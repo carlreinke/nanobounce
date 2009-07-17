@@ -1,7 +1,6 @@
 # BUILD SETTINGS ###################################
-DEBUG := 1
+
 PLATFORM := UNIX
-USE_PRECOMPILED := 1
 
 # If building for the GP2X
 GP2X_CHAINPREFIX := /opt/open2x/gcc-4.1.1-glibc-2.3.6
@@ -12,19 +11,10 @@ GP2X_CHAIN := $(GP2X_CHAINPREFIX)/bin/arm-open2x-linux-
 TARGET := bouncing
 OBJS := audio.o audio_sample.o ball.o block.o bouncing.o controller.o font.o level.o misc.o sprite.o video.o
 
-ifeq ($(DEBUG), 1)
-	DEBUG_FLAGS := -g3 -O0 -Werror
-else
-	DEBUG_FLAGS := -g0 -O2 -DNDEBUG
-endif
+STRIP := strip
 
-ifeq ($(USE_PRECOMPILED), 1)
-	PRECOMPILED_H_GCH := src/precompiled.h.gch
-	INCLUDE_PRECOMPILED := -include "precompiled.h"
-else
-	PRECOMPILED_H_GCH :=
-	INCLUDE_PRECOMPILED :=
-endif
+CXXFLAGS += --std=c++98 -pedantic -Wall -Wno-long-long -I$(CURDIR)/src/
+LDFLAGS += -lm
 
 SDL_CFLAGS := $(shell sdl-config --cflags)
 SDL_LDFLAGS := $(shell sdl-config --libs)
@@ -33,27 +23,46 @@ ifeq ($(PLATFORM), WIN32)
 	TARGET := $(TARGET).exe
 	
 	CXX := i486-mingw32-g++
+	STRIP := i486-mingw32-strip
+	
 	CXXFLAGS += -DTARGET_WIN32
 	
 	SDL_CFLAGS := $(shell ../SDL/bin/sdl-config --cflags)
 	SDL_LDFLAGS := $(shell ../SDL/bin/sdl-config --libs)
 endif
 ifeq ($(PLATFORM), GP2X)
+	TARGET := $(TARGET).gpe
+	
 	CXX := $(GP2X_CHAIN)g++
+	STRIP := $(GP2X_CHAIN)strip
+	
 	CXXFLAGS += -DTARGET_GP2X -mcpu=arm920t -mtune=arm920t -msoft-float -ffast-math
 	
 	SDL_CFLAGS := `$(GP2X_CHAINPREFIX)/bin/sdl-config --cflags` -I$(GP2X_CHAINPREFIX)/include
 	SDL_LDFLAGS := `$(GP2X_CHAINPREFIX)/bin/sdl-config --libs` -L$(GP2X_CHAINPREFIX)/lib
 endif
 
-CXXFLAGS += --std=c++98 -pedantic -Wall -Wno-long-long -I$(CURDIR)/src/ $(DEBUG_FLAGS) $(SDL_CFLAGS)
-LDFLAGS += $(SDL_LDFLAGS) -lm
-#CXXFLAGS += -pg
-#LDFLAGS += -pg
+CXXFLAGS += $(SDL_CFLAGS)
+LDFLAGS += $(SDL_LDFLAGS)
+
+DEBUG := 1
+DEBUG_FLAGS_0 := -g0 -O2 -DNDEBUG
+DEBUG_FLAGS_1 := -g3 -O0 -Werror
 
 ####################################################
 
+.PHONY : all
 all : $(TARGET)
+
+.PHONY : release
+release : DEBUG := 0
+release : all
+	$(STRIP) $(TARGET)
+
+.PHONY : clean
+clean :
+	rm -rf obj/* src/precompiled.h.gch
+	rm -f $(TARGET)
 
 OBJS := $(foreach obj, $(OBJS), obj/$(obj))
 
@@ -64,16 +73,10 @@ ifneq ($(MAKECMDGOALS), clean)
 -include $(OBJS:.o=.d)
 endif
 
-$(PRECOMPILED_H_GCH) : src/precompiled.h
-	$(CXX) -o $@ -c $(CXXFLAGS) $<
+src/precompiled.h.gch : src/precompiled.h
+	-$(CXX) -o $@ -c $(DEBUG_FLAGS_$(DEBUG)) $(CXXFLAGS) $<
 
 obj/%.d : obj/%.o
-obj/%.o : src/%.cpp $(PRECOMPILED_H_GCH)
+obj/%.o : src/%.cpp src/precompiled.h.gch
 	@mkdir -p "$(dir $@)"
-	$(CXX) -o $@ -MMD -c $(CXXFLAGS) $(INCLUDE_PRECOMPILED) $< 
-
-.PHONY : clean
-
-clean :
-	rm -rf obj/* $(PRECOMPILED_H_GCH)
-	rm -f $(TARGET)
+	$(CXX) -o $@ -MMD -c $(DEBUG_FLAGS_$(DEBUG)) $(CXXFLAGS) -include "precompiled.h" $< 
