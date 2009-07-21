@@ -9,7 +9,7 @@ GP2X_CHAIN := $(GP2X_CHAINPREFIX)/bin/arm-open2x-linux-
 # END SETTINGS #####################################
 
 TARGET := bouncing
-OBJS := audio.o audio_sample.o ball.o block.o bouncing.o controller.o font.o level.o misc.o sprite.o video.o
+OBJS := audio.o audio_sample.o ball.o block.o bouncing.o controller.o font.o game.o level.o menu.o misc.o sprite.o video.o
 
 STRIP := strip
 
