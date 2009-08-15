@@ -27,6 +27,14 @@ void Level::load( istream &data )
 	
 	getline(data, name);
 	
+	{
+		istringstream line;
+		getline(data, line);
+		
+		int dummy_width, dummy_height;
+		line >> dummy_width >> dummy_height;
+	}
+	
 	for (int y = 0; y < height && !data.fail(); y += Block::height)
 	{
 		istringstream line;
