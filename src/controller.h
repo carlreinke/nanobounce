@@ -74,17 +74,6 @@ private:
 	SDL_Joystick *joystick;
 };
 
-class Replay : public Controller
-{
-public:
-	Replay( const Highscore & );
-	
-private:
-	void do_update( void );
-	
-	Highscore data;
-};
-
 extern std::vector<Controller *> controllers, disabled_controllers;
 
 #endif
