@@ -10,24 +10,43 @@ Highscore::Highscore( int ms_per_tick )
 
 Highscore::Highscore( istream &is )
 {
-	getline(is, name);
-	is >> ms_per_tick;
-	
-	for ( ; ; )
-	{
-		int temp;
-		is >> temp;
-		
-		if (is.fail())
-			break;
-		else
-			x_push_direction.push_back(temp);
-	}
+	load(is);
 }
 
 bool Highscore::operator<( const Highscore &that ) const
 {
 	return ms() < that.ms();
+}
+
+void Highscore::load( istream &is )
+{
+	getline(is, name);
+	is >> ms_per_tick;
+	
+	unsigned int count;
+	is >> count;
+	
+	x_direction.clear();
+	while (x_direction.size() < count)
+	{
+		int temp;
+		is >> temp;
+		x_direction.push_back(temp);
+		
+		if (is.fail())
+			break;
+	}
+}
+
+void Highscore::save( ostream &os ) const
+{
+	os << name << endl;
+	os << ms_per_tick << " ";
+	
+	os << x_direction.size() << " ";
+	
+	for (vector<int>::const_iterator i = x_direction.begin(); i != x_direction.end(); ++i)
+		os << *i << " ";
 }
 
 string Highscore::time( void ) const

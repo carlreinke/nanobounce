@@ -9,15 +9,16 @@ public:
 	
 	bool operator<( const Highscore & ) const;
 	
+	void load( std::istream & );
 	void save( std::ostream & ) const;
 	
 	std::string time( void ) const;
 	
 	std::string name;
-	std::vector<int> x_push_direction;
+	std::vector<int> x_direction;
 	
 private:
-	int ms() const { return ms_per_tick * x_push_direction.size(); }
+	int ms() const { return ms_per_tick * x_direction.size(); }
 	
 	int ms_per_tick;
 };
