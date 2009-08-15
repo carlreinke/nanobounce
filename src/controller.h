@@ -1,6 +1,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include "highscore.h"
 #include "SDL.h"
 
 class Controller
@@ -71,22 +72,6 @@ private:
 	void do_update( void );
 	
 	SDL_Joystick *joystick;
-};
-
-class Highscore
-{
-public:
-	Highscore( int ms_per_tick );
-	Highscore( std::istream & );
-	
-	void save( std::ostream & );
-	std::string time( void );
-	
-	std::string name;
-	std::vector<int> x_push_direction;
-	
-private:
-	int ms_per_tick;
 };
 
 class Replay : public Controller
