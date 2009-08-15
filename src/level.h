@@ -33,9 +33,6 @@ public:
 	static const int width = 320, height = 240;
 	
 private:
-	Level( const Level & );
-	bool operator=( const Level & );
-	
 	void check_collide( Ball &, Block & );
 	
 	int fade;
