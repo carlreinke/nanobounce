@@ -68,6 +68,9 @@ void Level::draw( SDL_Surface *surface ) const
 
 void Level::update( int ball_x_direction )
 {
+	// limit how hard player can push the ball
+	ball_x_direction = min(max(-1, ball_x_direction), 1);
+	
 	for (vector<Ball>::iterator ball = balls.begin(); ball != balls.end(); ++ball)
 	{
 		ball->update(ball_x_direction);
