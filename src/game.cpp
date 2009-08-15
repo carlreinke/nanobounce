@@ -6,49 +6,52 @@
 
 using namespace std;
 
-void play_pack( SDL_Surface *surface, const string &path )
+void play_pack( SDL_Surface *surface, const string &directory )
 {
+	string meta_path;
+	meta_path = directory + "meta";
+	ifstream meta(meta_path.c_str());
+	
 	string pack_name, author;
+	getline(meta, pack_name);
+	getline(meta, author);
 	
-	string filename;
-	filename = path + "meta";
+	string level_path;
+	Level level, pristine_level;
 	
-	ifstream pack_data(filename.c_str());
-	getline(pack_data, pack_name);
-	getline(pack_data, author);
-	
-	bool next_level = true;
-	
-	Level level;
 	do
 	{
-		if (next_level)
+		if (level.state == Level::none || level.state == Level::won)
 		{
-			string temp;
-			getline(pack_data, temp);
+			string level_file;
+			getline(meta, level_file);
 			
-			if (pack_data.fail())
+			if (meta.fail())
 			{
 				pack_done_screen(surface, pack_name);
 				return;
 			}
 			
-			filename = path + temp;
+			level_path = directory + level_file;
+			
+			cout << "loading '" << level_path << "'" << endl;
+			
+			ifstream level_data(level_path.c_str());
+			level.load(level_data);
+			
+			if (level.state == Level::load_failed)
+				continue;
+			
+			level_screen(surface, level);
+			
+			pristine_level = level;
+		}
+		else
+		{
+			level = pristine_level;
 		}
 		
-		cout << "loading '" << filename << "'" << endl;
-		ifstream level_data(filename.c_str());
-		level.load(level_data);
-		
-		if (level.state == Level::load_failed)
-			continue;
-		
-		if (next_level)
-			level_screen(surface, level);
-		
 		level_loop(surface, level);
-		
-		next_level = level.state == Level::won;
 	}
 	while (level.state != Level::quit && !global_quit);
 }

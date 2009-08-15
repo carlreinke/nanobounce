@@ -118,27 +118,27 @@ void game_menu( SDL_Surface *surface )
 class Pack_Entry
 {
 public:
-	Pack_Entry( string name, string author, string path ) : name(name), author(author), path(path) {  }
-	string name, author, path;
+	Pack_Entry( string name, string author, string directory ) : name(name), author(author), directory(directory) {  }
+	string name, author, directory;
 	bool operator<( const Pack_Entry &that ) const { return this->name < that.name; }
 };
 
 void pack_menu( SDL_Surface *surface )
 {
-	string path = "lvl/";
+	string directory = "lvl/";
 	
 	vector<Pack_Entry> packs;
 	
 	// populate the pack list
 	{
-		DIR *dir = opendir(path.c_str());
+		DIR *dir = opendir(directory.c_str());
 		if (dir == NULL)
 			return;
 		
 		struct dirent *dir_ent;
 		while ((dir_ent = readdir(dir)) != NULL)
 		{
-			string filename = path + dir_ent->d_name + "/" + "meta";
+			string filename = directory + dir_ent->d_name + "/" + "meta";
 			
 			struct stat buffer;
 			if (stat(filename.c_str(), &buffer) == 0)
@@ -199,8 +199,8 @@ void pack_menu( SDL_Surface *surface )
 				
 			case SDLK_SPACE:
 			case SDLK_RETURN:
-				path += packs[selection].path;
-				play_pack(surface, path);
+				directory += packs[selection].directory;
+				play_pack(surface, directory);
 				
 				quit = true;
 				break;
