@@ -58,7 +58,7 @@ void Sprite::load_ppm( istream &ppm )
 	ppm >> type;
 	if (type != "P3")
 	{
-		cerr << "sprite loading failed" << endl;
+		cerr << "error: sprite loading failed" << endl;
 		return;
 	}
 	

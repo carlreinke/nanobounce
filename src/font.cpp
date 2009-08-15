@@ -20,7 +20,7 @@ void Font::load_pgm( istream &pgm )
 	pgm >> type;
 	if (type != "P2")
 	{
-		cerr << "font loading failed" << endl;
+		cerr << "error: font loading failed" << endl;
 		return;
 	}
 	
