@@ -7,12 +7,6 @@ int screen_bpp = 32;
 
 SDL_Surface *init_video( void )
 {
-	if (SDL_InitSubSystem(SDL_INIT_VIDEO) == -1)
-	{
-		cerr << SDL_GetError() << endl;
-		exit(EXIT_FAILURE);
-	}
-	
 	SDL_Surface *surface = SDL_SetVideoMode(320, 240, screen_bpp, SDL_HWSURFACE | SDL_ANYFORMAT | SDL_DOUBLEBUF);
 	
 	SDL_WM_SetCaption("Bouncing Frustration", NULL);
