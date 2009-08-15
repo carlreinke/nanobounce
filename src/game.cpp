@@ -213,10 +213,20 @@ void level_loop( SDL_Surface *surface, Level &level )
 				
 				for (int i = 0; i < 4; ++i)
 				{
-					for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-						(*c)->update();
+					int x_direction = 0;
 					
-					level.update();
+					for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+					{
+						(*c)->update();
+						
+						x_direction += (*c)->is_down[Controller::left] ? -1 : 0;
+						x_direction += (*c)->is_down[Controller::right] ? 1 : 0;
+						
+						if ((*c)->is_down[Controller::quit])
+							level.state = Level::quit;
+					}
+					
+					level.update(x_direction);
 				}
 				break;
 			}

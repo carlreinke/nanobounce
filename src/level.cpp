@@ -66,22 +66,11 @@ void Level::draw( SDL_Surface *surface ) const
 		ball->draw(surface, fade);
 }
 
-void Level::update( void )
+void Level::update( int ball_x_direction )
 {
 	for (vector<Ball>::iterator ball = balls.begin(); ball != balls.end(); ++ball)
 	{
-		int direction = 0;
-		
-		for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-		{
-			direction += (*c)->is_down[Controller::left] ? -1 : 0;
-			direction += (*c)->is_down[Controller::right] ? 1 : 0;
-			
-			if ((*c)->is_down[Controller::quit])
-				state = quit;
-		}
-		
-		ball->update(direction);
+		ball->update(ball_x_direction);
 		
 		for (vector<Block>::iterator block = blocks.begin(); block != blocks.end(); ++block)
 			check_collide(*ball, *block);

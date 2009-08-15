@@ -14,7 +14,7 @@ public:
 	void load( std::istream & );
 	
 	void draw( SDL_Surface * ) const;
-	void update( void );
+	void update( int ball_x_direction );
 	
 	std::string name;
 	
