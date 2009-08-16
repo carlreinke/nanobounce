@@ -68,7 +68,7 @@ void play_pack( SDL_Surface *surface, const string &directory )
 		
 		if (level.state == Level::won)
 		{
-			if (new_highscore.ms() < highscore.ms() || highscore.empty())
+			if (new_highscore.ms() < highscore.ms() || highscore.invalid())
 			{
 				// do highscore screen, ask for name
 				
@@ -167,7 +167,7 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 				
 				font.blit(surface, screen_width / 2, screen_height / 2 - font.height(font_sprites[3]), level.name, font_sprites[3], Font::center, fade);
 				
-				if (!highscore.empty())
+				if (!highscore.invalid())
 				{
 					font.blit(surface, screen_width / 2, screen_height * 3 / 4 - font.height(font_sprites[2]), "Best Time", font_sprites[2], Font::center, fade);
 					font.blit(surface, screen_width / 2, screen_height * 3 / 4, highscore.name + ": " + highscore.time(), font_sprites[2], Font::center, fade);
@@ -261,7 +261,7 @@ void level_loop( SDL_Surface *surface, Level &level, Highscore &new_highscore )
 							level.state = Level::quit;
 					}
 					
-					new_highscore.x_direction.push_back(x_direction);
+					new_highscore.push_back_tick(x_direction);
 					
 					level.update(x_direction);
 				}

@@ -4,23 +4,28 @@
 class Highscore
 {
 public:
-	Highscore( void ) { }
+	Highscore( void ) { reset(); }
 	Highscore( int ms_per_tick );
 	Highscore( std::istream & );
 	
 	void load( std::istream & );
 	void save( std::ostream & ) const;
+	void reset( int ms_per_tick = 0 );
 	
-	int ms( void ) const { return ms_per_tick * x_direction.size(); }
+	void push_back_tick( int x_direction );
+	
+	int ms( void ) const { return ticks * ms_per_tick; }
 	std::string time( void ) const;
 	
-	bool empty( void ) const { return ms() == 0 || name.size() == 0; }
+	bool invalid( void ) const { return ms() == 0; }
 	
 	std::string name;
-	std::vector<int> x_direction;
 	
 private:
 	int ms_per_tick;
+	
+	int ticks;
+	std::vector< std::pair<int, int> > x_direction;
 };
 
 #endif
