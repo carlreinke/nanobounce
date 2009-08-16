@@ -62,6 +62,6 @@ string Highscore::time( void ) const
 	int min = temp;
 	
 	ostringstream out;
-	out << min << ":" << setw(2) << sec << "." << setw(3) << ms;
+	out << min << ":" << setfill('0') << setw(2) << sec << "." << setfill('0') << setw(3) << ms;
 	return out.str();
 }

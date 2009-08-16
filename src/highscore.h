@@ -14,7 +14,7 @@ public:
 	int ms( void ) const { return ms_per_tick * x_direction.size(); }
 	std::string time( void ) const;
 	
-	bool empty( void ) const { return ms() == 0; }
+	bool empty( void ) const { return ms() == 0 || name.size() == 0; }
 	
 	std::string name;
 	std::vector<int> x_direction;

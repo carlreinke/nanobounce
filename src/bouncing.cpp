@@ -37,7 +37,7 @@ int main( int argc, char *argv[] )
 	{
 		SDL_Color color = { 100, 100, 100 };
 		font_sprites[1] = Sprite(1, 1, color);
-		
+		font_sprites[2] = Sprite("img/font_gray_2.ppm");
 		font_sprites[3] = Sprite("img/font_gray_3.ppm");
 		font_sprites[4] = Sprite("img/font_gray_4.ppm");
 	}

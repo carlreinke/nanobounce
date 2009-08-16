@@ -167,6 +167,12 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 				
 				font.blit(surface, screen_width / 2, screen_height / 2 - font.height(font_sprites[3]), level.name, font_sprites[3], Font::center, fade);
 				
+				if (!highscore.empty())
+				{
+					font.blit(surface, screen_width / 2, screen_height * 3 / 4 - font.height(font_sprites[2]), "Best Time", font_sprites[2], Font::center, fade);
+					font.blit(surface, screen_width / 2, screen_height * 3 / 4, highscore.name + ": " + highscore.time(), font_sprites[2], Font::center, fade);
+				}
+				
 				SDL_Flip(surface);
 				break;
 				
