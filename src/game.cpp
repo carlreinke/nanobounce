@@ -19,6 +19,9 @@ void play_pack( SDL_Surface *surface, const string &directory )
 	string level_path;
 	Level level, pristine_level;
 	
+	string highscore_path;
+	Highscore highscore;
+	
 	do
 	{
 		if (level.state == Level::none || level.state == Level::won)
@@ -42,16 +45,39 @@ void play_pack( SDL_Surface *surface, const string &directory )
 			if (level.state == Level::load_failed)
 				continue;
 			
-			level_screen(surface, level);
+			highscore_path = level_path + ".score";
+			
+			cout << "loading '" << highscore_path << "'" << endl;
+			
+			ifstream highscore_data(highscore_path.c_str());
+			highscore.load(highscore_data);
+			
+			level_screen(surface, level, highscore);
 			
 			pristine_level = level;
 		}
 		else
 		{
+			// redo last level
 			level = pristine_level;
 		}
 		
-		level_loop(surface, level);
+		Highscore new_highscore(update_ticks);
+		
+		level_loop(surface, level, new_highscore);
+		
+		if (level.state == Level::won)
+		{
+			if (new_highscore.ms() < highscore.ms() || highscore.empty())
+			{
+				// do highscore screen, ask for name
+				
+				cout << "saving new highscore '" << highscore_path << "'" << endl;
+				
+				ofstream highscore_data(highscore_path.c_str());
+				new_highscore.save(highscore_data);
+			}
+		}
 	}
 	while (level.state != Level::quit && !global_quit);
 }
@@ -117,7 +143,7 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 	}
 }
 
-void level_screen( SDL_Surface *surface, const Level &level )
+void level_screen( SDL_Surface *surface, const Level &level, const Highscore &highscore ) //! highscore?
 {
 	int ticks = 50, fade = SDL_ALPHA_TRANSPARENT;
 	
@@ -162,7 +188,7 @@ void level_screen( SDL_Surface *surface, const Level &level )
 	}
 }
 
-void level_loop( SDL_Surface *surface, Level &level )
+void level_loop( SDL_Surface *surface, Level &level, Highscore &new_highscore )
 {
 	int show_volume_ticks = 0;
 	ostringstream volume_text;
@@ -228,6 +254,8 @@ void level_loop( SDL_Surface *surface, Level &level )
 						if ((*c)->is_down[Controller::quit])
 							level.state = Level::quit;
 					}
+					
+					new_highscore.x_direction.push_back(x_direction);
 					
 					level.update(x_direction);
 				}

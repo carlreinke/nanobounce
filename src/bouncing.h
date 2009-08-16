@@ -10,6 +10,8 @@ enum
 	USER_UPDATE
 };
 
+extern int update_ticks;
+
 extern std::map<int, Sprite> font_sprites;
 
 extern bool global_quit;

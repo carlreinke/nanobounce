@@ -13,11 +13,6 @@ Highscore::Highscore( istream &is )
 	load(is);
 }
 
-bool Highscore::operator<( const Highscore &that ) const
-{
-	return ms() < that.ms();
-}
-
 void Highscore::load( istream &is )
 {
 	getline(is, name);
@@ -36,6 +31,11 @@ void Highscore::load( istream &is )
 		if (is.fail())
 			break;
 	}
+	
+	if (is.fail())
+		cout << "warning: score failed to load" << endl;
+	else
+		cout << "loaded score '" << name << "' " << ms() << " ms" << endl;
 }
 
 void Highscore::save( ostream &os ) const
