@@ -13,7 +13,7 @@ OBJS := audio.o audio_sample.o ball.o block.o bouncing.o controller.o font.o gam
 
 STRIP := strip
 
-CXXFLAGS += --std=c++98 -pedantic -Wall -Wno-long-long -I$(CURDIR)/src/
+CXXFLAGS += --std=c++98 -pedantic -Wall -Wextra -Wno-long-long -Wno-missing-field-initializers -I$(CURDIR)/src/
 LDFLAGS += -lm
 
 SDL_CFLAGS := $(shell sdl-config --cflags)

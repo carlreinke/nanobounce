@@ -21,7 +21,7 @@ map<int, Sprite> font_sprites;
 
 bool global_quit = false;
 
-int main( int argc, char *argv[] )
+int main( int, char *[] )
 {
 	if (SDL_Init(SDL_INIT_TIMER) == -1)
 	{
@@ -62,7 +62,7 @@ int main( int argc, char *argv[] )
 	return EXIT_SUCCESS;
 }
 
-Uint32 push_frame_event( Uint32 interval, void * )
+Uint32 push_frame_event( Uint32, void * )
 {
 	SDL_Event event;
 	event.type = SDL_USEREVENT;
@@ -74,7 +74,7 @@ Uint32 push_frame_event( Uint32 interval, void * )
 	return frame_ticks;
 }
 
-Uint32 push_update_event( Uint32 interval, void * )
+Uint32 push_update_event( Uint32, void * )
 {
 	SDL_Event event;
 	event.type = SDL_USEREVENT;
