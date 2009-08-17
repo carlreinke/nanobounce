@@ -4,7 +4,7 @@
 
 using namespace std;
 
-ifstream font_stream("img/font.pgm"), meta_stream("img/font.meta");
+ifstream font_stream("img/font_04b21.pgm"), meta_stream("img/font_04b21.meta");
 Font font(font_stream, meta_stream);
 
 Font::Font( std::istream &pgm, std::istream &is )
@@ -58,7 +58,7 @@ void Font::load_char_widths( istream &is )
 		int w = get_no_comments<int>(is);
 		
 		char_positions[c] = x;
-		char_widths[c] = w - 1;
+		char_widths[c] = w;
 		
 		if (c == 'N')
 		{
@@ -92,9 +92,9 @@ void Font::blit( SDL_Surface *surface, int x, int y, const std::string &text, co
 		
 		for (string::const_iterator c = text.begin(); c != text.end(); ++c)
 		{
-			unsigned int g_x = char_positions[toupper(*c)];
+			unsigned int g_x = char_positions[*c];
 			
-			for (unsigned int x = 0; x < char_widths[toupper(*c)]; ++x)
+			for (unsigned int x = 0; x < char_widths[*c]; ++x)
 			{
 				if ((*y_line)[g_x + x] > 0)
 					sprite.blit(surface, x_temp, y, alpha);
@@ -107,12 +107,32 @@ void Font::blit( SDL_Surface *surface, int x, int y, const std::string &text, co
 	}
 }
 
+void Font::blit( SDL_Surface *surface, int x, int y, std::string text, const Sprite &sprite, styles style, justifications justify, Uint8 alpha )
+{
+	switch (style)
+	{
+	case majuscule:
+		for (string::iterator c = text.begin(); c != text.end(); ++c)
+			*c = toupper(*c);
+		break;
+	case minuscule:
+		for (string::iterator c = text.begin(); c != text.end(); ++c)
+			*c = tolower(*c);
+		break;
+	case normal:
+	default:
+		break;
+	}
+	
+	blit(surface, x, y, text, sprite, justify, alpha);
+}
+
 unsigned int Font::width( const std::string &text, const Sprite &sprite ) const
 {
 	unsigned int width = 0;
 	
 	for (unsigned int i = 0; i < text.length(); ++i)
-		width += char_widths[toupper(text[i])] * sprite.width();
+		width += char_widths[text[i]] * sprite.width();
 	
 	return width;
 }

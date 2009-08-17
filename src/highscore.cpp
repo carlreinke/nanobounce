@@ -20,7 +20,7 @@ void Highscore::load( istream &is )
 	is >> ticks;
 	
 	if (name.size() == 0)
-		name = "Unknown";
+		name = "UNKNOWN";
 	
 	x_direction.clear();
 	for (; ; )

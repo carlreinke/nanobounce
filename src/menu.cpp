@@ -77,21 +77,21 @@ void game_menu( SDL_Surface *surface )
 				
 				ball.draw(surface);
 				
-				font.blit(surface, screen_width / 2, screen_height / 2 - font.height(font_sprites[4]) * 2, "Bouncing", font_sprites[4], Font::center);
-				font.blit(surface, screen_width / 2, screen_height / 2 - font.height(font_sprites[4]), "Frustration", font_sprites[4], Font::center);
+				font.blit(surface, screen_width / 2, screen_height / 2 - font.height(font_sprites[4]) * 2, "Bouncing", font_sprites[4], Font::majuscule, Font::center);
+				font.blit(surface, screen_width / 2, screen_height / 2 - font.height(font_sprites[4]), "Frustration", font_sprites[4], Font::majuscule, Font::center);
 				
 				for (unsigned int i = 0; i < COUNTOF(menu_items); ++i)
 				{
 					int x = screen_width * ((Fixed)((signed)i + 1) / ((signed)COUNTOF(menu_items) + 1)),
 						y = screen_height - font.height(font_sprites[3]) * 3;
 					
-					font.blit(surface, x, y, menu_items[i], font_sprites[3], Font::center, (i == selection) ? SDL_ALPHA_OPAQUE : 128);
+					font.blit(surface, x, y, menu_items[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? SDL_ALPHA_OPAQUE : 128);
 				}
 				
-				font.blit(surface, 0, screen_height - font.height(font_sprites[1]), "v0.1 BETA", font_sprites[1], Font::left);
+				font.blit(surface, 0, screen_height - font.height(font_sprites[1]), "v0.1 BETA", font_sprites[1], Font::majuscule, Font::left);
 				
-				font.blit(surface, screen_width - 1, screen_height - font.height(font_sprites[1]) * 2, "programming, graphics, and sound:", font_sprites[1], Font::right);
-				font.blit(surface, screen_width - 1, screen_height - font.height(font_sprites[1]), "Carl Reinke (a.k.a. Mindless)", font_sprites[1], Font::right);
+				font.blit(surface, screen_width - 1, screen_height - font.height(font_sprites[1]) * 2, "programming, graphics, and sound:", font_sprites[1], Font::majuscule, Font::right);
+				font.blit(surface, screen_width - 1, screen_height - font.height(font_sprites[1]), "Carl Reinke (a.k.a. Mindless)", font_sprites[1], Font::majuscule, Font::right);
 				
 				SDL_Flip(surface);
 				break;

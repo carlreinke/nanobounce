@@ -118,9 +118,9 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 			case USER_FRAME:
 				SDL_FillRect(surface, NULL, 0);
 				
-				font.blit(surface, screen_width / 2, screen_height / 4, "Congratulations!", font_sprites[3], Font::center, fade);
+				font.blit(surface, screen_width / 2, screen_height / 4, "Congratulations!", font_sprites[3], Font::majuscule, Font::center, fade);
 				font.blit(surface, screen_width / 2, screen_height / 2, pack_name, font_sprites[4], Font::center, fade);
-				font.blit(surface, screen_width / 2, screen_height / 2 + font.height(font_sprites[4]), "Completed!", font_sprites[3], Font::center, fade);
+				font.blit(surface, screen_width / 2, screen_height / 2 + font.height(font_sprites[4]), "completed!", font_sprites[3], Font::majuscule, Font::center, fade);
 				
 				SDL_Flip(surface);
 				break;
@@ -169,7 +169,7 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 				
 				if (!highscore.invalid())
 				{
-					font.blit(surface, screen_width / 2, screen_height * 3 / 4 - font.height(font_sprites[2]), "Best Time", font_sprites[2], Font::center, fade);
+					font.blit(surface, screen_width / 2, screen_height * 3 / 4 - font.height(font_sprites[2]), "Best Time", font_sprites[2], Font::majuscule, Font::center, fade);
 					font.blit(surface, screen_width / 2, screen_height * 3 / 4, highscore.name + ": " + highscore.time(), font_sprites[2], Font::center, fade);
 				}
 				

@@ -18,7 +18,15 @@ public:
 		right
 	};
 	
+	enum styles
+	{
+		normal,
+		majuscule,
+		minuscule
+	};
+	
 	void blit( SDL_Surface *, int x, int y, const std::string &, const Sprite &, justifications = left, Uint8 alpha = SDL_ALPHA_OPAQUE );
+	void blit( SDL_Surface *, int x, int y, std::string, const Sprite &, styles, justifications = left, Uint8 alpha = SDL_ALPHA_OPAQUE );
 	
 	unsigned int height( const Sprite &sprite ) const { return graymap.size() * sprite.height(); };
 	unsigned int width( const std::string &, const Sprite & ) const;
