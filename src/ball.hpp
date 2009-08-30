@@ -55,46 +55,16 @@ private:
 	void unboost( void );
 	void wall_jump( void );
 	
-	bool is_moving_left( void ) const;
-	bool is_moving_right( void ) const;
-	bool is_moving_up( void ) const;
-	bool is_moving_down( void ) const;
+	bool is_moving_left( void ) const { return (x_vel < 0); }
+	bool is_moving_right( void ) const { return (x_vel > 0); }
+	bool is_moving_up( void ) const { return (y_vel < 0); }
+	bool is_moving_down( void ) const { return (y_vel > 0); }
 	
-	bool was_pushed_left( void ) const;
-	bool was_pushed_right( void ) const;
+	bool was_pushed_left( void ) const { return (x_accel < 0); }
+	bool was_pushed_right( void ) const { return (x_accel > 0); }
 	
 	friend class Level;
 	friend void game_menu( SDL_Surface * );
 };
-
-inline bool Ball::is_moving_left( void ) const
-{
-	return (x_vel < 0);
-}
-
-inline bool Ball::is_moving_right( void ) const
-{
-	return (x_vel > 0);
-}
-
-inline bool Ball::is_moving_up( void ) const
-{
-	return (y_vel < 0);
-}
-
-inline bool Ball::is_moving_down( void ) const
-{
-	return (y_vel > 0);
-}
-
-inline bool Ball::was_pushed_left( void ) const
-{
-	return (x_accel < 0);
-}
-
-inline bool Ball::was_pushed_right( void ) const
-{
-	return (x_accel > 0);
-}
 
 #endif // BALL_HPP
