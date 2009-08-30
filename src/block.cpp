@@ -1,5 +1,5 @@
-#include "block.h"
-#include "sprite.h"
+#include "block.hpp"
+#include "sprite.hpp"
 
 using namespace std;
 

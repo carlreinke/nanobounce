@@ -1,5 +1,5 @@
-#ifndef HIGHSCORE_H
-#define HIGHSCORE_H
+#ifndef HIGHSCORE_HPP
+#define HIGHSCORE_HPP
 
 class Highscore
 {
@@ -28,4 +28,4 @@ private:
 	std::vector< std::pair<int, int> > x_direction;
 };
 
-#endif
+#endif // HIGHSCORE_HPP

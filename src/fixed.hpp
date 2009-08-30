@@ -1,7 +1,7 @@
-#ifndef FIXED_H
-#define FIXED_H
+#ifndef FIXED_HPP
+#define FIXED_HPP
 
-#ifdef FLOAT
+#ifdef HAS_FLOAT
 
 typedef float Fixed;
 
@@ -296,6 +296,6 @@ inline Fixed fabs( const Fixed &that )
 	return (that < 0) ? -that : that;
 }
 
-#endif // FLOAT
+#endif // HAS_FLOAT
 
-#endif // FIXED_H
+#endif // FIXED_HPP

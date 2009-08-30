@@ -1,8 +1,8 @@
-#ifndef LEVEL_H
-#define LEVEL_H
+#ifndef LEVEL_HPP
+#define LEVEL_HPP
 
-#include "ball.h"
-#include "block.h"
+#include "ball.hpp"
+#include "block.hpp"
 #include "SDL.h"
 
 class Level
@@ -41,4 +41,4 @@ private:
 	std::vector<Block> blocks;
 };
 
-#endif
+#endif // LEVEL_HPP

@@ -1,5 +1,5 @@
-#ifndef AUDIO_SAMPLE_H
-#define AUDIO_SAMPLE_H
+#ifndef AUDIO_SAMPLE_HPP
+#define AUDIO_SAMPLE_HPP
 
 #include "SDL.h"
 
@@ -23,4 +23,4 @@ private:
 	friend void audio_callback( void *, Uint8 *stream, int len );
 };
 
-#endif
+#endif // AUDIO_SAMPLE_HPP

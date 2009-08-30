@@ -1,5 +1,5 @@
-#ifndef VIDEO_H
-#define VIDEO_H
+#ifndef VIDEO_HPP
+#define VIDEO_HPP
 
 #include "SDL.h"
 
@@ -8,4 +8,4 @@ extern int screen_bpp;
 
 SDL_Surface *init_video( void );
 
-#endif
+#endif // VIDEO_HPP

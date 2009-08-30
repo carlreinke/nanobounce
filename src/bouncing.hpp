@@ -1,7 +1,7 @@
-#ifndef BOUNCING_H
-#define BOUNCING_H
+#ifndef BOUNCING_HPP
+#define BOUNCING_HPP
 
-#include "font.h"
+#include "font.hpp"
 #include "SDL.h"
 
 enum
@@ -16,4 +16,4 @@ extern std::map<int, Sprite> font_sprites;
 
 extern bool global_quit;
 
-#endif
+#endif // BOUNCING_HPP

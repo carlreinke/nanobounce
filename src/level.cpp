@@ -1,7 +1,7 @@
-#include "audio.h"
-#include "controller.h"
-#include "level.h"
-#include "misc.h"
+#include "audio.hpp"
+#include "controller.hpp"
+#include "level.hpp"
+#include "misc.hpp"
 #include "SDL.h"
 
 using namespace std;

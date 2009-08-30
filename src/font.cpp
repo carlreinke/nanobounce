@@ -1,6 +1,6 @@
-#include "fixed.h"
-#include "font.h"
-#include "misc.h"
+#include "fixed.hpp"
+#include "font.hpp"
+#include "misc.hpp"
 
 using namespace std;
 

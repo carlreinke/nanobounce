@@ -1,4 +1,4 @@
-#include "highscore.h"
+#include "highscore.hpp"
 
 using namespace std;
 

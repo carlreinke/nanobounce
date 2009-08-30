@@ -1,8 +1,8 @@
-#ifndef BALL_H
-#define BALL_H
+#ifndef BALL_HPP
+#define BALL_HPP
 
-#include "fixed.h"
-#include "sprite.h"
+#include "fixed.hpp"
+#include "sprite.hpp"
 #include "SDL.h"
 
 class Ball
@@ -86,4 +86,4 @@ inline bool Ball::was_pushed_right( void ) const
 	return (x_accel > 0);
 }
 
-#endif
+#endif // BALL_HPP

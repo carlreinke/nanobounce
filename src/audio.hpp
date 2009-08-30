@@ -1,8 +1,8 @@
-#ifndef AUDIO_H
-#define AUDIO_H
+#ifndef AUDIO_HPP
+#define AUDIO_HPP
 
-#include "audio_sample.h"
-#include "fixed.h"
+#include "audio_sample.hpp"
+#include "fixed.hpp"
 #include "SDL.h"
 
 class Stream
@@ -32,4 +32,4 @@ void deinit_audio( void );
 
 void audio_callback( void *, Uint8 *stream, int len );
 
-#endif
+#endif // AUDIO_HPP

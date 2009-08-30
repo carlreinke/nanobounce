@@ -1,5 +1,5 @@
-#ifndef MISC_H
-#define MISC_H
+#ifndef MISC_HPP
+#define MISC_HPP
 
 #include "SDL.h"
 
@@ -36,4 +36,4 @@ inline int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, const SDL_Color &
 	return SDL_FillRect(dst, dstrect, SDL_MapRGBA(dst->format, color.r, color.g, color.b, color.unused));
 }
 
-#endif
+#endif // MISC_HPP

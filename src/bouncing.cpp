@@ -1,8 +1,8 @@
-#include "audio.h"
-#include "bouncing.h"
-#include "controller.h"
-#include "menu.h"
-#include "video.h"
+#include "audio.hpp"
+#include "bouncing.hpp"
+#include "controller.hpp"
+#include "menu.hpp"
+#include "video.hpp"
 
 using namespace std;
 

@@ -1,7 +1,7 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#ifndef BLOCK_HPP
+#define BLOCK_HPP
 
-#include "sprite.h"
+#include "sprite.hpp"
 #include "SDL.h"
 
 class Block
@@ -38,4 +38,4 @@ private:
 	friend class Level;
 };
 
-#endif
+#endif // BLOCK_HPP

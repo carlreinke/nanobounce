@@ -1,7 +1,7 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#ifndef CONTROLLER_HPP
+#define CONTROLLER_HPP
 
-#include "highscore.h"
+#include "highscore.hpp"
 #include "SDL.h"
 
 class Controller
@@ -76,4 +76,4 @@ private:
 
 extern std::vector<Controller *> controllers, disabled_controllers;
 
-#endif
+#endif // CONTROLLER_HPP

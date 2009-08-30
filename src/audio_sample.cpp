@@ -1,5 +1,5 @@
-#include "audio.h"
-#include "audio_sample.h"
+#include "audio.hpp"
+#include "audio_sample.hpp"
 
 using namespace std;
 

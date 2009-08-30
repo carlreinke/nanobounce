@@ -1,7 +1,7 @@
-#include "fixed.h"
-#include "misc.h"
-#include "sprite.h"
-#include "video.h"
+#include "fixed.hpp"
+#include "misc.hpp"
+#include "sprite.hpp"
+#include "video.hpp"
 
 using namespace std;
 

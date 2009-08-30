@@ -1,5 +1,5 @@
-#ifndef SPRITE_H
-#define SPRITE_H
+#ifndef SPRITE_HPP
+#define SPRITE_HPP
 
 #include "SDL.h"
 
@@ -31,4 +31,4 @@ protected:
 	SDL_Surface *surface;
 };
 
-#endif
+#endif // SPRITE_HPP

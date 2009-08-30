@@ -1,7 +1,7 @@
-#ifndef FONT_H
-#define FONT_H
+#ifndef FONT_HPP
+#define FONT_HPP
 
-#include "sprite.h"
+#include "sprite.hpp"
 
 class Font
 {
@@ -42,4 +42,4 @@ private:
 
 extern Font font;
 
-#endif // FONT_H
+#endif // FONT_HPP

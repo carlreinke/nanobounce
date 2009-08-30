@@ -1,11 +1,11 @@
-#include "ball.h"
-#include "bouncing.h"
-#include "controller.h"
-#include "font.h"
-#include "game.h"
-#include "menu.h"
-#include "misc.h"
-#include "video.h"
+#include "ball.hpp"
+#include "bouncing.hpp"
+#include "controller.hpp"
+#include "font.hpp"
+#include "game.hpp"
+#include "menu.hpp"
+#include "misc.hpp"
+#include "video.hpp"
 
 using namespace std;
 

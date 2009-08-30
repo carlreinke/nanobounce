@@ -1,7 +1,7 @@
-#include "audio.h"
-#include "ball.h"
-#include "block.h"
-#include "level.h"
+#include "audio.hpp"
+#include "ball.hpp"
+#include "block.hpp"
+#include "level.hpp"
 
 using namespace std;
 

@@ -61,7 +61,7 @@ release : all
 
 .PHONY : clean
 clean :
-	rm -rf obj/* src/precompiled.h.gch
+	rm -rf obj/* src/precompiled.hpp.gch
 	rm -f $(TARGET)
 
 OBJS := $(foreach obj, $(OBJS), obj/$(obj))
@@ -73,10 +73,10 @@ ifneq ($(MAKECMDGOALS), clean)
 -include $(OBJS:.o=.d)
 endif
 
-src/precompiled.h.gch : src/precompiled.h
+src/precompiled.hpp.gch : src/precompiled.hpp
 	-$(CXX) -o $@ -c $(DEBUG_FLAGS_$(DEBUG)) $(CXXFLAGS) $<
 
 obj/%.d : obj/%.o
-obj/%.o : src/%.cpp src/precompiled.h.gch
+obj/%.o : src/%.cpp src/precompiled.hpp.gch
 	@mkdir -p "$(dir $@)"
-	$(CXX) -o $@ -MMD -c $(DEBUG_FLAGS_$(DEBUG)) $(CXXFLAGS) -include "precompiled.h" $< 
+	$(CXX) -o $@ -MMD -c $(DEBUG_FLAGS_$(DEBUG)) $(CXXFLAGS) -include "precompiled.hpp" $< 
