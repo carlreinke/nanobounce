@@ -121,7 +121,7 @@ redo:
 		if (block.can_collide())
 		{
 			// keep ball outside blocks
-			if (fabs(ball.y_vel) > 1)
+			if (fabsf(ball.y_vel) > 1)
 			{
 				ball.y -= ball.is_moving_up() ? -1 : 1;
 				ball.trail.back().second = ball.y;
@@ -181,7 +181,7 @@ redo:
 				
 				sample = &samples["wall_jump"];
 			}
-			else if (fabs(ball.x_vel) > 3 * ball.x_push_accel)
+			else if (fabsf(ball.x_vel) > 3 * ball.x_push_accel)
 			{
 				sample = &samples["bounce"];
 			}

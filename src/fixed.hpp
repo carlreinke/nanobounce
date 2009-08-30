@@ -5,7 +5,7 @@
 
 typedef float Fixed;
 
-#else // FLOAT
+#else // HAS_FLOAT
 
 class Fixed
 {
@@ -27,22 +27,21 @@ public:
 	Fixed operator+( void ) const;
 	Fixed operator-( void ) const;
 	
-	Fixed & operator++( void ); //!
-	Fixed & operator--( void ); //!
-	Fixed operator++( int ); //!
-	Fixed operator--( int ); //!
-	
 	friend Fixed operator+( const Fixed &, const Fixed & );
 	friend Fixed operator-( const Fixed &, const Fixed & );
 	friend Fixed operator*( const Fixed &, const Fixed & );
 	friend Fixed operator/( const Fixed &, const Fixed & );
 	
+	friend Fixed ceilf( const Fixed & );
+	
 private:
 	static Fixed from_value( int );
 	
-	static const int bits = 16;
+	typedef long int Value;
+	Value value;
 	
-	int value;
+	static const int bits = 16;
+	static const Value mask = (1 << bits) - 1;
 };
 
 inline Fixed::Fixed( void )
@@ -281,19 +280,19 @@ inline T & operator/=( T &lhs, const Fixed &rhs )
 	return lhs = (Fixed)lhs / rhs;
 }
 
-inline Fixed min( const Fixed &a, const Fixed &b )
-{
-	return (a < b) ? a : b;
-}
-
-inline Fixed max( const Fixed &a, const Fixed &b )
-{
-	return (a > b) ? a : b;
-}
-
-inline Fixed fabs( const Fixed &that )
+inline Fixed fabsf( const Fixed &that )
 {
 	return (that < 0) ? -that : that;
+}
+
+inline Fixed ceilf( const Fixed &that )
+{
+	return Fixed::from_value((that.value + that.mask) & ~that.mask);
+}
+
+inline std::ostream & operator<< ( std::ostream &lhs, const Fixed &rhs )
+{
+	return (lhs << (float)rhs);
 }
 
 #endif // HAS_FLOAT

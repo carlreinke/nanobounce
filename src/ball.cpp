@@ -102,8 +102,8 @@ void Ball::boost( Fixed x, Fixed y, int ticks, bool is_wall_jump )
 		y_vel = y;
 		return;
 	}
-	x_vel = (x < 0) ? -fabs(x_vel) : fabs(x_vel);
-	y_vel = (y < 0) ? -fabs(y_vel) : fabs(y_vel);
+	x_vel = (x < 0) ? -fabsf(x_vel) : fabsf(x_vel);
+	y_vel = (y < 0) ? -fabsf(y_vel) : fabsf(y_vel);
 	
 	x_boost = x;
 	y_boost = y;

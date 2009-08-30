@@ -217,7 +217,7 @@ void level_loop( SDL_Surface *surface, Level &level, Highscore &new_highscore )
 			case SDLK_MINUS:
 			{
 				const Fixed delta = (e.key.keysym.sym == SDLK_MINUS) ? -0.1f : 0.1f;
-				volume = min(max(0, volume + delta), 1);
+				volume = min(max((Fixed)0, volume + delta), (Fixed)1);
 				
 				show_volume_ticks = 20;
 				volume_text.str("");
