@@ -5,6 +5,8 @@
 
 #define COUNTOF(x) (sizeof(x) / sizeof(*x))
 
+#define sqr(x) ((x) * (x))
+
 void getline( std::istream &is, std::istringstream &iss );
 
 template <class T>

@@ -2,15 +2,16 @@
 #include "ball.hpp"
 #include "block.hpp"
 #include "level.hpp"
+#include "misc.hpp"
 
 using namespace std;
 
 // terminal velocity and acceleration
 const Fixed Ball::y_term_vel = 1.0f;
-const Fixed Ball::y_accel    = (-y_term_vel * -y_term_vel) / (2 * (1.5f * Block::height));
+const Fixed Ball::y_accel    = sqr(-y_term_vel) / (2 * (1.5f * Block::height));
 
 const Fixed Ball::x_term_vel   = (3.0f * Block::width) / ((2 * y_term_vel) / y_accel);
-const Fixed Ball::push_x_accel = (x_term_vel * x_term_vel) / (2.0f * Block::width);
+const Fixed Ball::push_x_accel = sqr(x_term_vel) / (2.0f * Block::width);
 
 // boost block presets
 const Fixed Ball::x_boost_block = 1.0f;
@@ -35,7 +36,6 @@ Ball::Ball( Fixed x, Fixed y )
   ticks_until_unboost(0),
   x_vel_unboost(0), y_vel_unboost(0)
 {
-	
 	// build sprites
 	if (sprites.empty())
 	{
