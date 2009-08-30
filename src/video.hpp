@@ -3,8 +3,7 @@
 
 #include "SDL.h"
 
-extern const int screen_width, screen_height;
-extern int screen_bpp;
+extern int screen_width, screen_height, screen_bpp;
 
 SDL_Surface *init_video( void );
 

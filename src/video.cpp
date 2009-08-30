@@ -2,14 +2,13 @@
 
 using namespace std;
 
-const int screen_width = 320, screen_height = 240;
-int screen_bpp = 32;
+int screen_width = 320, screen_height = 240, screen_bpp = 32;
 
 SDL_Surface *init_video( void )
 {
-	SDL_Surface *surface = SDL_SetVideoMode(320, 240, screen_bpp, SDL_HWSURFACE | SDL_ANYFORMAT | SDL_DOUBLEBUF);
+	SDL_Surface *surface = SDL_SetVideoMode(screen_width, screen_height, screen_bpp, SDL_HWSURFACE | SDL_ANYFORMAT | SDL_DOUBLEBUF);
 	
-	SDL_WM_SetCaption("Bouncing Frustration", NULL);
+	SDL_WM_SetCaption("Bouncing", NULL);
 	SDL_ShowCursor(SDL_DISABLE);
 	
 	if (surface == NULL)
@@ -18,8 +17,14 @@ SDL_Surface *init_video( void )
 		exit(EXIT_FAILURE);
 	}
 	
+	SDL_WM_SetCaption("Bouncing", NULL);
+	SDL_ShowCursor(SDL_DISABLE);
+	
+	screen_width = surface->w;
+	screen_height = surface->h;
 	screen_bpp = surface->format->BitsPerPixel;
-	cout << "video: " << surface->w << "x" << surface->h << "x" << screen_bpp << endl;
+	
+	clog << "video: " << screen_width << "x" << screen_height << "x" << screen_bpp << endl;
 	
 	return surface;
 }
