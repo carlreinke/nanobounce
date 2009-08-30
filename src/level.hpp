@@ -13,7 +13,7 @@ public:
 	
 	void load( std::istream & );
 	
-	void draw( SDL_Surface * ) const;
+	void draw( SDL_Surface *, int x_offset, int y_offset ) const;
 	void update( int ball_x_direction );
 	
 	std::string name;

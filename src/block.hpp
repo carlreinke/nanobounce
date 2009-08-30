@@ -24,7 +24,7 @@ public:
 	
 	static const int height = 16, width = 16;
 	
-	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 private:
 	int x, y;

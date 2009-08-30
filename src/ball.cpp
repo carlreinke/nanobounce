@@ -48,10 +48,10 @@ Ball::Ball( Fixed x, Fixed y )
 	}
 }
 
-void Ball::draw( SDL_Surface *surface, Uint8 alpha ) const
+void Ball::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
 {
 	for (deque<coord>::const_iterator i = trail.begin(); i != trail.end(); ++i)
-		sprites[trail.end() - i - 1].blit(surface, i->first, i->second, alpha);
+		sprites[trail.end() - i - 1].blit(surface, x_offset + i->first, y_offset + i->second, alpha);
 }
 
 void Ball::update( int x_push_direction )

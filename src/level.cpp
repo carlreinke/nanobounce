@@ -63,15 +63,15 @@ void Level::load( istream &data )
 		cout << "loaded level '" << name << "'" << endl;
 }
 
-void Level::draw( SDL_Surface *surface ) const
+void Level::draw( SDL_Surface *surface, int x_offset, int y_offset ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
 	for (vector<Block>::const_iterator block = blocks.begin(); block != blocks.end(); ++block)
-		block->draw(surface, fade);
+		block->draw(surface, x_offset, y_offset, fade);
 	
 	for (vector<Ball>::const_iterator ball = balls.begin(); ball != balls.end(); ++ball)
-		ball->draw(surface, fade);
+		ball->draw(surface, x_offset, y_offset, fade);
 }
 
 void Level::update( int ball_x_direction )

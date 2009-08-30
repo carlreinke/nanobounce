@@ -20,9 +20,9 @@ Block::Block( int x, int y, types type )
 	}
 }
 
-void Block::draw( SDL_Surface *surface, Uint8 alpha ) const
+void Block::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
 {
-	sprites[type].blit(surface, x, y, alpha);
+	sprites[type].blit(surface, x_offset + x, y_offset + y, alpha);
 }
 
 bool Block::can_collide( void ) const

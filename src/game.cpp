@@ -199,6 +199,9 @@ void level_loop( SDL_Surface *surface, Level &level, Highscore &new_highscore )
 	int show_volume_ticks = 0;
 	ostringstream volume_text;
 	
+	// TODO these should be members of a Game class
+	int x_offset = 0, y_offset = 0;
+	
 	while (!level.done && !global_quit)
 	{
 		SDL_Event e;
@@ -234,7 +237,7 @@ void level_loop( SDL_Surface *surface, Level &level, Highscore &new_highscore )
 			switch (e.user.code)
 			{
 			case USER_FRAME:
-				level.draw(surface);
+				level.draw(surface, x_offset, y_offset);
 				
 				if (show_volume_ticks > 0)
 					font.blit(surface, 0, screen_height - font.height(font_sprites[3]), volume_text.str(), font_sprites[3], Font::left, 128);

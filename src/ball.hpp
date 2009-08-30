@@ -10,7 +10,7 @@ class Ball
 public:
 	Ball( Fixed x, Fixed y );
 	
-	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	void draw( SDL_Surface *, int x_offset = 0, int y_offset = 0, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	void update( int x_push );
 	
 private:
@@ -50,8 +50,8 @@ private:
 	
 	static std::vector<Sprite> sprites;
 	
-	void x_boost( Fixed x );
-	void y_boost( Fixed y );
+	void x_boost( Fixed x_boost );
+	void y_boost( Fixed y_boost );
 	void unboost( void );
 	void wall_jump( void );
 	
