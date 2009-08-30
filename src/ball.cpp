@@ -5,31 +5,36 @@
 
 using namespace std;
 
+// terminal velocity and acceleration
+const Fixed Ball::y_term_vel = 1.0f;
+const Fixed Ball::y_accel    = (-y_term_vel * -y_term_vel) / (2 * (1.5f * Block::height));
+
+const Fixed Ball::x_term_vel   = (3.0f * Block::width) / ((2 * y_term_vel) / y_accel);
+const Fixed Ball::push_x_accel = (x_term_vel * x_term_vel) / (2.0f * Block::width);
+
+// boost block presets
+const Fixed Ball::x_boost_block = 1.0f;
+const Fixed Ball::y_boost_block = sqrtf(2 * y_accel * ((4.0f * Block::height) - height));
+
+// wall jump presets
+const Fixed Ball::wall_jump_x_vel = 1.0f;
+const Fixed Ball::wall_jump_y_vel = wall_jump_x_vel * 0.5f;
+const Fixed Ball::wall_jump_y_vel_reset = (-1.0f * Block::width * y_accel) / (2 * x_term_vel);
+const int Ball::wall_jump_ticks = (2.0f * Block::width) / wall_jump_x_vel;
+
 std::vector<Sprite> Ball::sprites;
 
 Ball::Ball( Fixed x, Fixed y )
-: x(x), y(y), x_vel(0), y_vel(0),
-  x_boost(0), y_boost(0), boost_ticks_left(0), is_wall_jumping(false)
+: x(x), y(y),
+  no_vel(false), x_vel(0), y_vel(0),
+  no_vel_limits(false),
+  no_accel(false), x_accel(0),
+  
+  // unboost
+  can_unboost(false), user_can_unboost(false),
+  ticks_until_unboost(0),
+  x_vel_unboost(0), y_vel_unboost(0)
 {
-	// terminal velocities
-	y_term_vel = 1.0f;
-	Fixed gravity = (-y_term_vel * -y_term_vel) / (2 * (1.5f * Block::height));
-	x_term_vel = (3.0f * Block::width) / ((2 * y_term_vel) / gravity);
-	
-	// accelerations
-	x_accel = 0;
-	y_accel = gravity;
-	x_push_accel = (x_term_vel * x_term_vel) / (2.0f * Block::width);
-	
-	// boost blocks
-	x_boost_block = 1.0f;
-	y_boost_block = sqrtf(2 * gravity * ((4.0f * Block::height) - height));
-	
-	// wall jump
-	x_wall_jump = 1.0f;
-	y_wall_jump = x_wall_jump * 0.5f;
-	wall_jump_ticks = (2.0f * Block::width) / x_wall_jump;
-	y_wall_jump_reset = (-1.0f * Block::width * gravity) / (2 * x_term_vel);
 	
 	// build sprites
 	if (sprites.empty())
@@ -52,74 +57,100 @@ void Ball::draw( SDL_Surface *surface, Uint8 alpha ) const
 void Ball::update( int x_push_direction )
 {
 	// keep track of push for wall jumping
-	x_accel = x_push_direction * x_push_accel;
+	x_accel = x_push_direction * push_x_accel;
 	
-	if (boost_ticks_left != 0)
+	if (can_unboost)
 	{
-		--boost_ticks_left;
-		
-		x_vel = x_boost;
-		y_vel = y_boost;
-		
-		if (is_wall_jumping) // wall jumps can't be stopped
+		if (user_can_unboost)
 		{
-			if (boost_ticks_left == 0)
+			// if boost is not time-based, user can cancel the boost
+			if ((was_pushed_left() && is_moving_right()) ||
+			    (was_pushed_right() && is_moving_left()))
 			{
-				y_vel = y_wall_jump_reset;
+				unboost();
 				
-				is_wall_jumping = false;
+				streams.push_back(Stream(samples["unboost"], 1, (Fixed)x / (Fixed)Level::width)); //! play_sample()
 			}
 		}
-		else if ((was_pushed_left() && is_moving_right()) ||
-		         (was_pushed_right() && is_moving_left()))
-		{
-			stop_boost();
-			
-			streams.push_back(Stream(samples["unboost"], 1, (Fixed)x / (Fixed)Level::width)); //! play_sample()
-		}
-	}
-	else
-	{
-		x_vel += x_accel;
-		y_vel += y_accel;
-		
-		x_vel = max(-x_term_vel, min(x_vel, x_term_vel));
-		y_vel = min(y_vel, y_term_vel); // no max up speed for y boost
+		else if (--ticks_until_unboost == 0)
+			unboost();
 	}
 	
-	x += x_vel;
-	y += y_vel;
+	if (!no_vel)
+	{
+		if (!no_accel)
+		{
+			x_vel += x_accel;
+			y_vel += y_accel;
+		}
+		
+		if (!no_vel_limits)
+		{
+			x_vel = max(-x_term_vel, min(x_vel, x_term_vel));
+			y_vel = min(y_vel, y_term_vel); // no max up speed for y boost
+		}
+		
+		x += x_vel;
+		y += y_vel;
+	}
 	
 	trail.push_back(coord(x, y));
 	if (trail.size() > trail_max)
 		trail.pop_front();
 }
 
-void Ball::boost( Fixed x, Fixed y, int ticks, bool is_wall_jump )
+void Ball::x_boost( Fixed x_boost )
 {
-	if (x == 0)
-	{
-		y_vel = y;
-		return;
-	}
-	x_vel = (x < 0) ? -fabsf(x_vel) : fabsf(x_vel);
-	y_vel = (y < 0) ? -fabsf(y_vel) : fabsf(y_vel);
+	no_vel_limits = true;
+	no_accel = true;
 	
-	x_boost = x;
-	y_boost = y;
-	boost_ticks_left = ticks;
+	x_vel = x_boost;
+	y_vel = 0;
 	
-	is_wall_jumping = is_wall_jump;
+	x_vel_unboost = x_vel;
+	y_vel_unboost = y_vel;
+	
+	can_unboost = true;
+	user_can_unboost = true;
+	
+	// because ball gets relocated before boost
+	trail.push_back(coord(x, y));
+	if (trail.size() > trail_max)
+		trail.pop_front();
 }
 
-void Ball::stop_boost( void )
+void Ball::y_boost( Fixed y_boost )
 {
-	boost_ticks_left = 0;
+	if (can_unboost)
+		unboost();
 	
-	is_wall_jumping = false;
+	y_vel = y_boost;
+}
+
+void Ball::unboost( void )
+{
+	no_vel_limits = false;
+	no_accel = false;
+	
+	x_vel = x_vel_unboost;
+	y_vel = y_vel_unboost;
+	
+	can_unboost = false;
+	user_can_unboost = false;
 }
 
 void Ball::wall_jump( void )
 {
-	boost(was_pushed_left() ? -x_wall_jump : x_wall_jump, -y_wall_jump, wall_jump_ticks, true);
+	no_vel_limits = true;
+	no_accel = true;
+	
+	x_vel = was_pushed_left() ? -wall_jump_x_vel : wall_jump_x_vel;
+	y_vel = -wall_jump_y_vel;
+	
+	x_vel_unboost = x_vel;
+	y_vel_unboost = wall_jump_y_vel_reset;
+	
+	can_unboost = true;
+	user_can_unboost = false;
+	ticks_until_unboost = wall_jump_ticks;
 }

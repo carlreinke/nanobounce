@@ -156,8 +156,10 @@ redo:
 		
 		if (hit_top || hit_bottom)
 		{
+			if (ball.can_unboost)
+				ball.unboost();
+			
 			ball.y_vel = hit_top ? -ball.y_term_vel : -ball.y_vel / 3;
-			ball.stop_boost();
 			
 			sample = &samples["bounce"];
 		}
@@ -170,8 +172,10 @@ redo:
 		
 		if (hit_left || hit_right)
 		{
+			if (ball.can_unboost)
+				ball.unboost();
+			
 			ball.x_vel = -ball.x_vel / 3;
-			ball.stop_boost();
 			
 			// wall jump
 			if ((hit_left && ball.was_pushed_left()) ||
@@ -181,7 +185,7 @@ redo:
 				
 				sample = &samples["wall_jump"];
 			}
-			else if (fabsf(ball.x_vel) > 3 * ball.x_push_accel)
+			else if (fabsf(ball.x_vel) > 3 * ball.push_x_accel)
 			{
 				sample = &samples["bounce"];
 			}
@@ -193,8 +197,7 @@ redo:
 		switch (block.type)
 		{
 		case Block::bomb:
-			ball.x_vel = ball.y_vel = 0;
-			ball.x_push_accel = ball.y_accel = 0;
+			ball.no_vel = true;
 			
 			//! explode block and/or ball into particles
 			
@@ -212,23 +215,23 @@ redo:
 			break;
 			
 		case Block::boost_up:
-			ball.boost(0, -ball.y_boost_block);
+			ball.y_boost(-ball.y_boost_block);
 			
 			sample = &samples["boost"];
 			break;
 			
 		case Block::boost_left:
-			ball.x = block.x - Ball::width + ball.x_boost_block;
+			ball.x = block.x - Ball::width;
 			ball.y += Ball::height;
-			ball.boost(-ball.x_boost_block, 0);
+			ball.x_boost(-ball.x_boost_block);
 			
 			sample = &samples["boost"];
 			break;
 			
 		case Block::boost_right:
-			ball.x = block.x + Block::width - ball.x_boost_block;
+			ball.x = block.x + Block::width;
 			ball.y += Ball::height;
-			ball.boost(ball.x_boost_block, 0);
+			ball.x_boost(ball.x_boost_block);
 			
 			sample = &samples["boost"];
 			break;

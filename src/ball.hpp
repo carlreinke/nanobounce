@@ -17,21 +17,31 @@ private:
 	Fixed x, y;
 	static const int height = 2, width = 2;
 	
+	// velocity
+	bool no_vel;
 	Fixed x_vel, y_vel;
-	Fixed x_term_vel, y_term_vel;
 	
-	Fixed x_boost, y_boost;
-	int boost_ticks_left;
-	bool is_wall_jumping;
+	// terminal velocity
+	bool no_vel_limits;
+	static const Fixed y_term_vel, x_term_vel;
 	
-	// block boost presets
-	Fixed x_boost_block, y_boost_block;
+	// acceleration
+	bool no_accel;
+	static const Fixed y_accel, push_x_accel;
+	Fixed x_accel;
 	
-	// wall jump boost presets
-	Fixed x_wall_jump, y_wall_jump, y_wall_jump_reset;
-	int wall_jump_ticks;
+	// after unboost
+	bool can_unboost, user_can_unboost;
+	int ticks_until_unboost;
+	Fixed x_vel_unboost, y_vel_unboost;
 	
-	Fixed x_accel, y_accel, x_push_accel;
+	// boost presets: boost blocks
+	static const Fixed x_boost_block, y_boost_block;
+	
+	// boost presets: wall jump
+	static const Fixed wall_jump_x_vel, wall_jump_y_vel;
+	static const Fixed wall_jump_y_vel_reset;
+	static const int wall_jump_ticks;
 	
 	typedef std::pair<int, int> coord;
 	
@@ -40,8 +50,9 @@ private:
 	
 	static std::vector<Sprite> sprites;
 	
-	void boost( Fixed x, Fixed y, int ticks = -1, bool is_wall_jump = false );
-	void stop_boost();
+	void x_boost( Fixed x );
+	void y_boost( Fixed y );
+	void unboost( void );
 	void wall_jump( void );
 	
 	bool is_moving_left( void ) const;
