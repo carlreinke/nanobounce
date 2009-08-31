@@ -105,7 +105,7 @@ void game_menu( SDL_Surface *surface )
 					int x = screen_width * ((Fixed)((signed)selection + 1) / ((signed)COUNTOF(menu_items) + 1)),
 						y = screen_height - font.height(font_sprites[3]) * 2;
 					
-					ball.update(ball.x > x ? -1 : 1);
+					ball.tick(ball.x > x ? -1 : 1);
 					if (ball.y > y)
 						ball.y_vel = -ball.y_term_vel;
 				}

@@ -20,22 +20,28 @@ Block::Block( int x, int y, types type )
 	}
 }
 
-void Block::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
-{
-	sprites[type].blit(surface, x_offset + x, y_offset + y, alpha);
-}
-
-bool Block::can_collide( void ) const
+void Block::reset( void )
 {
 	switch (type)
 	{
 	case none:
 	case ball:
+		ignore = true;
+		collideable = false;
+		break;
 	case exit:
-		return false;
+		collideable = false;
+		ignore = false;
 		break;
 	default:
+		collideable = true;
+		ignore = false;
 		break;
 	}
-	return true;
+}
+
+void Block::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
+{
+	if (!ignore)
+		sprites[type].blit(surface, x_offset + x, y_offset + y, alpha);
 }

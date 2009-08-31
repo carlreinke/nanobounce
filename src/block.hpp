@@ -22,20 +22,23 @@ public:
 	
 	Block( int x, int y, types type );
 	
-	static const int height = 16, width = 16;
+	void reset( void );
 	
 	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	
+	static const int height = 16, width = 16;
 	
 private:
 	int x, y;
 	
 	types type;
 	
+	bool collideable;
+	bool ignore;
+	
 	static std::map<types, Sprite> sprites;
 	
-	bool can_collide( void ) const;
-	
-	friend class Level;
+	friend class Game;
 };
 
 #endif // BLOCK_HPP

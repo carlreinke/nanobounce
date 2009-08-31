@@ -11,7 +11,7 @@ public:
 	Ball( Fixed x, Fixed y );
 	
 	void draw( SDL_Surface *, int x_offset = 0, int y_offset = 0, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
-	void update( int x_push );
+	void tick( int x_push_direction );
 	
 private:
 	Fixed x, y;
@@ -63,7 +63,7 @@ private:
 	bool was_pushed_left( void ) const { return (x_accel < 0); }
 	bool was_pushed_right( void ) const { return (x_accel > 0); }
 	
-	friend class Level;
+	friend class Game;
 	friend void game_menu( SDL_Surface * );
 };
 

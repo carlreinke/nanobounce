@@ -54,7 +54,7 @@ void Ball::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha )
 		sprites[trail.end() - i - 1].blit(surface, x_offset + i->first, y_offset + i->second, alpha);
 }
 
-void Ball::update( int x_push_direction )
+void Ball::tick( int x_push_direction )
 {
 	// keep track of push for wall jumping
 	x_accel = x_push_direction * push_x_accel;
@@ -69,7 +69,7 @@ void Ball::update( int x_push_direction )
 			{
 				unboost();
 				
-				streams.push_back(Stream(samples["unboost"], 1, (Fixed)x / (Fixed)Level::width)); //! play_sample()
+				//! streams.push_back(Stream(samples["unboost"], 1, (Fixed)x / (Fixed)Level::width)); //! play_sample()
 			}
 		}
 		else if (--ticks_until_unboost == 0)

@@ -6,6 +6,230 @@
 
 using namespace std;
 
+Game::Game( void )
+: state(none)
+{
+	// good to go
+}
+
+bool Game::load( const string &level_data_path )
+{
+	bool temp = level.load(level_data_path);
+	reset();
+	
+	return temp;
+}
+
+void Game::reset( void )
+{
+	level.reset();
+	
+	balls.clear();
+	for (vector<Block>::const_iterator b = level.blocks.begin(); b != level.blocks.end(); ++b)
+	{
+		if (b->type == Block::ball)
+		{
+			balls.push_back(Ball(b->x + Block::width / 2 - Ball::width / 2,
+			                     b->y + Block::height / 2 - Ball::height / 2));
+		}
+	}
+	
+	state = none;
+	
+	x_offset = y_offset = 0;
+}
+
+void Game::tick( void )
+{
+	int x_direction = 0;
+	
+	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+	{
+		(*c)->update();
+		
+		x_direction += (*c)->is_down[Controller::left] ? -1 : 0;
+		x_direction += (*c)->is_down[Controller::right] ? 1 : 0;
+		
+		if ((*c)->is_down[Controller::quit])
+			state = quit;
+	}
+	
+	// limit how hard player can push the ball
+	x_direction = min(max(-1, x_direction), 1);
+	
+	for (vector<Ball>::iterator ball = balls.begin(); ball != balls.end(); ++ball)
+	{
+		ball->tick(x_direction);
+		
+		for (vector<Block>::iterator block = level.blocks.begin(); block != level.blocks.end(); ++block)
+			if (!block->ignore)
+				check_collide(*ball, *block);
+		
+		// check ball outside level
+		if (state == none)
+		{
+			if ((int)ball->x + Ball::width <= 0 ||
+				(int)ball->x >= level.width ||
+				(int)ball->y + Ball::height <= 0 ||
+				(int)ball->y >= level.height)
+			{
+				state = lost;
+				
+				streams.push_back(Stream(samples["lost"], 1, ball->x / level.width)); //! play_sample()
+			}
+		}
+	}
+}
+
+void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
+{
+	SDL_FillRect(surface, NULL, 0);
+	
+	// TODO only redraw when the level changes
+	level.draw(surface, x_offset, y_offset, alpha);
+	
+	for (vector<Ball>::const_iterator ball = balls.begin(); ball != balls.end(); ++ball)
+		ball->draw(surface, x_offset, y_offset, alpha);
+}
+
+void Game::check_collide( Ball &ball, Block &block )
+{
+redo:
+	bool x_in = (int)ball.x + ball.width > block.x &&
+	            (int)ball.x < block.x + block.width;
+	bool y_in = (int)ball.y + ball.height > block.y &&
+	            (int)ball.y < block.y + block.height;
+	
+	if (x_in && y_in)
+	{
+		if (block.collideable)
+		{
+			// keep ball outside blocks
+			if (fabsf(ball.y_vel) > 1)
+			{
+				ball.y -= ball.is_moving_up() ? -1 : 1;
+				ball.trail.back().second = ball.y;
+			}
+			else
+			{
+				ball.x -= ball.is_moving_left() ? -1 : 1;
+				ball.trail.back().first = ball.x;
+			}
+			
+			goto redo;
+		}
+		else if (block.type == Block::exit && state != won)
+		{
+			state = won;
+			
+			streams.push_back(Stream(samples["won"], 1, ball.x / level.width)); //! play_sample()
+		}
+	}
+	
+	if (!block.collideable)
+		return;
+	
+	Sample *sample = NULL;
+	
+	bool hit_top = false;
+	
+	if (x_in)
+	{
+		hit_top         = ball.is_moving_down() && (int)ball.y + ball.height == block.y;
+		bool hit_bottom = ball.is_moving_up() && (int)ball.y == block.y + block.height;
+		
+		if (hit_top || hit_bottom)
+		{
+			if (ball.can_unboost)
+				ball.unboost();
+			
+			ball.y_vel = hit_top ? -ball.y_term_vel : -ball.y_vel / 3;
+			
+			sample = &samples["bounce"];
+		}
+	}
+	
+	if (y_in)
+	{
+		bool hit_left  = ball.is_moving_right() && (int)ball.x + ball.width == block.x;
+		bool hit_right = ball.is_moving_left() && (int)ball.x == block.x + block.width;
+		
+		if (hit_left || hit_right)
+		{
+			if (ball.can_unboost)
+				ball.unboost();
+			
+			ball.x_vel = -ball.x_vel / 3;
+			
+			// wall jump
+			if ((hit_left && ball.was_pushed_left()) ||
+			    (hit_right && ball.was_pushed_right()))
+			{
+				ball.wall_jump();
+				
+				sample = &samples["wall_jump"];
+			}
+			else if (fabsf(ball.x_vel) > 3 * ball.push_x_accel)
+			{
+				sample = &samples["bounce"];
+			}
+		}
+	}
+	
+	if (hit_top)
+	{
+		switch (block.type)
+		{
+		case Block::bomb:
+			ball.no_vel = true;
+			
+			//! explode block and/or ball into particles
+			
+			state = lost;
+			
+			sample = &samples["explode"];
+			break;
+			
+		case Block::cracked:
+			block.ignore = true;
+			
+			//! explode block into particles
+			
+			sample = &samples["recycle"];
+			break;
+			
+		case Block::boost_up:
+			ball.y_boost(-ball.y_boost_block);
+			
+			sample = &samples["boost"];
+			break;
+			
+		case Block::boost_left:
+			ball.x = block.x - Ball::width;
+			ball.y += Ball::height;
+			ball.x_boost(-ball.x_boost_block);
+			
+			sample = &samples["boost"];
+			break;
+			
+		case Block::boost_right:
+			ball.x = block.x + Block::width;
+			ball.y += Ball::height;
+			ball.x_boost(ball.x_boost_block);
+			
+			sample = &samples["boost"];
+			break;
+			
+		default:
+			break;
+		}
+	}
+	
+	if (sample != NULL)
+		streams.push_back(Stream(*sample, 1, ball.x / level.width)); //! play_sample()
+}
+
+
 void play_pack( SDL_Surface *surface, const string &directory )
 {
 	string meta_path;
@@ -17,14 +241,14 @@ void play_pack( SDL_Surface *surface, const string &directory )
 	getline(meta, author);
 	
 	string level_path;
-	Level level, pristine_level;
+	Game game;
 	
 	string highscore_path;
 	Highscore highscore;
 	
 	do
 	{
-		if (level.state == Level::none || level.state == Level::won)
+		if (game.state == Game::none || game.state == Game::won)
 		{
 			string level_file;
 			getline(meta, level_file);
@@ -39,10 +263,7 @@ void play_pack( SDL_Surface *surface, const string &directory )
 			
 			cout << "loading '" << level_path << "'" << endl;
 			
-			ifstream level_data(level_path.c_str());
-			level.load(level_data);
-			
-			if (level.state == Level::load_failed)
+			if (!game.load(level_path))
 				continue;
 			
 			highscore_path = level_path + ".score";
@@ -52,21 +273,19 @@ void play_pack( SDL_Surface *surface, const string &directory )
 			ifstream highscore_data(highscore_path.c_str());
 			highscore.load(highscore_data);
 			
-			level_screen(surface, level, highscore);
-			
-			pristine_level = level;
+			level_screen(surface, game.level, highscore);
 		}
 		else
 		{
-			// redo last level
-			level = pristine_level;
+			// retry level
+			game.reset();
 		}
 		
 		Highscore new_highscore(update_ticks);
 		
-		level_loop(surface, level, new_highscore);
+		level_loop(surface, game, new_highscore);
 		
-		if (level.state == Level::won)
+		if (game.state == Game::won)
 		{
 			if (new_highscore.ms() < highscore.ms() || highscore.invalid())
 			{
@@ -79,7 +298,7 @@ void play_pack( SDL_Surface *surface, const string &directory )
 			}
 		}
 	}
-	while (level.state != Level::quit && !global_quit);
+	while (game.state != Game::quit && !global_quit);
 }
 
 void pack_done_screen( SDL_Surface *surface, const string &pack_name )
@@ -143,7 +362,7 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 	}
 }
 
-void level_screen( SDL_Surface *surface, const Level &level, const Highscore &highscore ) //! highscore?
+void level_screen( SDL_Surface *surface, const Level &level, const Highscore &highscore )
 {
 	int ticks = 50, fade = SDL_ALPHA_TRANSPARENT;
 	
@@ -194,15 +413,17 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 	}
 }
 
-void level_loop( SDL_Surface *surface, Level &level, Highscore &new_highscore )
+void level_loop( SDL_Surface *surface, Game &game, Highscore &/*new_highscore*/ ) // TODO highscore?
 {
 	int show_volume_ticks = 0;
 	ostringstream volume_text;
 	
-	// TODO these should be members of a Game class
-	int x_offset = 0, y_offset = 0;
+	int fade = SDL_ALPHA_TRANSPARENT;
+	bool fading_in = true, fading_out = false;
 	
-	while (!level.done && !global_quit)
+	bool done = false;
+	
+	while (!done && !global_quit)
 	{
 		SDL_Event e;
 		SDL_WaitEvent(&e);
@@ -237,7 +458,7 @@ void level_loop( SDL_Surface *surface, Level &level, Highscore &new_highscore )
 			switch (e.user.code)
 			{
 			case USER_FRAME:
-				level.draw(surface, x_offset, y_offset);
+				game.draw(surface, fade);
 				
 				if (show_volume_ticks > 0)
 					font.blit(surface, 0, screen_height - font.height(font_sprites[3]), volume_text.str(), font_sprites[3], Font::left, 128);
@@ -249,25 +470,23 @@ void level_loop( SDL_Surface *surface, Level &level, Highscore &new_highscore )
 				if (show_volume_ticks > 0)
 					--show_volume_ticks;
 				
-				for (int i = 0; i < 4; ++i)
+				if (fading_in)
 				{
-					int x_direction = 0;
-					
-					for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-					{
-						(*c)->update();
-						
-						x_direction += (*c)->is_down[Controller::left] ? -1 : 0;
-						x_direction += (*c)->is_down[Controller::right] ? 1 : 0;
-						
-						if ((*c)->is_down[Controller::quit])
-							level.state = Level::quit;
-					}
-					
-					new_highscore.push_back_tick(x_direction);
-					
-					level.update(x_direction);
+					fade = min(fade + 15, SDL_ALPHA_OPAQUE);
+					fading_in = fade != SDL_ALPHA_OPAQUE;
 				}
+				else if (fading_out)
+				{
+					fade = max(fade - 15, SDL_ALPHA_TRANSPARENT);
+					done = fade == SDL_ALPHA_TRANSPARENT;
+				}
+				
+				if (!fading_in)
+					for (int i = 0; i < 4; ++i)
+						game.tick();
+					
+				if (game.state != Game::none)
+					fading_out = true;
 				break;
 			}
 			break;

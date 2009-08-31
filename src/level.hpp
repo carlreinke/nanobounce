@@ -9,36 +9,21 @@ class Level
 {
 public:
 	Level( void );
-	Level( std::istream & );
 	
-	void load( std::istream & );
+	bool load( std::istream & );
+	bool load( const std::string & );
+	void reset( void );
 	
-	void draw( SDL_Surface *, int x_offset, int y_offset ) const;
-	void update( int ball_x_direction );
+	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 	std::string name;
 	
-	bool done;
-	enum states
-	{
-		none,
-		won,
-		lost,
-		quit,
-		
-		load_failed
-	}
-	state;
-	
-	static const int width = 320, height = 240;
-	
 private:
-	void check_collide( Ball &, Block & );
+	int width, height;
 	
-	int fade;
-	
-	std::vector<Ball> balls;
 	std::vector<Block> blocks;
+	
+	friend class Game;
 };
 
 #endif // LEVEL_HPP
