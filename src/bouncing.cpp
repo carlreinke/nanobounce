@@ -10,8 +10,8 @@ Uint32 push_frame_event( Uint32, void * );
 Uint32 push_update_event( Uint32, void * );
 
 int fps = 50, ups = 40;
-int frame_ticks = 1000 / min(fps, ups),
-    update_ticks = 1000 / ups;
+int ms_per_frame = 1000 / min(fps, ups),
+    ms_per_update = 1000 / ups;
 
 //! in-game menu
 //! best-time high score list
@@ -71,7 +71,7 @@ Uint32 push_frame_event( Uint32, void * )
 	
 	SDL_PushEvent(&event);
 	
-	return frame_ticks;
+	return ms_per_frame;
 }
 
 Uint32 push_update_event( Uint32, void * )
@@ -83,5 +83,5 @@ Uint32 push_update_event( Uint32, void * )
 	
 	SDL_PushEvent(&event);
 	
-	return update_ticks;
+	return ms_per_update;
 }

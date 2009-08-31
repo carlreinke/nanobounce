@@ -23,6 +23,7 @@ bool Game::load( const string &level_data_path )
 void Game::reset( void )
 {
 	level.reset();
+	highscore.reset(ms_per_update);
 	
 	balls.clear();
 	for (vector<Block>::const_iterator b = level.blocks.begin(); b != level.blocks.end(); ++b)
@@ -35,7 +36,6 @@ void Game::reset( void )
 	}
 	
 	state = none;
-	
 	x_offset = y_offset = 0;
 }
 
@@ -56,6 +56,8 @@ void Game::tick( void )
 	
 	// limit how hard player can push the ball
 	x_direction = min(max(-1, x_direction), 1);
+	
+	highscore.push_back_tick(x_direction);
 	
 	for (vector<Ball>::iterator ball = balls.begin(); ball != balls.end(); ++ball)
 	{
@@ -281,20 +283,18 @@ void play_pack( SDL_Surface *surface, const string &directory )
 			game.reset();
 		}
 		
-		Highscore new_highscore(update_ticks);
-		
-		level_loop(surface, game, new_highscore);
+		level_loop(surface, game);
 		
 		if (game.state == Game::won)
 		{
-			if (new_highscore.ms() < highscore.ms() || highscore.invalid())
+			if (game.highscore.ms() < highscore.ms() || highscore.invalid())
 			{
 				// do highscore screen, ask for name
 				
 				cout << "saving new highscore '" << highscore_path << "'" << endl;
 				
 				ofstream highscore_data(highscore_path.c_str());
-				new_highscore.save(highscore_data);
+				game.highscore.save(highscore_data);
 			}
 		}
 	}
@@ -413,7 +413,7 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 	}
 }
 
-void level_loop( SDL_Surface *surface, Game &game, Highscore &/*new_highscore*/ ) // TODO highscore?
+void level_loop( SDL_Surface *surface, Game &game )
 {
 	int show_volume_ticks = 0;
 	ostringstream volume_text;

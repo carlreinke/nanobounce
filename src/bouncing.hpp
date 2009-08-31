@@ -10,7 +10,7 @@ enum
 	USER_UPDATE
 };
 
-extern int update_ticks;
+extern int ms_per_update;
 
 extern std::map<int, Sprite> font_sprites;
 

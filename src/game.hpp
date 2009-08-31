@@ -25,6 +25,8 @@ public:
 	};
 	State state;
 	
+	Highscore highscore;
+	
 private:
 	void check_collide( Ball &, Block & );
 	
@@ -40,6 +42,6 @@ void play_pack( SDL_Surface *surface, const std::string &directory );
 void pack_done_screen( SDL_Surface *surface, const std::string &pack_name );
 
 void level_screen( SDL_Surface *surface, const Level &level, const Highscore &highscore );
-void level_loop( SDL_Surface *surface, Game &, Highscore &new_highscore );
+void level_loop( SDL_Surface *surface, Game & );
 
 #endif // GAME_HPP
