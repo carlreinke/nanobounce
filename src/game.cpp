@@ -68,17 +68,11 @@ void Game::tick( void )
 				check_collide(*ball, *block);
 		
 		// check ball outside level
-		if (state == none)
+		if (state == none && !is_inside(*ball, level))
 		{
-			if ((int)ball->x + Ball::width <= 0 ||
-				(int)ball->x >= level.width ||
-				(int)ball->y + Ball::height <= 0 ||
-				(int)ball->y >= level.height)
-			{
-				state = lost;
-				
-				streams.push_back(Stream(samples["lost"], 1, ball->x / level.width)); //! play_sample()
-			}
+			state = lost;
+			
+			streams.push_back(Stream(samples["lost"], 1, ball->x / level.width)); //! play_sample()
 		}
 	}
 }
@@ -231,6 +225,11 @@ redo:
 		streams.push_back(Stream(*sample, 1, ball.x / level.width)); //! play_sample()
 }
 
+bool Game::is_inside( const Ball &ball, const Level &level ) const
+{
+	return (int)ball.x + ball.width <= 0 || (int)ball.x >= level.width ||
+	       (int)ball.y + ball.height <= 0 || (int)ball.y >= level.height;
+}
 
 void play_pack( SDL_Surface *surface, const string &directory )
 {
@@ -248,7 +247,7 @@ void play_pack( SDL_Surface *surface, const string &directory )
 	string highscore_path;
 	Highscore highscore;
 	
-	do
+	while (game.state != Game::quit && !global_quit)
 	{
 		if (game.state == Game::none || game.state == Game::won)
 		{
@@ -289,7 +288,7 @@ void play_pack( SDL_Surface *surface, const string &directory )
 		{
 			if (game.highscore.ms() < highscore.ms() || highscore.invalid())
 			{
-				// do highscore screen, ask for name
+				// do highscore screen, ask for name?
 				
 				cout << "saving new highscore '" << highscore_path << "'" << endl;
 				
@@ -298,7 +297,6 @@ void play_pack( SDL_Surface *surface, const string &directory )
 			}
 		}
 	}
-	while (game.state != Game::quit && !global_quit);
 }
 
 void pack_done_screen( SDL_Surface *surface, const string &pack_name )

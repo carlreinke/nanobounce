@@ -29,6 +29,7 @@ public:
 	
 private:
 	void check_collide( Ball &, Block & );
+	bool is_inside( const Ball &, const Level & ) const;
 	
 	int x_offset, y_offset;
 	
