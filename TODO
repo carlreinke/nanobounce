@@ -1,0 +1,15 @@
+performance
+ * redraw level only when necessary
+
+features
+ * add a level editor
+    - change level file format (arbitrary size, blocks to be stored as <x> <y> <type>)
+ * add an in-game menu (or, at least, a pause feature)
+ * viewable highscore list
+    - add replay feature for highscores
+ * add particle class for explosions
+
+misc
+ * add a level pack class
+
+

@@ -74,7 +74,7 @@ void Game::tick( void )
 		{
 			state = lost;
 			
-			streams.push_back(Stream(samples["lost"], 1, sample_pan(ball->x))); //! play_sample()
+			streams.push_back(Stream(samples["lost"], 1, sample_pan(ball->x)));
 		}
 	}
 }
@@ -103,7 +103,7 @@ void Game::check_unboost( Ball &ball )
 			{
 				ball.unboost();
 				
-				streams.push_back(Stream(samples["unboost"], 1, sample_pan(ball.x))); //! play_sample()
+				streams.push_back(Stream(samples["unboost"], 1, sample_pan(ball.x)));
 			}
 		}
 		else if (--ball.ticks_until_unboost == 0)
@@ -141,7 +141,7 @@ redo:
 		{
 			state = won;
 			
-			streams.push_back(Stream(samples["won"], 1, sample_pan(ball.x))); //! play_sample()
+			streams.push_back(Stream(samples["won"], 1, sample_pan(ball.x)));
 		}
 	}
 	
@@ -202,7 +202,7 @@ redo:
 		case Block::bomb:
 			ball.no_vel = true;
 			
-			//! explode block and/or ball into particles
+			// TODO explode block and/or ball into particles
 			
 			state = lost;
 			
@@ -212,7 +212,7 @@ redo:
 		case Block::cracked:
 			block.ignore = true;
 			
-			//! explode block into particles
+			// TODO explode block into particles
 			
 			sample = &samples["recycle"];
 			break;
@@ -245,7 +245,7 @@ redo:
 	}
 	
 	if (sample != NULL)
-		streams.push_back(Stream(*sample, 1, sample_pan(ball.x))); //! play_sample()
+		streams.push_back(Stream(*sample, 1, sample_pan(ball.x)));
 }
 
 bool Game::is_outside( const Ball &ball, const Level &level ) const

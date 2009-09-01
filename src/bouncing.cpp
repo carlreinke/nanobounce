@@ -13,10 +13,6 @@ int fps = 50, ups = 40;
 int ms_per_frame = 1000 / min(fps, ups),
     ms_per_update = 1000 / ups;
 
-//! in-game menu
-//! best-time high score list
-//! add particle class
-
 map<int, Sprite> font_sprites;
 
 bool global_quit = false;
