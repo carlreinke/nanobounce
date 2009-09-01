@@ -59,23 +59,6 @@ void Ball::tick( int x_push_direction )
 	// keep track of push for wall jumping
 	x_accel = x_push_direction * push_x_accel;
 	
-	if (can_unboost)
-	{
-		if (user_can_unboost)
-		{
-			// if boost is not time-based, user can cancel the boost
-			if ((was_pushed_left() && is_moving_right()) ||
-			    (was_pushed_right() && is_moving_left()))
-			{
-				unboost();
-				
-				//! streams.push_back(Stream(samples["unboost"], 1, (Fixed)x / (Fixed)Level::width)); //! play_sample()
-			}
-		}
-		else if (--ticks_until_unboost == 0)
-			unboost();
-	}
-	
 	if (!no_vel)
 	{
 		if (!no_accel)

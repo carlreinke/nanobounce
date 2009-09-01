@@ -63,16 +63,18 @@ void Game::tick( void )
 	{
 		ball->tick(x_direction);
 		
+		check_unboost(*ball);
+		
 		for (vector<Block>::iterator block = level.blocks.begin(); block != level.blocks.end(); ++block)
 			if (!block->ignore)
 				check_collide(*ball, *block);
 		
 		// check ball outside level
-		if (state == none && !is_inside(*ball, level))
+		if (state == none && is_outside(*ball, level))
 		{
 			state = lost;
 			
-			streams.push_back(Stream(samples["lost"], 1, ball->x / level.width)); //! play_sample()
+			streams.push_back(Stream(samples["lost"], 1, sample_pan(ball->x))); //! play_sample()
 		}
 	}
 }
@@ -86,6 +88,27 @@ void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	for (vector<Ball>::const_iterator ball = balls.begin(); ball != balls.end(); ++ball)
 		ball->draw(surface, x_offset, y_offset, alpha);
+}
+
+void Game::check_unboost( Ball &ball )
+{
+	if (ball.can_unboost)
+	{
+		if (ball.user_can_unboost)
+		{
+			// if boost is not time-based, user can cancel the boost
+			// by pushing ball in opposite direction
+			if ((ball.was_pushed_left() && ball.is_moving_right()) ||
+			    (ball.was_pushed_right() && ball.is_moving_left()))
+			{
+				ball.unboost();
+				
+				streams.push_back(Stream(samples["unboost"], 1, sample_pan(ball.x))); //! play_sample()
+			}
+		}
+		else if (--ball.ticks_until_unboost == 0)
+			ball.unboost();
+	}
 }
 
 void Game::check_collide( Ball &ball, Block &block )
@@ -118,7 +141,7 @@ redo:
 		{
 			state = won;
 			
-			streams.push_back(Stream(samples["won"], 1, ball.x / level.width)); //! play_sample()
+			streams.push_back(Stream(samples["won"], 1, sample_pan(ball.x))); //! play_sample()
 		}
 	}
 	
@@ -222,10 +245,10 @@ redo:
 	}
 	
 	if (sample != NULL)
-		streams.push_back(Stream(*sample, 1, ball.x / level.width)); //! play_sample()
+		streams.push_back(Stream(*sample, 1, sample_pan(ball.x))); //! play_sample()
 }
 
-bool Game::is_inside( const Ball &ball, const Level &level ) const
+bool Game::is_outside( const Ball &ball, const Level &level ) const
 {
 	return (int)ball.x + ball.width <= 0 || (int)ball.x >= level.width ||
 	       (int)ball.y + ball.height <= 0 || (int)ball.y >= level.height;

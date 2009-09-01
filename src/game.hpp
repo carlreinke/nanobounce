@@ -3,7 +3,7 @@
 
 #include "highscore.hpp"
 #include "level.hpp"
-#include "SDL.h"
+#include "video.hpp"
 
 class Game
 {
@@ -28,8 +28,12 @@ public:
 	Highscore highscore;
 	
 private:
+	void check_unboost( Ball & );
+	
 	void check_collide( Ball &, Block & );
-	bool is_inside( const Ball &, const Level & ) const;
+	bool is_outside( const Ball &, const Level & ) const;
+	
+	Fixed sample_pan( const Fixed &x ) const { return (x_offset + x) / screen_width; }
 	
 	int x_offset, y_offset;
 	
