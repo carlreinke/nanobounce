@@ -7,13 +7,14 @@
 using namespace std;
 
 Level::Level( void )
+: name(m_name)
 {
 	// good to go
 }
 
 bool Level::load( istream &data )
 {
-	getline(data, name);
+	getline(data, m_name);
 	
 	{
 		istringstream line;

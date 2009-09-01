@@ -16,11 +16,11 @@ public:
 	
 	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
-	std::string name;
+	const std::string &name;
 	
 private:
+	std::string m_name;
 	int width, height;
-	
 	std::vector<Block> blocks;
 	
 	friend class Game;
