@@ -5,6 +5,7 @@ features
  * viewable highscore list
     - add replay feature for highscores
  * add particle class for explosions
+    - render text screens into particle matrixes
 
 misc
  * add a level pack class
