@@ -290,7 +290,12 @@ void play_pack( SDL_Surface *surface, const string &directory )
 	
 	while (game.state != Game::quit && !global_quit)
 	{
-		if (game.state == Game::none || game.state == Game::won)
+		if (game.state == Game::lost)
+		{
+			// retry level
+			game.reset();
+		}
+		else
 		{
 			string level_file;
 			getline(meta, level_file);
@@ -316,11 +321,6 @@ void play_pack( SDL_Surface *surface, const string &directory )
 			highscore.load(highscore_data);
 			
 			level_screen(surface, game.level, highscore);
-		}
-		else
-		{
-			// retry level
-			game.reset();
 		}
 		
 		level_loop(surface, game);

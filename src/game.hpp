@@ -22,6 +22,7 @@ public:
 		none,
 		quit,
 		won,
+		cheat_won,
 		lost
 	};
 	State state;
