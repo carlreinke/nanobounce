@@ -50,6 +50,12 @@ void Game::tick( void )
 		x_direction += (*c)->is_down[Controller::left] ? -1 : 0;
 		x_direction += (*c)->is_down[Controller::right] ? 1 : 0;
 		
+		if ((*c)->is_down[Controller::up] &&
+		    (*c)->is_down[Controller::down] &&
+		    (*c)->is_down[Controller::left] &&
+		    (*c)->is_down[Controller::right])
+			state = won;
+		
 		if ((*c)->is_down[Controller::quit])
 			state = quit;
 	}
