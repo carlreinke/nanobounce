@@ -17,6 +17,8 @@ bool Game::load( const string &level_data_path )
 	bool temp = level.load(level_data_path);
 	reset();
 	
+	level_cache.resize(level.width, level.height, screen_bpp);
+	
 	return temp;
 }
 
@@ -37,6 +39,7 @@ void Game::reset( void )
 	
 	state = none;
 	x_offset = y_offset = 0;
+	level_draw_needed = true;
 }
 
 void Game::tick( void )
@@ -85,12 +88,20 @@ void Game::tick( void )
 	}
 }
 
-void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
+void Game::draw( SDL_Surface *surface, Uint8 alpha )
 {
+	if (level_draw_needed)
+	{
+		level_draw_needed = false;
+		
+		SDL_FillRect(level_cache, NULL, 0);
+		level.draw(level_cache, x_offset, y_offset);
+	}
+	
 	SDL_FillRect(surface, NULL, 0);
 	
-	// TODO only redraw when the level changes
-	level.draw(surface, x_offset, y_offset, alpha);
+	SDL_SetAlpha(level_cache, (alpha != SDL_ALPHA_OPAQUE) ? SDL_SRCALPHA : 0, alpha);
+	SDL_BlitSurface(level_cache, NULL, surface, NULL);
 	
 	for (vector<Ball>::const_iterator ball = balls.begin(); ball != balls.end(); ++ball)
 		ball->draw(surface, x_offset, y_offset, alpha);
@@ -217,6 +228,7 @@ redo:
 			
 		case Block::cracked:
 			block.ignore = true;
+			level_draw_needed = true;
 			
 			// TODO explode block into particles
 			

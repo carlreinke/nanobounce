@@ -1,6 +1,3 @@
-performance
- * redraw level only when necessary
-
 features
  * add a level editor
     - change level file format (arbitrary size, blocks to be stored as <x> <y> <type>)

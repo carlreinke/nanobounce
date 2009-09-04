@@ -3,6 +3,7 @@
 
 #include "highscore.hpp"
 #include "level.hpp"
+#include "sdl_ext.hpp"
 #include "video.hpp"
 
 class Game
@@ -14,7 +15,7 @@ public:
 	void reset( void );
 	
 	void tick( void );
-	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE );
 	
 	enum State
 	{
@@ -36,6 +37,9 @@ private:
 	Fixed sample_pan( const Fixed &x ) const { return (x_offset + x) / screen_width; }
 	
 	int x_offset, y_offset;
+	
+	bool level_draw_needed;
+	SDL_Surface_smartptr level_cache;
 	
 	Level level;
 	std::vector<Ball> balls;
