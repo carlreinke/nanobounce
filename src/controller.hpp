@@ -7,6 +7,7 @@ class Controller
 {
 public:
 	Controller( void );
+	virtual ~Controller( void ) { } // work-around a gcc 4.1.1 warning
 	
 	void update( void );
 	

@@ -10,4 +10,5 @@ features
 misc
  * add a level pack class
 
-
+bugs
+ * fades cause a build-up of update events on GP2X
