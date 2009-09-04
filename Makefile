@@ -25,8 +25,6 @@ ifeq ($(PLATFORM), WIN32)
 	CXX := i486-mingw32-g++
 	STRIP := i486-mingw32-strip
 	
-	CXXFLAGS += -DTARGET_WIN32
-	
 	SDL_CFLAGS := $(shell ../SDL/bin/sdl-config --cflags)
 	SDL_LDFLAGS := $(shell ../SDL/bin/sdl-config --libs)
 endif
@@ -36,13 +34,13 @@ ifeq ($(PLATFORM), GP2X)
 	CXX := $(GP2X_CHAIN)g++
 	STRIP := $(GP2X_CHAIN)strip
 	
-	CXXFLAGS += -DTARGET_GP2X -mcpu=arm920t -mtune=arm920t -msoft-float -ffast-math
+	CXXFLAGS += -mcpu=arm920t -mtune=arm920t -msoft-float -ffast-math
 	
 	SDL_CFLAGS := `$(GP2X_CHAINPREFIX)/bin/sdl-config --cflags` -I$(GP2X_CHAINPREFIX)/include
 	SDL_LDFLAGS := `$(GP2X_CHAINPREFIX)/bin/sdl-config --libs` -L$(GP2X_CHAINPREFIX)/lib
 endif
 
-CXXFLAGS += $(SDL_CFLAGS)
+CXXFLAGS += -DTARGET_$(PLATFORM) $(SDL_CFLAGS)
 LDFLAGS += $(SDL_LDFLAGS)
 
 DEBUG := 1

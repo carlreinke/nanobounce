@@ -12,3 +12,4 @@ misc
 
 bugs
  * fades cause a build-up of update events on GP2X
+ * hitting a block's corner, in some cases, causes the game to freeze
