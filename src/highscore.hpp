@@ -1,6 +1,8 @@
 #ifndef HIGHSCORE_HPP
 #define HIGHSCORE_HPP
 
+#include "controller.hpp"
+
 class Highscore
 {
 public:
@@ -25,7 +27,23 @@ private:
 	int ms_per_tick;
 	
 	int ticks;
-	std::vector< std::pair<int, int> > x_direction;
+	std::deque< std::pair<int, int> > x_direction;
+	
+	friend class Replay;
+};
+
+class Replay : public Controller
+{
+public:
+	Replay( std::istream & );
+	Replay( const std::string & );
+	
+private:
+	void do_update( void );
+	
+	void load( std::istream & );
+	
+	Highscore highscore;
 };
 
 #endif // HIGHSCORE_HPP

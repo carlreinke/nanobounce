@@ -49,7 +49,7 @@ void Highscore::save( ostream &os ) const
 	os << ms_per_tick << " ";
 	os << ticks << " ";
 	
-	for (vector< pair<int, int> >::const_iterator i = x_direction.begin(); i != x_direction.end(); ++i)
+	for (deque< pair<int, int> >::const_iterator i = x_direction.begin(); i != x_direction.end(); ++i)
 		os << i->first << " " << i->second << " ";
 	os << ticks << " " << 0 << endl;
 }
@@ -84,4 +84,53 @@ string Highscore::time( void ) const
 	ostringstream out;
 	out << min << ":" << setfill('0') << setw(2) << sec << "." << setfill('0') << setw(3) << ms;
 	return out.str();
+}
+
+Replay::Replay( istream &data )
+{
+	load(data);
+}
+
+Replay::Replay( const string &data_path )
+{
+	ifstream data(data_path.c_str());
+	load(data);
+}
+
+void Replay::load( istream &data )
+{
+	highscore.load(data);
+}
+
+void Replay::do_update( void )
+{
+	static int ticks = 0;
+	
+	if (ticks > highscore.ticks || highscore.x_direction.empty())
+		return;
+	
+	if (highscore.x_direction.front().first == ticks)
+	{
+		switch (highscore.x_direction.front().second)
+		{
+		case -1:
+			is_down[left] = true;
+			is_down[right] = false;
+			break;
+		case 0:
+			is_down[left] = false;
+			is_down[right] = false;
+			break;
+		case 1:
+			is_down[left] = false;
+			is_down[right] = true;
+			break;
+		default:
+			break;
+		}
+		
+		highscore.x_direction.pop_front();
+	}
+	
+	++ticks;
 }

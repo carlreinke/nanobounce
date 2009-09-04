@@ -1,7 +1,6 @@
 #ifndef CONTROLLER_HPP
 #define CONTROLLER_HPP
 
-#include "highscore.hpp"
 #include "SDL.h"
 
 class Controller

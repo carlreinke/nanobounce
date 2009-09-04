@@ -1,6 +1,8 @@
 #include "audio.hpp"
 #include "bouncing.hpp"
 #include "controller.hpp"
+#include "game.hpp"
+#include "highscore.hpp"
 #include "menu.hpp"
 #include "video.hpp"
 
@@ -17,7 +19,7 @@ map<int, Sprite> font_sprites;
 
 bool global_quit = false;
 
-int main( int, char *[] )
+int main( int argc, char *argv[] )
 {
 	if (SDL_Init(SDL_INIT_TIMER) == -1)
 	{
@@ -26,9 +28,6 @@ int main( int, char *[] )
 	}
 	SDL_Surface *surface = init_video();
 	init_audio();
-	
-	controllers.push_back(new Keyboard());
-	controllers.push_back(new Joystick(0));
 	
 	{
 		SDL_Color color = { 100, 100, 100 };
@@ -41,7 +40,22 @@ int main( int, char *[] )
 	SDL_TimerID frame_timer = SDL_AddTimer(0, push_frame_event, NULL);
 	SDL_TimerID update_timer = SDL_AddTimer(0, push_update_event, NULL);
 	
-	game_menu(surface);
+	if (argc == 3)
+	{
+		controllers.push_back(new Replay(argv[2]));
+		
+		Game game;
+		game.load(argv[1]);
+		
+		level_loop(surface, game);
+	}
+	else
+	{
+		controllers.push_back(new Keyboard());
+		controllers.push_back(new Joystick(0));
+		
+		game_menu(surface);
+	}
 	
 	SDL_RemoveTimer(frame_timer);
 	SDL_RemoveTimer(update_timer);
