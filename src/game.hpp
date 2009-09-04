@@ -39,9 +39,6 @@ private:
 	
 	int x_offset, y_offset;
 	
-	bool level_draw_needed;
-	SDL_Surface_smartptr level_cache;
-	
 	Level level;
 	std::vector<Ball> balls;
 	
