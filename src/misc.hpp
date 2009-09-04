@@ -1,8 +1,6 @@
 #ifndef MISC_HPP
 #define MISC_HPP
 
-#include "SDL.h"
-
 #define COUNTOF(x) (sizeof(x) / sizeof(*x))
 
 #define sqr(x) ((x) * (x))
@@ -26,16 +24,6 @@ T get_no_comments( std::istream &is )
 	
 	is >> temp;
 	return temp;
-}
-
-inline int SDL_FillRect( SDL_Surface *dst, SDL_Rect *dstrect, const SDL_Color &color )
-{
-	return SDL_FillRect(dst, dstrect, SDL_MapRGB(dst->format, color.r, color.g, color.b));
-}
-
-inline int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, const SDL_Color &color )
-{
-	return SDL_FillRect(dst, dstrect, SDL_MapRGBA(dst->format, color.r, color.g, color.b, color.unused));
 }
 
 #endif // MISC_HPP

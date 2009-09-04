@@ -1,5 +1,6 @@
 #include "fixed.hpp"
 #include "misc.hpp"
+#include "sdl_ext.hpp"
 #include "sprite.hpp"
 #include "video.hpp"
 
