@@ -287,7 +287,7 @@ void play_pack( SDL_Surface *surface, const string &directory )
 			string level_file;
 			getline(meta, level_file);
 			
-			if (meta.fail())
+			if (!meta.good())
 			{
 				pack_done_screen(surface, pack_name);
 				return;

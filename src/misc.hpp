@@ -12,11 +12,11 @@ T get_no_comments( std::istream &is )
 {
 	T temp;
 	is >> temp;
-	if (!is.fail())
+	if (is.good())
 		return temp;
 		
 	is.clear();
-	while (is.peek() == '#' && !is.eof())
+	while (is.peek() == '#' && is.good())
 	{
 		std::string dummy;
 		getline(is, dummy);

@@ -149,7 +149,7 @@ void pack_menu( SDL_Surface *surface )
 				getline(pack_data, pack_name);
 				getline(pack_data, author);
 				
-				if (!pack_data.fail())
+				if (pack_data.good())
 					packs.push_back(Pack_Entry(pack_name, author, string(dir_ent->d_name) + "/"));
 			}
 		}

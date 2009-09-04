@@ -71,7 +71,7 @@ void Sprite::load_ppm( istream &ppm )
 	
 	SDL_Rect rect = { 0, 0, 1, 1 };
 	
-	while (!ppm.eof() && rect.y < h)
+	while (ppm.good() && rect.y < h)
 	{
 		SDL_Color color =
 		{

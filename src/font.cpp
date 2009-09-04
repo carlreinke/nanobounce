@@ -32,7 +32,7 @@ void Font::load_pgm( istream &pgm )
 	
 	int x = 0, y = 0;
 	
-	while (!pgm.eof() && y < h)
+	while (pgm.good() && y < h)
 	{
 		int g = get_no_comments<int>(pgm) * (component_max / (Fixed)255);
 		graymap[y].push_back(g);
@@ -52,7 +52,7 @@ void Font::load_char_widths( istream &is )
 	
 	unsigned int x = 0;
 	
-	while (!is.eof() && x < graymap[0].size())
+	while (is.good() && x < graymap[0].size())
 	{
 		char c = get_no_comments<char>(is);
 		int w = get_no_comments<int>(is);

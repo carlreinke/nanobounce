@@ -28,13 +28,13 @@ void Highscore::load( istream &is )
 		int tick, x_direction;
 		is >> tick >> x_direction;
 		
-		if (is.fail() || tick == ticks)
+		if (!is.good() || tick == ticks)
 			break;
 		
 		this->x_direction.push_back(make_pair(tick, x_direction));
 	}
 	
-	if (is.fail())
+	if (!is.good()) // highscore file corrupt?
 		reset();
 	
 	if (invalid())
