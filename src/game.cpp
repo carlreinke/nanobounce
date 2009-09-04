@@ -57,7 +57,7 @@ void Game::tick( void )
 		    (*c)->is_down[Controller::down] &&
 		    (*c)->is_down[Controller::left] &&
 		    (*c)->is_down[Controller::right])
-			state = won;
+			state = cheat_won;
 		
 		if ((*c)->is_down[Controller::quit])
 			state = quit;
