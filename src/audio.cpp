@@ -16,9 +16,7 @@ Stream::Stream( const Sample &sample, Fixed volume, Fixed pan )
 : sample(sample), position(0),
   volume(min(max((Fixed)0, volume), (Fixed)1)), pan(min(max((Fixed)0, pan), (Fixed)1))
 {
-#ifdef TARGET_GP2X
-	pan = 1 - pan; // inverted stereo
-#endif
+	// good to go
 }
 
 void init_audio( void )
