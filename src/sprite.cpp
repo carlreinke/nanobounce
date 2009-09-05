@@ -7,12 +7,15 @@
 using namespace std;
 
 Sprite::Sprite( void )
+: surface(NULL)
 {
-	surface = SDL_CreateRGBSurface(SDL_HWSURFACE || SDL_HWACCEL, 0, 0, screen_bpp, 0, 0, 0, 0);
+	// good to go
 }
 
 Sprite::Sprite( unsigned int width, unsigned int height, const SDL_Color &color )
 {
+	assert(width > 0 && height > 0);
+	
 	surface = SDL_CreateRGBSurface(SDL_HWSURFACE || SDL_HWACCEL, width, height, screen_bpp, 0, 0, 0, 0);
 	SDL_FillRect(surface, NULL, color);
 }
@@ -92,8 +95,11 @@ void Sprite::load_ppm( istream &ppm )
 
 void Sprite::copy( const Sprite &that )
 {
-	surface = SDL_CreateRGBSurface(SDL_HWSURFACE || SDL_HWACCEL, that.surface->h, that.surface->w, that.surface->format->BitsPerPixel, 0, 0, 0, 0);
-	SDL_BlitSurface(that.surface, NULL, surface, NULL);
+	if (that.surface != NULL)
+	{
+		surface = SDL_CreateRGBSurface(SDL_HWSURFACE || SDL_HWACCEL, that.surface->h, that.surface->w, that.surface->format->BitsPerPixel, 0, 0, 0, 0);
+		SDL_BlitSurface(that.surface, NULL, surface, NULL);
+	}
 }
 
 void Sprite::destroy( void )
