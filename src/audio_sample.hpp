@@ -22,7 +22,7 @@ private:
 	void copy( const Sample & );
 	
 	boost::shared_array<Uint8> buffer;
-	int size;
+	int length;
 	
 	int position;
 };
