@@ -31,4 +31,10 @@ inline int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, const SDL_Color &
 	return SDL_FillRect(dst, dstrect, SDL_MapRGBA(dst->format, color.r, color.g, color.b, color.unused));
 }
 
+inline SDL_Color SDL_Color_RGBA( int r, int g, int b, int a = 0 )
+{
+	SDL_Color c = { r, g, b, a };
+	return c;
+}
+
 #endif // SDL_EXT_HPP

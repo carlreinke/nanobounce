@@ -7,17 +7,15 @@
 using namespace std;
 
 Sprite::Sprite( void )
-: surface(NULL)
+: surface(NULL), w(0), h(0)
 {
 	// good to go
 }
 
 Sprite::Sprite( unsigned int width, unsigned int height, const SDL_Color &color )
+: surface(NULL), color(color), w(width), h(height)
 {
 	assert(width > 0 && height > 0);
-	
-	surface = SDL_CreateRGBSurface(SDL_HWSURFACE || SDL_HWACCEL, width, height, screen_bpp, 0, 0, 0, 0);
-	SDL_FillRect(surface, NULL, color);
 }
 
 Sprite::Sprite( istream &netpbm )
@@ -100,6 +98,12 @@ void Sprite::copy( const Sprite &that )
 		surface = SDL_CreateRGBSurface(SDL_HWSURFACE || SDL_HWACCEL, that.surface->h, that.surface->w, that.surface->format->BitsPerPixel, 0, 0, 0, 0);
 		SDL_BlitSurface(that.surface, NULL, surface, NULL);
 	}
+	else
+	{
+		color = that.color;
+		w = that.w;
+		h = that.h;
+	}
 }
 
 void Sprite::destroy( void )
@@ -113,7 +117,16 @@ void Sprite::destroy( void )
 
 void Sprite::blit( SDL_Surface *surface, int x, int y, Uint8 alpha ) const
 {
-	SDL_Rect rect = { x, y, this->surface->w, this->surface->h };
-	SDL_SetAlpha(this->surface, (alpha != SDL_ALPHA_OPAQUE) ? SDL_SRCALPHA : 0, alpha);
-	SDL_BlitSurface(this->surface, NULL, surface, &rect);
+	if (this->surface != NULL)
+	{
+		SDL_Rect rect = { x, y, this->surface->w, this->surface->h };
+		SDL_SetAlpha(this->surface, (alpha != SDL_ALPHA_OPAQUE) ? SDL_SRCALPHA : 0, alpha);
+		SDL_BlitSurface(this->surface, NULL, surface, &rect);
+	}
+	else
+	{
+		// TODO this doesn't alpha blend
+		SDL_Rect rect = { x, y, w, h };
+		SDL_FillRect(surface, &rect, color);
+	}
 }

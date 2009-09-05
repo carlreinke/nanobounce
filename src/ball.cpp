@@ -3,6 +3,7 @@
 #include "block.hpp"
 #include "level.hpp"
 #include "misc.hpp"
+#include "sdl_ext.hpp"
 
 using namespace std;
 
@@ -42,8 +43,7 @@ Ball::Ball( Fixed x, Fixed y )
 		for (unsigned int i = 0; i < trail_max; ++i)
 		{
 			int temp = 255 - i * (256 / trail_max);
-			SDL_Color color = { temp, temp, temp };
-			sprites.push_back(Sprite(width, height, color));
+			sprites.push_back(Sprite(width, height, SDL_Color_RGBA(temp, temp, temp)));
 		}
 	}
 }
