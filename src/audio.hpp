@@ -23,13 +23,11 @@ extern Fixed volume;
 
 extern SDL_AudioSpec spec;
 
-extern std::vector<Stream> streams;
-
 extern std::map<std::string, Sample> samples;
 
 void init_audio( void );
 void deinit_audio( void );
 
-void audio_callback( void *, Uint8 *stream, int len );
+void play_sample( const Stream & );
 
 #endif // AUDIO_HPP

@@ -2,6 +2,8 @@
 
 using namespace std;
 
+void audio_callback( void *, Uint8 *stream, int len );
+
 Fixed volume = 0.5f;
 
 SDL_AudioSpec spec;
@@ -83,4 +85,16 @@ void audio_callback( void *, Uint8 *stream_, int len )
 		else
 			++s;
 	}
+}
+
+void play_sample( const Stream &stream )
+{
+	if (audio_disabled)
+		return;
+	
+	SDL_LockAudio();
+	
+	streams.push_back(stream);
+	
+	SDL_UnlockAudio();
 }
