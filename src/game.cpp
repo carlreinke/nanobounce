@@ -80,7 +80,7 @@ void Game::tick( void )
 		{
 			state = lost;
 			
-			play_sample(Stream(samples["lost"], 1, sample_pan(ball->x)));
+			play_sample(samples["lost"], 1, sample_pan(ball->x));
 		}
 	}
 }
@@ -108,7 +108,7 @@ void Game::check_unboost( Ball &ball )
 			{
 				ball.unboost();
 				
-				play_sample(Stream(samples["unboost"], 1, sample_pan(ball.x)));
+				play_sample(samples["unboost"], 1, sample_pan(ball.x));
 			}
 		}
 		else if (--ball.ticks_until_unboost == 0)
@@ -146,7 +146,7 @@ redo:
 		{
 			state = won;
 			
-			play_sample(Stream(samples["won"], 1, sample_pan(ball.x)));
+			play_sample(samples["won"], 1, sample_pan(ball.x));
 		}
 	}
 	
@@ -250,7 +250,7 @@ redo:
 	}
 	
 	if (sample != NULL)
-		play_sample(Stream(*sample, 1, sample_pan(ball.x)));
+		play_sample(*sample, 1, sample_pan(ball.x));
 }
 
 bool Game::is_outside( const Ball &ball, const Level &level ) const

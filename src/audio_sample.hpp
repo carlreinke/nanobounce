@@ -1,26 +1,30 @@
 #ifndef AUDIO_SAMPLE_HPP
 #define AUDIO_SAMPLE_HPP
 
-#include "SDL.h"
+#include "audio_channel.hpp"
 
-class Sample
+class Sample : public Channel
 {
 public:
 	Sample( void );
-	Sample( const char *file );
-	Sample( const Sample &  );
-	~Sample( void );
+	Sample( const std::string & );
+	
+	Sample( const Sample & );
+	Sample( const Sample &, Fixed volume, Fixed pan );
 	
 	Sample & operator=( const Sample & );
 	
+	Uint8 *get_buffer( int &len );
+	void flush( int len );
+	bool empty( void ) const;
+	
 private:
 	void copy( const Sample & );
-	void destroy( void );
 	
-	Uint8 *buffer;
-	unsigned int length;
+	boost::shared_array<Uint8> buffer;
+	int size;
 	
-	friend void audio_callback( void *, Uint8 *stream, int len );
+	int position;
 };
 
 #endif // AUDIO_SAMPLE_HPP

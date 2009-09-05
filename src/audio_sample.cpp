@@ -3,75 +3,69 @@
 
 using namespace std;
 
-Sample::Sample()
-: buffer(NULL), length(0)
+Sample::Sample( void )
+: Channel(),
+  buffer(NULL), size(0), position(0)
 {
-	// good to do
+	// good to go
 }
 
-Sample::Sample( const char *file )
-: buffer(NULL), length(0)
+Sample::Sample( const string &path )
+: Channel()
 {
-	SDL_AudioSpec wav_spec;
-	SDL_AudioCVT wav_cvt;
-	Uint8 *wav_buffer;
-	Uint32 wav_length;
-	
-	if (SDL_LoadWAV(file, &wav_spec, &wav_buffer, &wav_length) == NULL)
-	{
-		cerr << "error: '" << file << "' failed to load: " << SDL_GetError() << endl;
-		return;
-	}
-	
-	if (SDL_BuildAudioCVT(&wav_cvt,
-	                      wav_spec.format, wav_spec.channels, wav_spec.freq,
-	                      spec.format, 1 /*spec.channels*/, spec.freq) == -1)
-	{
-		cerr << "error: '" << file << "' failed to load: " << SDL_GetError() << endl;
-		return;
-	}
-	
-	wav_cvt.len = wav_length;
-	wav_cvt.buf = new Uint8[wav_cvt.len * wav_cvt.len_mult];
-	
-	memcpy(wav_cvt.buf, wav_buffer, wav_length);
-	
-	SDL_FreeWAV(wav_buffer);
-	
-	SDL_ConvertAudio(&wav_cvt);
-	
-	length = wav_cvt.len_cvt;
-	buffer = wav_cvt.buf;
+	(void)path;
+	clog << "TODO " << __PRETTY_FUNCTION__ << endl;
 }
 
 Sample::Sample( const Sample &that )
+: Channel(that)
 {
 	copy(that);
 }
 
-Sample::~Sample( void )
+Sample::Sample( const Sample &that, Fixed volume, Fixed pan )
+: Channel(that)
 {
-	destroy();
+	copy(that);
+	
+	this->volume = volume;
+	this->pan = pan;
 }
 
 Sample & Sample::operator=( const Sample &that )
 {
 	if (this != &that)
 	{
-		destroy();
+		Channel::operator=( that );
 		copy(that);
 	}
 	return *this;
 }
 
-void Sample::copy( const Sample &that )
+
+Uint8 * Sample::get_buffer( int &len )
 {
-	length = that.length;
-	buffer = new Uint8[length];
-	memcpy(buffer, that.buffer, length);
+	clog << "TODO " << __PRETTY_FUNCTION__ << endl;
+	len = 0;
+	return NULL;
 }
 
-void Sample::destroy( void )
+void Sample::flush( int len )
 {
-	delete[] buffer;
+	(void)len;
+	clog << "TODO " << __PRETTY_FUNCTION__ << endl;
+}
+
+bool Sample::empty( void ) const
+{
+	return (position == size);
+}
+
+
+void Sample::copy( const Sample &that )
+{
+	buffer = that.buffer;
+	size = that.size;
+	
+	position = 0;
 }
