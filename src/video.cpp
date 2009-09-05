@@ -8,9 +8,6 @@ SDL_Surface *init_video( void )
 {
 	SDL_Surface *surface = SDL_SetVideoMode(screen_width, screen_height, screen_bpp, SDL_HWSURFACE | SDL_ANYFORMAT | SDL_DOUBLEBUF);
 	
-	SDL_WM_SetCaption("Bouncing", NULL);
-	SDL_ShowCursor(SDL_DISABLE);
-	
 	if (surface == NULL)
 	{
 		cerr << SDL_GetError() << endl;
