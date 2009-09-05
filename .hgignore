@@ -2,5 +2,10 @@ syntax: glob
 *~
 obj/*
 src/*.gch
+
 nanobounce
 nanobounce.exe
+nanobounce.gpe
+
+lvl/*/*.score
+
