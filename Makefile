@@ -8,8 +8,8 @@ GP2X_CHAIN := $(GP2X_CHAINPREFIX)/bin/arm-open2x-linux-
 
 # END SETTINGS #####################################
 
-TARGET := bouncing
-OBJS := audio.o audio_sample.o ball.o block.o bouncing.o controller.o font.o game.o highscore.o level.o menu.o misc.o sprite.o video.o
+TARGET := nanobounce
+OBJS := audio.o audio_sample.o ball.o block.o controller.o font.o game.o highscore.o level.o main.o menu.o misc.o sprite.o video.o
 
 STRIP := strip
 

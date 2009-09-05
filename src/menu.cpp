@@ -1,8 +1,8 @@
 #include "ball.hpp"
-#include "bouncing.hpp"
 #include "controller.hpp"
 #include "font.hpp"
 #include "game.hpp"
+#include "main.hpp"
 #include "menu.hpp"
 #include "misc.hpp"
 #include "video.hpp"
@@ -77,8 +77,7 @@ void game_menu( SDL_Surface *surface )
 				
 				ball.draw(surface);
 				
-				font.blit(surface, screen_width / 2, screen_height / 2 - font.height(font_sprites[4]) * 2, "Bouncing", font_sprites[4], Font::majuscule, Font::center);
-				font.blit(surface, screen_width / 2, screen_height / 2 - font.height(font_sprites[4]), "Frustration", font_sprites[4], Font::majuscule, Font::center);
+				font.blit(surface, screen_width / 2, screen_height / 2 - font.height(font_sprites[4]), "Nanobounce", font_sprites[4], Font::majuscule, Font::center);
 				
 				for (unsigned int i = 0; i < COUNTOF(menu_items); ++i)
 				{
@@ -91,7 +90,7 @@ void game_menu( SDL_Surface *surface )
 				font.blit(surface, 0, screen_height - font.height(font_sprites[1]), "v0.1 BETA", font_sprites[1], Font::majuscule, Font::left);
 				
 				font.blit(surface, screen_width - 1, screen_height - font.height(font_sprites[1]) * 2, "programming, graphics, and sound:", font_sprites[1], Font::majuscule, Font::right);
-				font.blit(surface, screen_width - 1, screen_height - font.height(font_sprites[1]), "Carl Reinke (a.k.a. Mindless)", font_sprites[1], Font::majuscule, Font::right);
+				font.blit(surface, screen_width - 1, screen_height - font.height(font_sprites[1]), "Carl \"Mindless\" Reinke", font_sprites[1], Font::majuscule, Font::right);
 				
 				SDL_Flip(surface);
 				break;

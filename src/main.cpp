@@ -1,8 +1,8 @@
 #include "audio.hpp"
-#include "bouncing.hpp"
 #include "controller.hpp"
 #include "game.hpp"
 #include "highscore.hpp"
+#include "main.hpp"
 #include "menu.hpp"
 #include "video.hpp"
 

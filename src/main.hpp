@@ -1,5 +1,5 @@
-#ifndef BOUNCING_HPP
-#define BOUNCING_HPP
+#ifndef MAIN_HPP
+#define MAIN_HPP
 
 #include "font.hpp"
 #include "SDL.h"
@@ -16,4 +16,4 @@ extern std::map<int, Sprite> font_sprites;
 
 extern bool global_quit;
 
-#endif // BOUNCING_HPP
+#endif // MAIN_HPP

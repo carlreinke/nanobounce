@@ -1,7 +1,7 @@
 #include "audio.hpp"
-#include "bouncing.hpp"
 #include "controller.hpp"
 #include "game.hpp"
+#include "main.hpp"
 #include "video.hpp"
 
 using namespace std;
