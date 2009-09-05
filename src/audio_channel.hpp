@@ -8,6 +8,7 @@ class Channel
 {
 public:
 	Channel( Fixed volume = 1.0f, Fixed pan = 0.5f );
+	virtual ~Channel( void ) { } // work-around a gcc 4.1.1 warning
 	
 	Channel( const Channel & );
 	
