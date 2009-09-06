@@ -14,12 +14,13 @@ public:
 	
 	Sample & operator=( const Sample & );
 	
-	Uint8 *get_buffer( int &len );
-	void flush( int len );
 	bool empty( void ) const;
 	
 private:
 	void copy( const Sample & );
+	
+	Uint8 *get_buffer( int &len );
+	void flush( int len );
 	
 	boost::shared_array<Uint8> buffer;
 	int length;

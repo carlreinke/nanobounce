@@ -3,8 +3,6 @@
 using namespace std;
 
 void audio_callback( void *, Uint8 *stream, int len );
-template <class T>
-void audio_mixer( Uint8 *stream_, int len );
 
 Fixed volume = 0.5f;
 
@@ -53,45 +51,20 @@ void deinit_audio( void )
 
 void audio_callback( void *, Uint8 *stream, int len )
 {
-	switch (spec.format)
-	{
-	case AUDIO_U8:
-	case AUDIO_S8:
-		audio_mixer<Sint8>(stream, len);
-		break;
-	default:
-		audio_mixer<Sint16>(stream, len);
-		break;
-	}
-}
-
-template <class T>
-void audio_mixer( Uint8 *stream_, int len )
-{
-	T *stream = (T *)stream_;
-	
 	for (vector<Channel *>::iterator channel_i = channels.begin(); channel_i != channels.end(); )
 	{
 		Channel *channel = *channel_i;
 		
-		const Fixed pan = (spec.channels == 1) ? (Fixed)0 : channel->pan;
-		vector<Fixed> stereo_volume;
-		stereo_volume.push_back(volume * channel->volume * (1 - pan));
-		stereo_volume.push_back(volume * channel->volume * pan);
-		
-		int buffer_len = len;
-		T *buffer = (T *)channel->get_buffer(buffer_len);
-		
-		for (int i = 0; i < buffer_len / (signed)sizeof(T); )
+		switch (spec.format)
 		{
-			for (int c = 0; c < spec.channels; ++c)
-			{
-				const Sint32 clip = stream[i] + buffer[i] * stereo_volume[c];
-				stream[i++] = min(max(SHRT_MIN, clip), SHRT_MAX);
-			}
+		case AUDIO_U8:
+		case AUDIO_S8:
+			channel->mix_into_stream<Sint8>(spec, stream, len, volume);
+			break;
+		default:
+			channel->mix_into_stream<Sint16>(spec, stream, len, volume);
+			break;
 		}
-		
-		channel->flush(buffer_len);
 		
 		if (channel->empty())
 		{
@@ -102,6 +75,7 @@ void audio_mixer( Uint8 *stream_, int len )
 			++channel_i;
 	}
 }
+
 
 void play_sample( const Sample &sample, Fixed volume, Fixed pan )
 {
