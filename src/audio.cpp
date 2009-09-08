@@ -5,7 +5,7 @@ using namespace std;
 
 void audio_callback( void *, Uint8 *stream, int len );
 
-Fixed volume = 0.5f;
+Fixed volume = 0.5f, music_volume = 0.75f;
 
 SDL_AudioSpec spec;
 
@@ -62,10 +62,10 @@ void audio_callback( void *, Uint8 *stream, int len )
 		{
 		case AUDIO_U8:
 		case AUDIO_S8:
-			music->mix_into_stream<Sint8>(spec, stream, len, volume);
+			music->mix_into_stream<Sint8>(spec, stream, len, volume * music_volume);
 			break;
 		default:
-			music->mix_into_stream<Sint16>(spec, stream, len, volume);
+			music->mix_into_stream<Sint16>(spec, stream, len, volume * music_volume);
 			break;
 		}
 		
