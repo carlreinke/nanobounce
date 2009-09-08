@@ -43,7 +43,7 @@ protected:
 	void push_function_event( functions ) const;
 	
 private:
-	static const int down_repeat_ticks = 25;
+	static const int down_repeat_ticks = 15;
 	std::vector<int> down_ticks;
 };
 
