@@ -1,0 +1,45 @@
+#ifndef AUDIO_STREAM_HPP
+#define AUDIO_STREAM_HPP
+
+#include "audio_channel.hpp"
+
+#ifndef TARGET_GP2X
+#include <vorbis/vorbisfile.h>
+#else
+#include <tremor/ivorbisfile.h>
+#endif
+
+class Stream : public Channel
+{
+public:
+	Stream( const std::string & );
+	~Stream( void );
+	
+	bool empty( void ) const;
+	
+	void rewind( void );
+	
+private:
+	Stream( const Stream & );
+	
+	Stream & operator=( const Stream & );
+	
+	void copy( const Stream & );
+	void destroy( void );
+	
+	Uint8 *get_buffer( int &len );
+	void flush( int len );
+	
+	boost::shared_array<Uint8> buffer;
+	int size;
+	
+	int start_position, end_position;
+	bool end_of_file;
+	int bitstream;
+	
+	OggVorbis_File vorbis_file;
+	
+	SDL_AudioCVT cvt;
+};
+
+#endif // AUDIO_STREAM_HPP

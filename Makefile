@@ -9,7 +9,7 @@ GP2X_CHAIN := $(GP2X_CHAINPREFIX)/bin/arm-open2x-linux-
 # END SETTINGS #####################################
 
 TARGET := nanobounce
-OBJS := audio.o audio_channel.o audio_sample.o ball.o block.o controller.o font.o game.o highscore.o level.o main.o menu.o misc.o sprite.o video.o
+OBJS := audio.o audio_channel.o audio_sample.o audio_stream.o ball.o block.o controller.o font.o game.o highscore.o level.o main.o menu.o misc.o sprite.o video.o
 
 STRIP := strip
 
@@ -18,6 +18,8 @@ LDFLAGS += -lm
 
 SDL_CFLAGS := $(shell sdl-config --cflags)
 SDL_LDFLAGS := $(shell sdl-config --libs)
+
+VORBIS_LDFLAGS := -lvorbisfile
 
 ifeq ($(PLATFORM), WIN32)
 	TARGET := $(TARGET).exe
@@ -38,10 +40,12 @@ ifeq ($(PLATFORM), GP2X)
 	
 	SDL_CFLAGS := `$(GP2X_CHAINPREFIX)/bin/sdl-config --cflags` -I$(GP2X_CHAINPREFIX)/include
 	SDL_LDFLAGS := `$(GP2X_CHAINPREFIX)/bin/sdl-config --libs` -L$(GP2X_CHAINPREFIX)/lib
+	
+	VORBIS_LDFLAGS := -lvorbisidec
 endif
 
 CXXFLAGS += -DTARGET_$(PLATFORM) $(SDL_CFLAGS)
-LDFLAGS += $(SDL_LDFLAGS)
+LDFLAGS += $(SDL_LDFLAGS) $(VORBIS_LDFLAGS)
 
 DEBUG := 1
 DEBUG_FLAGS_0 := -g0 -O2 -DNDEBUG
