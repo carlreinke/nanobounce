@@ -43,17 +43,20 @@ Stream::~Stream( void )
 
 Uint8 * Stream::get_buffer( int &len )
 {
-	assert(len < size);
+	if (end_of_file)
+		len = min(len, end_position - start_position);
+	
+	assert(len <= size);
 	
 	// shift data to front of buffer if necessary
-	if (size - start_position <= len)
+	if (start_position + len > size)
 	{
 		memmove(&buffer[0], &buffer[start_position], end_position - start_position);
 		end_position -= start_position;
 		start_position = 0;
 	}
 	
-	while (end_position - start_position < len && !end_of_file)
+	while (end_position - start_position < len)
 	{
 		// fill empty section at end of buffer with raw audio
 #ifndef TARGET_GP2X
