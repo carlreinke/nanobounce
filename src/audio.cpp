@@ -1,4 +1,5 @@
 #include "audio.hpp"
+#include "audio_stream.hpp"
 
 using namespace std;
 
@@ -9,6 +10,7 @@ Fixed volume = 0.5f;
 SDL_AudioSpec spec;
 
 vector<Channel *> channels;
+auto_ptr<Stream> music;
 
 std::map<std::string, Sample> samples;
 
@@ -42,6 +44,8 @@ void init_audio( void )
 	
 	samples["won"] = Sample("smp/won.wav");
 	samples["lost"] = Sample("smp/lost.wav");
+	
+	music = auto_ptr<Stream>(new Stream("music/01 Papilio.ogg"));
 }
 
 void deinit_audio( void )
@@ -51,6 +55,25 @@ void deinit_audio( void )
 
 void audio_callback( void *, Uint8 *stream, int len )
 {
+	// music
+	if (music.get() != NULL)
+	{
+		switch (spec.format)
+		{
+		case AUDIO_U8:
+		case AUDIO_S8:
+			music->mix_into_stream<Sint8>(spec, stream, len, volume);
+			break;
+		default:
+			music->mix_into_stream<Sint16>(spec, stream, len, volume);
+			break;
+		}
+		
+		if (music->empty())
+			music->rewind();
+	}
+	
+	// channels
 	for (vector<Channel *>::iterator channel_i = channels.begin(); channel_i != channels.end(); )
 	{
 		Channel *channel = *channel_i;
