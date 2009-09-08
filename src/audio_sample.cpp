@@ -11,7 +11,8 @@ Sample::Sample( void )
 }
 
 Sample::Sample( const string &path )
-: Channel()
+: Channel(),
+  position(0)
 {
 	SDL_AudioSpec wav_spec;
 	SDL_AudioCVT wav_cvt;
@@ -42,7 +43,7 @@ Sample::Sample( const string &path )
 	SDL_ConvertAudio(&wav_cvt);
 	
 	length = wav_cvt.len_cvt;
-	buffer = (boost::shared_array<Uint8>)wav_cvt.buf;
+	buffer = boost::shared_array<Uint8>(wav_cvt.buf);
 }
 
 Sample::Sample( const Sample &that )
