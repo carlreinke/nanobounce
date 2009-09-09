@@ -20,6 +20,7 @@ public:
 	enum State
 	{
 		none,
+		paused,
 		quit,
 		won,
 		cheat_won,

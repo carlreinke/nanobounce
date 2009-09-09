@@ -38,6 +38,8 @@ public:
 	Replay( std::istream & );
 	Replay( const std::string & );
 	
+	bool is_fake( void ) { return true; }
+	
 private:
 	void do_update( void );
 	

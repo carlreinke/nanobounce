@@ -12,7 +12,7 @@ public:
 	void update( void );
 	
 	virtual bool is_keyboard( void ) { return false; }
-	virtual bool is_joystick( void ) { return false; }
+	virtual bool is_fake( void ) { return false; }
 	
 	static const int functions_count = 10;
 	enum functions

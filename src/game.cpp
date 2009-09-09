@@ -45,8 +45,6 @@ void Game::tick( void )
 	
 	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
 	{
-		(*c)->update();
-		
 		x_direction += (*c)->is_down[Controller::left] ? -1 : 0;
 		x_direction += (*c)->is_down[Controller::right] ? 1 : 0;
 		
@@ -55,9 +53,6 @@ void Game::tick( void )
 		    (*c)->is_down[Controller::left] &&
 		    (*c)->is_down[Controller::right])
 			state = cheat_won;
-		
-		if ((*c)->is_down[Controller::quit])
-			state = quit;
 	}
 	
 	// limit how hard player can push the ball
@@ -475,6 +470,15 @@ void level_loop( SDL_Surface *surface, Game &game )
 				cout << "volume: " << volume_text.str() << endl;
 				break;
 			}
+			case SDLK_RETURN:
+				if (game.state == Game::none)
+					game.state = Game::paused;
+				else if (game.state == Game::paused)
+					game.state = Game::none;
+				break;
+			case SDLK_ESCAPE:
+				game.state = Game::quit;
+				break;
 			default:
 				break;
 			}
@@ -488,6 +492,9 @@ void level_loop( SDL_Surface *surface, Game &game )
 				
 				if (show_volume_ticks > 0)
 					font.blit(surface, 0, screen_height - font.height(font_sprites[3]), volume_text.str(), font_sprites[3], Font::left, 128);
+				
+				if (game.state == Game::paused)
+					font.blit(surface, surface->w / 2, surface->h / 2, "Paused", font_sprites[3], Font::majuscule, Font::center, 128);
 				
 				SDL_Flip(surface);
 				break;
@@ -507,11 +514,23 @@ void level_loop( SDL_Surface *surface, Game &game )
 					done = fade == SDL_ALPHA_TRANSPARENT;
 				}
 				
-				if (!fading_in)
+				for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+					if (!(*c)->is_fake())
+						(*c)->update();
+				
+				if (!fading_in && game.state != Game::paused)
+				{
 					for (int i = 0; i < 4; ++i)
+					{
+						for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+							if ((*c)->is_fake())
+								(*c)->update();
+						
 						game.tick();
+					}
+				}
 					
-				if (game.state != Game::none)
+				if (game.state != Game::none && game.state != Game::paused)
 					fading_out = true;
 				break;
 			}
