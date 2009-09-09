@@ -1,7 +1,7 @@
 features
  * add a level editor
     - change level file format (arbitrary size, blocks to be stored as <x> <y> <type>)
- * add an in-game menu (or, at least, a pause feature)
+ * add an in-game menu
  * viewable highscore list
     - add user-visible replay
  * add particle class for explosions
