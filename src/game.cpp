@@ -466,7 +466,7 @@ void level_loop( SDL_Surface *surface, Game &game )
 				
 				show_volume_ticks = 20;
 				volume_text.str("");
-				volume_text << (int)(volume * 100) << "%";
+				volume_text << (int)(volume * 100 + 0.5f) << "%";
 				cout << "volume: " << volume_text.str() << endl;
 				break;
 			}
