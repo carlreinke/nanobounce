@@ -54,17 +54,11 @@ void Font::load_char_widths( istream &is )
 	
 	while (is.good() && x < graymap[0].size())
 	{
-		char c = get_no_comments<char>(is);
+		char c = (x == 0) ? ' ' : get_no_comments<char>(is);
 		int w = get_no_comments<int>(is);
 		
 		char_positions[c] = x;
 		char_widths[c] = w;
-		
-		if (c == 'N')
-		{
-			char_positions[' '] = graymap[0].size();
-			char_widths[' '] = w / 2;
-		}
 		
 		x += w;
 	}
