@@ -38,10 +38,10 @@ public:
 	Replay( std::istream & );
 	Replay( const std::string & );
 	
-	bool is_fake( void ) { return true; }
+	void tick_update( void );
 	
 private:
-	void do_update( void );
+	void update_down( void );
 	
 	void load( std::istream & );
 	

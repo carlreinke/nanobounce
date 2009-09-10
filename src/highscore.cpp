@@ -102,7 +102,7 @@ void Replay::load( istream &data )
 	highscore.load(data);
 }
 
-void Replay::do_update( void )
+void Replay::tick_update( void )
 {
 	static int ticks = 0;
 	
@@ -133,4 +133,9 @@ void Replay::do_update( void )
 	}
 	
 	++ticks;
+}
+
+void Replay::update_down( void )
+{
+	// nothing to do
 }

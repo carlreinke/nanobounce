@@ -490,9 +490,11 @@ void level_loop( SDL_Surface *surface, Game &game )
 			case USER_FRAME:
 				game.draw(surface, fade);
 				
+				// volume notification
 				if (show_volume_ticks > 0)
 					font.blit(surface, 0, screen_height - font.height(font_sprites[3]), volume_text.str(), font_sprites[3], Font::left, 128);
 				
+				// paused message
 				if (game.state == Game::paused)
 					font.blit(surface, surface->w / 2, surface->h / 2, "Paused", font_sprites[3], Font::majuscule, Font::center, 128);
 				
@@ -503,6 +505,7 @@ void level_loop( SDL_Surface *surface, Game &game )
 				if (show_volume_ticks > 0)
 					--show_volume_ticks;
 				
+				// fading
 				if (fading_in)
 				{
 					fade = min(fade + 15, SDL_ALPHA_OPAQUE);
@@ -514,22 +517,22 @@ void level_loop( SDL_Surface *surface, Game &game )
 					done = fade == SDL_ALPHA_TRANSPARENT;
 				}
 				
+				// update controller
 				for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-					if (!(*c)->is_fake())
-						(*c)->update();
+					(*c)->update();
 				
 				if (!fading_in && game.state != Game::paused)
 				{
 					for (int i = 0; i < 4; ++i)
 					{
+						// update replay controllers
 						for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-							if ((*c)->is_fake())
-								(*c)->update();
+							(*c)->tick_update();
 						
 						game.tick();
 					}
 				}
-					
+				
 				if (game.state != Game::none && game.state != Game::paused)
 					fading_out = true;
 				break;

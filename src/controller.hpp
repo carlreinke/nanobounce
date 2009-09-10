@@ -10,9 +10,9 @@ public:
 	virtual ~Controller( void ) { } // work-around a gcc 4.1.1 warning
 	
 	void update( void );
+	virtual void tick_update( void ) { };
 	
 	virtual bool is_keyboard( void ) { return false; }
-	virtual bool is_fake( void ) { return false; }
 	
 	static const int functions_count = 10;
 	enum functions
@@ -35,7 +35,7 @@ public:
 	std::vector<bool> is_down;
 	
 protected:
-	virtual void do_update( void ) = 0;
+	virtual void update_down( void ) = 0;
 	
 	static bool drop_input_enabled;
 	static int drop_input( const SDL_Event *event );
@@ -55,7 +55,7 @@ public:
 	bool is_keyboard( void ) { return true; }
 	
 private:
-	void do_update( void );
+	void update_down( void );
 	
 	Uint8 *key_state;
 };
@@ -69,7 +69,7 @@ public:
 	bool is_joystick( void ) { return true; }
 	
 private:
-	void do_update( void );
+	void update_down( void );
 	
 	SDL_Joystick *joystick;
 };

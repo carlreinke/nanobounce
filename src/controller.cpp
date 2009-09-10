@@ -39,7 +39,7 @@ int Controller::drop_input( const SDL_Event *e )
 
 void Controller::update( void )
 {
-	do_update();
+	update_down();
 	
 	for (int i = 0; i < functions_count; ++i)
 	{
@@ -93,7 +93,7 @@ Keyboard::Keyboard( void )
 	key_state = SDL_GetKeyState(NULL);
 }
 
-void Keyboard::do_update( void )
+void Keyboard::update_down( void )
 {
 	is_down[left]  = key_state[SDLK_LEFT];
 	is_down[right] = key_state[SDLK_RIGHT];
@@ -144,12 +144,10 @@ Joystick::~Joystick( void )
 	}
 }
 
-void Joystick::do_update( void )
+void Joystick::update_down( void )
 {
 	if (joystick == NULL)
 		return;
-	
-	const vector<bool> was_down = is_down;
 	
 #ifdef TARGET_GP2X
 	is_down[left]  = SDL_JoystickGetButton(joystick, GP2X_VK_UP_LEFT) ||
