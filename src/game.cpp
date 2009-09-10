@@ -3,6 +3,7 @@
 #include "game.hpp"
 #include "main.hpp"
 #include "video.hpp"
+#include "volume.hpp"
 
 using namespace std;
 
@@ -436,9 +437,6 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 
 void level_loop( SDL_Surface *surface, Game &game )
 {
-	int show_volume_ticks = 0;
-	ostringstream volume_text;
-	
 	int fade = SDL_ALPHA_TRANSPARENT;
 	bool fading_in = true, fading_out = false;
 	
@@ -459,17 +457,11 @@ void level_loop( SDL_Surface *surface, Game &game )
 			switch (e.key.keysym.sym)
 			{
 			case SDLK_PLUS:
-			case SDLK_MINUS:
-			{
-				const Fixed delta = (e.key.keysym.sym == SDLK_MINUS) ? -0.1f : 0.1f;
-				volume = min(max((Fixed)0, volume + delta), (Fixed)1);
-				
-				show_volume_ticks = 20;
-				volume_text.str("");
-				volume_text << (int)(volume * 100 + 0.5f) << "%";
-				cout << "volume: " << volume_text.str() << endl;
+				trigger_volume_change(0.1f);
 				break;
-			}
+			case SDLK_MINUS:
+				trigger_volume_change(-0.1f);
+				break;
 			case SDLK_RETURN:
 				if (game.state == Game::none)
 					game.state = Game::paused;
@@ -490,9 +482,7 @@ void level_loop( SDL_Surface *surface, Game &game )
 			case USER_FRAME:
 				game.draw(surface, fade);
 				
-				// volume notification
-				if (show_volume_ticks > 0)
-					font.blit(surface, 0, screen_height - font.height(font_sprites[3]), volume_text.str(), font_sprites[3], Font::left, 128);
+				draw_volume_notification(surface);
 				
 				// paused message
 				if (game.state == Game::paused)
@@ -502,8 +492,7 @@ void level_loop( SDL_Surface *surface, Game &game )
 				break;
 				
 			case USER_UPDATE:
-				if (show_volume_ticks > 0)
-					--show_volume_ticks;
+				update_volume_notification();
 				
 				// fading
 				if (fading_in)

@@ -46,18 +46,18 @@ void Controller::update( void )
 		if (is_down[i])
 		{
 			if (down_ticks[i] == 0)
-				push_function_event((functions)i);
+				push_function_event(Functions(i));
 			++down_ticks[i] %= down_repeat_ticks;
 		}
 		else if (down_ticks[i] != 0)
 		{
-			push_function_event((functions)i);
+			push_function_event(Functions(i));
 			down_ticks[i] = 0;
 		}
 	}
 }
 
-void Controller::push_function_event( functions function ) const
+void Controller::push_function_event( Functions function ) const
 {
 	SDLKey keys[functions_count] = 
 	{

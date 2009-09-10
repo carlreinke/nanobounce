@@ -15,7 +15,7 @@ public:
 	virtual bool is_keyboard( void ) { return false; }
 	
 	static const int functions_count = 10;
-	enum functions
+	enum Functions
 	{
 		up = 0,
 		right,
@@ -40,7 +40,7 @@ protected:
 	static bool drop_input_enabled;
 	static int drop_input( const SDL_Event *event );
 	
-	void push_function_event( functions ) const;
+	void push_function_event( Functions ) const;
 	
 private:
 	static const int down_repeat_ticks = 15;

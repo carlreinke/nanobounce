@@ -5,6 +5,7 @@ using namespace std;
 
 void audio_callback( void *, Uint8 *stream, int len );
 
+Audio_mode audio_mode = ALL_AUDIO;
 Fixed volume = 0.5f, music_volume = 0.75f;
 
 SDL_AudioSpec spec;
@@ -56,7 +57,7 @@ void deinit_audio( void )
 void audio_callback( void *, Uint8 *stream, int len )
 {
 	// music
-	if (music.get() != NULL)
+	if (music.get() != NULL && audio_mode != NO_MUSIC)
 	{
 		switch (spec.format)
 		{
@@ -102,7 +103,7 @@ void audio_callback( void *, Uint8 *stream, int len )
 
 void play_sample( const Sample &sample, Fixed volume, Fixed pan )
 {
-	if (audio_disabled)
+	if (audio_disabled || audio_mode == NO_SAMPLES)
 		return;
 	
 	SDL_LockAudio();

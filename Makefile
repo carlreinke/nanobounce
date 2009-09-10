@@ -9,7 +9,7 @@ GP2X_CHAIN := $(GP2X_CHAINPREFIX)/bin/arm-open2x-linux-
 # END SETTINGS #####################################
 
 TARGET := nanobounce
-OBJS := audio.o audio_channel.o audio_sample.o audio_stream.o ball.o block.o controller.o font.o game.o highscore.o level.o main.o menu.o misc.o sprite.o video.o
+OBJS := audio.o audio_channel.o audio_sample.o audio_stream.o ball.o block.o controller.o font.o game.o highscore.o level.o main.o menu.o misc.o sprite.o video.o volume.o
 
 STRIP := strip
 
