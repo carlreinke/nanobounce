@@ -43,9 +43,6 @@ Stream::~Stream( void )
 
 Uint8 * Stream::get_buffer( int &len )
 {
-	if (end_of_file)
-		len = min(len, end_position - start_position);
-	
 	assert(len <= size);
 	
 	// shift data to front of buffer if necessary
@@ -56,28 +53,29 @@ Uint8 * Stream::get_buffer( int &len )
 		start_position = 0;
 	}
 	
-	while (end_position - start_position < len)
+	while (end_position - start_position < len && !end_of_file)
 	{
 		// fill empty section at end of buffer with raw audio
 #ifndef TARGET_GP2X
-		int read = ov_read(&vorbis_file, (char *)&buffer[end_position], size - end_position, 0, 2, 1, &bitstream);
+		int read = ov_read(&vorbis_file, (char *)&buffer[end_position], (size - end_position) / cvt.len_mult, 0, 2, 1, &bitstream);
 #else
-		int read = ov_read(&vorbis_file, (char *)&buffer[end_position], size - end_position, &bitstream);
+		int read = ov_read(&vorbis_file, (char *)&buffer[end_position], (size - end_position) / cvt.len_mult, &bitstream);
 #endif
-		if (read <= 0)
+		if (read > 0)
 		{
-			end_of_file = true;
-			break;
+			// convert the section of raw audio
+			cvt.buf = (Uint8 *)&buffer[end_position];
+			cvt.len = read;
+			
+			SDL_ConvertAudio(&cvt);
+			
+			end_position += cvt.len_cvt;
 		}
-		
-		// convert the section of raw audio
-		cvt.buf = (Uint8 *)&buffer[end_position];
-		cvt.len = read;
-		
-		SDL_ConvertAudio(&cvt);
-		
-		end_position += cvt.len_cvt;
+		else
+			end_of_file = true;
 	}
+	
+	len = min(len, end_position - start_position);
 	
 	return (Uint8 *)&buffer[start_position];
 }
