@@ -7,5 +7,7 @@ nanobounce
 nanobounce.exe
 nanobounce.gpe
 
+*.dll
+
 lvl/*/*.score
 
