@@ -2,9 +2,19 @@
 
 PLATFORM := UNIX
 
-# If building for the GP2X
-GP2X_CHAINPREFIX := /opt/open2x/gcc-4.1.1-glibc-2.3.6
-GP2X_CHAIN := $(GP2X_CHAINPREFIX)/bin/arm-open2x-linux-
+PREFIX := 
+EPREFIX := /usr
+HOST := 
+
+ifeq ($(PLATFORM), WIN32)
+	PREFIX := /usr/i486-mingw32
+	HOST := i486-mingw32
+endif
+ifeq ($(PLATFORM), GP2X)
+	PREFIX := /opt/open2x/gcc-4.1.1-glibc-2.3.6
+	EPREFIX := $(PREFIX)
+	HOST := arm-open2x-linux
+endif
 
 # END SETTINGS #####################################
 
@@ -13,33 +23,40 @@ OBJS := audio.o audio_channel.o audio_sample.o audio_stream.o ball.o block.o con
 
 STRIP := strip
 
-CXXFLAGS += --std=c++98 -pedantic -Wall -Wextra -Wno-long-long -Wno-missing-field-initializers -I$(CURDIR)/src/
-LDFLAGS += -lm
+BINDIR := $(EPREFIX)/bin
+LIBDIR := $(PREFIX)/lib
+INCLUDEDIR := $(PREFIX)/include
 
-SDL_CFLAGS := $(shell sdl-config --cflags)
-SDL_LDFLAGS := $(shell sdl-config --libs)
+ifneq ($(HOST), )
+	CXX := $(HOST)-$(CXX)
+	STRIP := $(HOST)-$(CXX)
+endif
+
+CXX := $(BINDIR)/$(CXX)
+STRIP := $(BINDIR)/$(STRIP)
+
+CXXFLAGS += --std=c++98 -pedantic -Wall -Wextra -Wno-long-long -Wno-missing-field-initializers
+CXXFLAGS += -I./src -I$(INCLUDEDIR)
+LDFLAGS += -L$(LIBDIR) -lm
+
+ifneq ($(PREFIX), )
+	SLD_CONFIG_PREFIX := $(PREFIX)/bin
+else
+	SLD_CONFIG_PREFIX := $(BINDIR)
+endif
+
+SDL_CFLAGS := $(shell $(SLD_CONFIG_PREFIX)/sdl-config --cflags)
+SDL_LDFLAGS := $(shell $(SLD_CONFIG_PREFIX)/sdl-config --libs)
 
 VORBIS_LDFLAGS := -lvorbisfile
 
 ifeq ($(PLATFORM), WIN32)
 	TARGET := $(TARGET).exe
-	
-	CXX := i486-mingw32-g++
-	STRIP := i486-mingw32-strip
-	
-	SDL_CFLAGS := $(shell ../SDL/bin/sdl-config --cflags)
-	SDL_LDFLAGS := $(shell ../SDL/bin/sdl-config --libs)
 endif
 ifeq ($(PLATFORM), GP2X)
 	TARGET := $(TARGET).gpe
 	
-	CXX := $(GP2X_CHAIN)g++
-	STRIP := $(GP2X_CHAIN)strip
-	
 	CXXFLAGS += -mcpu=arm920t -mtune=arm920t -msoft-float -ffast-math
-	
-	SDL_CFLAGS := `$(GP2X_CHAINPREFIX)/bin/sdl-config --cflags` -I$(GP2X_CHAINPREFIX)/include
-	SDL_LDFLAGS := `$(GP2X_CHAINPREFIX)/bin/sdl-config --libs` -L$(GP2X_CHAINPREFIX)/lib
 	
 	VORBIS_LDFLAGS := -lvorbisidec
 endif

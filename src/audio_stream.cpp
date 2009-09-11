@@ -12,7 +12,7 @@ Stream::Stream( const string &path )
 	FILE *f = fopen(path.c_str(), "rb");
 	if (!f || ov_open(f, &vorbis_file, NULL, 0) != 0)
 #else
-	if (ov_fopen(path.c_str(), &vorbis_file) != 0)
+	if (ov_fopen(const_cast<char *>(path.c_str()), &vorbis_file) != 0)
 #endif
 	{
 		cerr << "failed to load '" << path << "'" << endl;
