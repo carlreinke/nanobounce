@@ -19,7 +19,6 @@ GP2X_HOST := arm-open2x-linux
 GP2X_EXT := .gpe
 GP2X_CXXFLAGS := -mcpu=arm920t -mtune=arm920t -msoft-float -ffast-math
 
-
 # END SETTINGS #############################################
 
 TARGET := nanobounce$($(PLATFORM)_EXT)
@@ -52,7 +51,7 @@ STRIP := $(BINDIR)/$(STRIP)
 NDEBUG_FLAGS := -g0 -O2 -DNDEBUG
 DEBUG_FLAGS := -g3 -O0 -Werror
 
-CXXFLAGS += --std=gnu++98 -pedantic -Wall -Wextra -Wno-long-long -Wno-missing-field-initializers
+CXXFLAGS += --std=c++98 -pedantic -Wall -Wextra -Wno-long-long -Wno-missing-field-initializers
 CXXFLAGS += -I./src -I$(INCLUDEDIR)
 LDFLAGS += -L$(LIBDIR) -lm
 
