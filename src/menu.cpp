@@ -19,7 +19,7 @@ void game_menu( SDL_Surface *surface )
 		"Quit"
 	};
 	
-	Ball ball(screen_width / 2, screen_height);
+	Ball ball(surface->w / 2, surface->h);
 	
 	bool quit = false;
 	while (!quit && !global_quit)
@@ -77,20 +77,20 @@ void game_menu( SDL_Surface *surface )
 				
 				ball.draw(surface);
 				
-				font.blit(surface, screen_width / 2, screen_height / 2 - font.height(font_sprites[4]), "Nanobounce", font_sprites[4], Font::majuscule, Font::center);
+				font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[4]), "Nanobounce", font_sprites[4], Font::majuscule, Font::center);
 				
 				for (unsigned int i = 0; i < COUNTOF(menu_items); ++i)
 				{
-					int x = screen_width * ((Fixed)((signed)i + 1) / ((signed)COUNTOF(menu_items) + 1)),
-						y = screen_height - font.height(font_sprites[3]) * 3;
+					int x = surface->w * ((Fixed)((signed)i + 1) / ((signed)COUNTOF(menu_items) + 1)),
+						y = surface->h - font.height(font_sprites[3]) * 3;
 					
 					font.blit(surface, x, y, menu_items[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? SDL_ALPHA_OPAQUE : 128);
 				}
 				
-				font.blit(surface, 0, screen_height - font.height(font_sprites[1]), "v0.1 BETA", font_sprites[1], Font::majuscule, Font::left);
+				font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.1 BETA", font_sprites[1], Font::majuscule, Font::left);
 				
-				font.blit(surface, screen_width - 1, screen_height - font.height(font_sprites[1]) * 2, "programming, graphics, and sound:", font_sprites[1], Font::majuscule, Font::right);
-				font.blit(surface, screen_width - 1, screen_height - font.height(font_sprites[1]), "Carl \"Mindless\" Reinke", font_sprites[1], Font::majuscule, Font::right);
+				font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]) * 2, "programming, graphics, and sound:", font_sprites[1], Font::majuscule, Font::right);
+				font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]), "Carl \"Mindless\" Reinke", font_sprites[1], Font::majuscule, Font::right);
 				
 				SDL_Flip(surface);
 				break;
@@ -101,8 +101,8 @@ void game_menu( SDL_Surface *surface )
 				
 				for (int i = 0; i < 4; ++i)
 				{
-					int x = screen_width * ((Fixed)((signed)selection + 1) / ((signed)COUNTOF(menu_items) + 1)),
-						y = screen_height - font.height(font_sprites[3]) * 2;
+					int x = surface->w * ((Fixed)((signed)selection + 1) / ((signed)COUNTOF(menu_items) + 1)),
+						y = surface->h - font.height(font_sprites[3]) * 2;
 					
 					ball.tick(ball.x > x ? -1 : 1);
 					if (ball.y > y)
@@ -223,15 +223,15 @@ void pack_menu( SDL_Surface *surface )
 					for (unsigned int i = 0; i < 4; ++i)
 					{
 						if (p >= 0)
-							font.blit(surface, screen_width / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
+							font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
 						y += font.height(font_sprites[3]);
 						++p;
 					}
 					
 					y += font.height(font_sprites[3]) / 2;
-					font.blit(surface, screen_width / 2, y, packs[p].name, font_sprites[3], Font::center);
+					font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center);
 					y += font.height(font_sprites[3]);
-					font.blit(surface, screen_width / 2, y, packs[p].author, font_sprites[1], Font::center);
+					font.blit(surface, surface->w / 2, y, packs[p].author, font_sprites[1], Font::center);
 					y += font.height(font_sprites[1]);
 					y += font.height(font_sprites[3]) / 2;
 					++p;
@@ -239,7 +239,7 @@ void pack_menu( SDL_Surface *surface )
 					for (unsigned int i = 0; i < 4; ++i)
 					{
 						if (p < (signed)packs.size())
-							font.blit(surface, screen_width / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
+							font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
 						y += font.height(font_sprites[3]);
 						++p;
 					}
