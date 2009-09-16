@@ -325,10 +325,11 @@ void play_pack( SDL_Surface *surface, const string &directory )
 
 void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 {
-	int fade = SDL_ALPHA_TRANSPARENT;
+	Fader fader(20);
+	fader.fade(Fader::in);
 	
-	bool done = false, quit = false;
-	while (!quit && !global_quit)
+	bool done = false;
+	while (!done && !global_quit)
 	{
 		SDL_WaitEvent(NULL);
 		
@@ -350,7 +351,7 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 				case SDLK_ESCAPE:
 				case SDLK_SPACE:
 				case SDLK_RETURN:
-					done = true;
+					fader.fade(Fader::out);
 					break;
 					
 				case SDLK_PLUS:
@@ -383,13 +384,8 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
 				(*c)->update();
 			
-			if (done)
-				fade = max(SDL_ALPHA_TRANSPARENT, fade - 20);
-			else if (fade < SDL_ALPHA_OPAQUE)
-				fade = min(fade + 20, SDL_ALPHA_OPAQUE);
-			
-			if (fade == SDL_ALPHA_TRANSPARENT)
-				quit = true;
+			fader.update();
+			done = fader.is_done() && fader.was_fading(Fader::out);
 			
 			update_volume_notification();
 		}
@@ -398,9 +394,9 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 		{
 			SDL_FillRect(surface, NULL, 0);
 			
-			font.blit(surface, surface->w / 2, surface->h / 4, "Congratulations!", font_sprites[3], Font::majuscule, Font::center, fade);
-			font.blit(surface, surface->w / 2, surface->h / 2, pack_name, font_sprites[4], Font::center, fade);
-			font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), "completed!", font_sprites[3], Font::majuscule, Font::center, fade);
+			font.blit(surface, surface->w / 2, surface->h / 4, "Congratulations!", font_sprites[3], Font::majuscule, Font::center, fader.value());
+			font.blit(surface, surface->w / 2, surface->h / 2, pack_name, font_sprites[4], Font::center, fader.value());
+			font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), "completed!", font_sprites[3], Font::majuscule, Font::center, fader.value());
 			
 			draw_volume_notification(surface);
 			
@@ -414,10 +410,13 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 
 void level_screen( SDL_Surface *surface, const Level &level, const Highscore &highscore )
 {
-	int ticks = 50, fade = SDL_ALPHA_TRANSPARENT;
+	Fader fader(20);
+	fader.fade(Fader::in);
 	
-	bool quit = false;
-	while (!quit && !global_quit)
+	int ticks = 50;
+	
+	bool done = false;
+	while (!done && !global_quit)
 	{
 		SDL_WaitEvent(NULL);
 		
@@ -465,13 +464,11 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
 				(*c)->update();
 			
-			if (--ticks <= 0)
-				fade = max(SDL_ALPHA_TRANSPARENT, fade - 20);
-			else if (fade < SDL_ALPHA_OPAQUE)
-				fade = min(fade + 20, SDL_ALPHA_OPAQUE);
+			if (--ticks == 0)
+				fader.fade(Fader::out);
 			
-			if (fade == SDL_ALPHA_TRANSPARENT)
-				quit = true;
+			fader.update();
+			done = fader.is_done() && fader.was_fading(Fader::out);
 			
 			update_volume_notification();
 		}
@@ -480,12 +477,12 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 		{
 			SDL_FillRect(surface, NULL, 0);
 			
-			font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[3]), level.name, font_sprites[3], Font::center, fade);
+			font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[3]), level.name, font_sprites[3], Font::center, fader.value());
 			
 			if (!highscore.invalid())
 			{
-				font.blit(surface, surface->w / 2, surface->h * 3 / 4 - font.height(font_sprites[2]), "Best Time", font_sprites[2], Font::majuscule, Font::center, fade);
-				font.blit(surface, surface->w / 2, surface->h * 3 / 4, highscore.name + ": " + highscore.time(), font_sprites[2], Font::center, fade);
+				font.blit(surface, surface->w / 2, surface->h * 3 / 4 - font.height(font_sprites[2]), "Best Time", font_sprites[2], Font::majuscule, Font::center, fader.value());
+				font.blit(surface, surface->w / 2, surface->h * 3 / 4, highscore.name + ": " + highscore.time(), font_sprites[2], Font::center, fader.value());
 			}
 			
 			draw_volume_notification(surface);
@@ -564,9 +561,6 @@ void level_loop( SDL_Surface *surface, Game &game )
 		
 		while (updates--)
 		{
-			fader.update();
-			done = fader.is_done() && fader.was_fading(Fader::out);
-			
 			// update controller
 			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
 				(*c)->update();
@@ -586,6 +580,9 @@ void level_loop( SDL_Surface *surface, Game &game )
 			if (game.state != Game::none && game.state != Game::paused)
 				fader.fade(Fader::out);
 				
+			fader.update();
+			done = fader.is_done() && fader.was_fading(Fader::out);
+			
 			update_volume_notification();
 		}
 		
