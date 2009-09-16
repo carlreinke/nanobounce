@@ -368,12 +368,11 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 			case SDL_USEREVENT:
 				switch (e.user.code)
 				{
-				case USER_FRAME:
-					++frames;
-					break;
-					
 				case USER_UPDATE:
 					++updates;
+					break;
+				case USER_FRAME:
+					++frames;
 					break;
 				}
 			}
@@ -451,12 +450,11 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 			case SDL_USEREVENT:
 				switch (e.user.code)
 				{
-				case USER_FRAME:
-					++frames;
-					break;
-					
 				case USER_UPDATE:
 					++updates;
+					break;
+				case USER_FRAME:
+					++frames;
 					break;
 				}
 			}
@@ -550,12 +548,11 @@ void level_loop( SDL_Surface *surface, Game &game )
 			case SDL_USEREVENT:
 				switch (e.user.code)
 				{
-				case USER_FRAME:
-					++frames;
-					break;
-					
 				case USER_UPDATE:
 					++updates;
+					break;
+				case USER_FRAME:
+					++frames;
 					break;
 				}
 				break;

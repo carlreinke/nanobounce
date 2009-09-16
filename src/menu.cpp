@@ -84,12 +84,11 @@ void game_menu( SDL_Surface *surface )
 			case SDL_USEREVENT:
 				switch (e.user.code)
 				{
-				case USER_FRAME:
-					++frames;
-					break;
-					
 				case USER_UPDATE:
 					++updates;
+					break;
+				case USER_FRAME:
+					++frames;
 					break;
 				}
 			}
@@ -253,12 +252,11 @@ void pack_menu( SDL_Surface *surface )
 			case SDL_USEREVENT:
 				switch (e.user.code)
 				{
-				case USER_FRAME:
-					++frames;
-					break;
-					
 				case USER_UPDATE:
 					++updates;
+					break;
+				case USER_FRAME:
+					++frames;
 					break;
 				}
 			}

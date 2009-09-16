@@ -6,8 +6,8 @@
 
 enum
 {
-	USER_FRAME,
-	USER_UPDATE
+	USER_UPDATE,
+	USER_FRAME
 };
 
 extern int ms_per_update;
