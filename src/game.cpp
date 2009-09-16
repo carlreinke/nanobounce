@@ -500,8 +500,8 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 
 void level_loop( SDL_Surface *surface, Game &game )
 {
-	int fade = SDL_ALPHA_TRANSPARENT;
-	bool fading_in = true, fading_out = false;
+	Fader fader;
+	fader.fade(Fader::in);
 	
 	bool done = false;
 	
@@ -564,23 +564,14 @@ void level_loop( SDL_Surface *surface, Game &game )
 		
 		while (updates--)
 		{
-			// fading
-			if (fading_in)
-			{
-				fade = min(fade + 15, SDL_ALPHA_OPAQUE);
-				fading_in = fade != SDL_ALPHA_OPAQUE;
-			}
-			else if (fading_out)
-			{
-				fade = max(fade - 15, SDL_ALPHA_TRANSPARENT);
-				done = fade == SDL_ALPHA_TRANSPARENT;
-			}
+			fader.update();
+			done = fader.is_done() && fader.was_fading(Fader::out);
 			
 			// update controller
 			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
 				(*c)->update();
 			
-			if (!fading_in && game.state != Game::paused)
+			if (game.state != Game::paused && !fader.is_fading(Fader::in))
 			{
 				for (int i = 0; i < 4; ++i)
 				{
@@ -593,14 +584,14 @@ void level_loop( SDL_Surface *surface, Game &game )
 			}
 			
 			if (game.state != Game::none && game.state != Game::paused)
-				fading_out = true;
+				fader.fade(Fader::out);
 				
 			update_volume_notification();
 		}
 		
 		if (frames--)
 		{
-			game.draw(surface, fade);
+			game.draw(surface, fader.value());
 			
 			// paused message
 			if (game.state == Game::paused)
