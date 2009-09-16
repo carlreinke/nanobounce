@@ -330,56 +330,77 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 	bool done = false, quit = false;
 	while (!quit && !global_quit)
 	{
-		SDL_Event e;
-		SDL_WaitEvent(&e);
+		SDL_WaitEvent(NULL);
 		
-		switch (e.type)
+		int updates = 0, frames = 0;
+		
+		SDL_Event e;
+		while (SDL_PollEvent(&e))
 		{
-		case SDL_QUIT:
-			global_quit = true;
-			break;
-			
-		case SDL_KEYDOWN:
-			switch (e.key.keysym.sym)
+			switch (e.type)
 			{
-			case SDLK_BACKQUOTE:
-			case SDLK_ESCAPE:
-			case SDLK_SPACE:
-			case SDLK_RETURN:
-				done = true;
+			case SDL_QUIT:
+				global_quit = true;
 				break;
-			default:
+				
+			case SDL_KEYDOWN:
+				switch (e.key.keysym.sym)
+				{
+				case SDLK_BACKQUOTE:
+				case SDLK_ESCAPE:
+				case SDLK_SPACE:
+				case SDLK_RETURN:
+					done = true;
+					break;
+				default:
+					break;
+				}
 				break;
+				
+			case SDL_USEREVENT:
+				switch (e.user.code)
+				{
+				case USER_FRAME:
+					++frames;
+					break;
+					
+				case USER_UPDATE:
+					++updates;
+					break;
+				}
 			}
-			break;
+		}
+		
+		while (updates--)
+		{
+			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+				(*c)->update();
 			
-		case SDL_USEREVENT:
-			switch (e.user.code)
-			{
-			case USER_FRAME:
-				SDL_FillRect(surface, NULL, 0);
-				
-				font.blit(surface, surface->w / 2, surface->h / 4, "Congratulations!", font_sprites[3], Font::majuscule, Font::center, fade);
-				font.blit(surface, surface->w / 2, surface->h / 2, pack_name, font_sprites[4], Font::center, fade);
-				font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), "completed!", font_sprites[3], Font::majuscule, Font::center, fade);
-				
-				SDL_Flip(surface);
-				break;
-				
-			case USER_UPDATE:
-				for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-					(*c)->update();
-				
-				if (done)
-					fade = max(SDL_ALPHA_TRANSPARENT, fade - 20);
-				else if (fade < SDL_ALPHA_OPAQUE)
-					fade = min(fade + 20, SDL_ALPHA_OPAQUE);
-				
-				if (fade == SDL_ALPHA_TRANSPARENT)
-					quit = true;
-				
-				break;
-			}
+			if (done)
+				fade = max(SDL_ALPHA_TRANSPARENT, fade - 20);
+			else if (fade < SDL_ALPHA_OPAQUE)
+				fade = min(fade + 20, SDL_ALPHA_OPAQUE);
+			
+			if (fade == SDL_ALPHA_TRANSPARENT)
+				quit = true;
+			
+			update_volume_notification();
+		}
+		
+		if (frames--)
+		{
+			SDL_FillRect(surface, NULL, 0);
+			
+			font.blit(surface, surface->w / 2, surface->h / 4, "Congratulations!", font_sprites[3], Font::majuscule, Font::center, fade);
+			font.blit(surface, surface->w / 2, surface->h / 2, pack_name, font_sprites[4], Font::center, fade);
+			font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), "completed!", font_sprites[3], Font::majuscule, Font::center, fade);
+			
+			draw_volume_notification(surface);
+			
+			SDL_Flip(surface);
+			
+			if (frames > 0)
+				clog << "dropped " << frames << " frame(s)" << endl;
 		}
 	}
 }
@@ -391,46 +412,67 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 	bool quit = false;
 	while (!quit && !global_quit)
 	{
-		SDL_Event e;
-		SDL_WaitEvent(&e);
+		SDL_WaitEvent(NULL);
 		
-		switch (e.type)
+		int updates = 0, frames = 0;
+		
+		SDL_Event e;
+		while (SDL_PollEvent(&e))
 		{
-		case SDL_QUIT:
-			global_quit = true;
-			break;
-			
-		case SDL_USEREVENT:
-			switch (e.user.code)
+			switch (e.type)
 			{
-			case USER_FRAME:
-				SDL_FillRect(surface, NULL, 0);
+			case SDL_QUIT:
+				global_quit = true;
+				break;
 				
-				font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[3]), level.name, font_sprites[3], Font::center, fade);
-				
-				if (!highscore.invalid())
+			case SDL_USEREVENT:
+				switch (e.user.code)
 				{
-					font.blit(surface, surface->w / 2, surface->h * 3 / 4 - font.height(font_sprites[2]), "Best Time", font_sprites[2], Font::majuscule, Font::center, fade);
-					font.blit(surface, surface->w / 2, surface->h * 3 / 4, highscore.name + ": " + highscore.time(), font_sprites[2], Font::center, fade);
+				case USER_FRAME:
+					++frames;
+					break;
+					
+				case USER_UPDATE:
+					++updates;
+					break;
 				}
-				
-				SDL_Flip(surface);
-				break;
-				
-			case USER_UPDATE:
-				for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-					(*c)->update();
-				
-				if (--ticks <= 0)
-					fade = max(SDL_ALPHA_TRANSPARENT, fade - 20);
-				else if (fade < SDL_ALPHA_OPAQUE)
-					fade = min(fade + 20, SDL_ALPHA_OPAQUE);
-				
-				if (fade == SDL_ALPHA_TRANSPARENT)
-					quit = true;
-				
-				break;
 			}
+		}
+		
+		while (updates--)
+		{
+			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+				(*c)->update();
+			
+			if (--ticks <= 0)
+				fade = max(SDL_ALPHA_TRANSPARENT, fade - 20);
+			else if (fade < SDL_ALPHA_OPAQUE)
+				fade = min(fade + 20, SDL_ALPHA_OPAQUE);
+			
+			if (fade == SDL_ALPHA_TRANSPARENT)
+				quit = true;
+			
+			update_volume_notification();
+		}
+		
+		if (frames--)
+		{
+			SDL_FillRect(surface, NULL, 0);
+			
+			font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[3]), level.name, font_sprites[3], Font::center, fade);
+			
+			if (!highscore.invalid())
+			{
+				font.blit(surface, surface->w / 2, surface->h * 3 / 4 - font.height(font_sprites[2]), "Best Time", font_sprites[2], Font::majuscule, Font::center, fade);
+				font.blit(surface, surface->w / 2, surface->h * 3 / 4, highscore.name + ": " + highscore.time(), font_sprites[2], Font::center, fade);
+			}
+			
+			draw_volume_notification(surface);
+			
+			SDL_Flip(surface);
+			
+			if (frames > 0)
+				clog << "dropped " << frames << " frame(s)" << endl;
 		}
 	}
 }
@@ -444,92 +486,110 @@ void level_loop( SDL_Surface *surface, Game &game )
 	
 	while (!done && !global_quit)
 	{
-		SDL_Event e;
-		SDL_WaitEvent(&e);
+		SDL_WaitEvent(NULL);
 		
-		switch (e.type)
+		int updates = 0, frames = 0;
+		
+		SDL_Event e;
+		while (SDL_PollEvent(&e))
 		{
-		case SDL_QUIT:
-			global_quit = true;
-			break;
-			
-		case SDL_KEYDOWN:
-			switch (e.key.keysym.sym)
+			switch (e.type)
 			{
-			case SDLK_PLUS:
-				trigger_volume_change(0.1f);
+			case SDL_QUIT:
+				global_quit = true;
 				break;
-			case SDLK_MINUS:
-				trigger_volume_change(-0.1f);
+				
+			case SDL_KEYDOWN:
+				switch (e.key.keysym.sym)
+				{
+				case SDLK_PLUS:
+					trigger_volume_change(0.1f);
+					break;
+				case SDLK_MINUS:
+					trigger_volume_change(-0.1f);
+					break;
+				case SDLK_RETURN:
+					if (game.state == Game::none)
+						game.state = Game::paused;
+					else if (game.state == Game::paused)
+						game.state = Game::none;
+					break;
+				case SDLK_ESCAPE:
+					game.state = Game::quit;
+					break;
+				default:
+					break;
+				}
 				break;
-			case SDLK_RETURN:
-				if (game.state == Game::none)
-					game.state = Game::paused;
-				else if (game.state == Game::paused)
-					game.state = Game::none;
+				
+			case SDL_USEREVENT:
+				switch (e.user.code)
+				{
+				case USER_FRAME:
+					++frames;
+					break;
+					
+				case USER_UPDATE:
+					++updates;
+					break;
+				}
 				break;
-			case SDLK_ESCAPE:
-				game.state = Game::quit;
-				break;
+				
 			default:
 				break;
 			}
-			break;
-			
-		case SDL_USEREVENT:
-			switch (e.user.code)
+		}
+		
+		while (updates--)
+		{
+			// fading
+			if (fading_in)
 			{
-			case USER_FRAME:
-				game.draw(surface, fade);
-				
-				draw_volume_notification(surface);
-				
-				// paused message
-				if (game.state == Game::paused)
-					font.blit(surface, surface->w / 2, surface->h / 2, "Paused", font_sprites[3], Font::majuscule, Font::center, 128);
-				
-				SDL_Flip(surface);
-				break;
-				
-			case USER_UPDATE:
-				update_volume_notification();
-				
-				// fading
-				if (fading_in)
-				{
-					fade = min(fade + 15, SDL_ALPHA_OPAQUE);
-					fading_in = fade != SDL_ALPHA_OPAQUE;
-				}
-				else if (fading_out)
-				{
-					fade = max(fade - 15, SDL_ALPHA_TRANSPARENT);
-					done = fade == SDL_ALPHA_TRANSPARENT;
-				}
-				
-				// update controller
-				for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-					(*c)->update();
-				
-				if (!fading_in && game.state != Game::paused)
-				{
-					for (int i = 0; i < 4; ++i)
-					{
-						// update replay controllers
-						for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-							(*c)->tick_update();
-						
-						game.tick();
-					}
-				}
-				
-				if (game.state != Game::none && game.state != Game::paused)
-					fading_out = true;
-				break;
+				fade = min(fade + 15, SDL_ALPHA_OPAQUE);
+				fading_in = fade != SDL_ALPHA_OPAQUE;
 			}
-			break;
+			else if (fading_out)
+			{
+				fade = max(fade - 15, SDL_ALPHA_TRANSPARENT);
+				done = fade == SDL_ALPHA_TRANSPARENT;
+			}
 			
-		default:
-			break;
+			// update controller
+			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+				(*c)->update();
+			
+			if (!fading_in && game.state != Game::paused)
+			{
+				for (int i = 0; i < 4; ++i)
+				{
+					// update replay controllers
+					for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+						(*c)->tick_update();
+					
+					game.tick();
+				}
+			}
+			
+			if (game.state != Game::none && game.state != Game::paused)
+				fading_out = true;
+				
+			update_volume_notification();
+		}
+		
+		if (frames--)
+		{
+			game.draw(surface, fade);
+			
+			// paused message
+			if (game.state == Game::paused)
+				font.blit(surface, surface->w / 2, surface->h / 2, "Paused", font_sprites[3], Font::majuscule, Font::center, 128);
+			
+			draw_volume_notification(surface);
+			
+			SDL_Flip(surface);
+			
+			if (frames > 0)
+				clog << "dropped " << frames << " frame(s)" << endl;
 		}
 	}
 }

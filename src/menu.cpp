@@ -5,7 +5,7 @@
 #include "main.hpp"
 #include "menu.hpp"
 #include "misc.hpp"
-#include "video.hpp"
+#include "volume.hpp"
 
 using namespace std;
 
@@ -24,92 +24,114 @@ void game_menu( SDL_Surface *surface )
 	bool quit = false;
 	while (!quit && !global_quit)
 	{
-		SDL_Event e;
-		SDL_WaitEvent(&e);
+		SDL_WaitEvent(NULL);
 		
-		switch (e.type)
+		int updates = 0, frames = 0;
+		
+		SDL_Event e;
+		while (SDL_PollEvent(&e))
 		{
-		case SDL_QUIT:
-			global_quit = true;
-			break;
-			
-		case SDL_KEYDOWN:
-			switch (e.key.keysym.sym)
+			switch (e.type)
 			{
-			case SDLK_BACKQUOTE:
-			case SDLK_ESCAPE:
-				quit = true;
+			case SDL_QUIT:
+				global_quit = true;
 				break;
 				
-			case SDLK_LEFT:
-				if (selection > 0)
-					--selection;
-				break;
-				
-			case SDLK_RIGHT:
-				if (selection < (signed)COUNTOF(menu_items) - 1)
-					++selection;
-				break;
-				
-			case SDLK_SPACE:
-			case SDLK_RETURN:
-				switch (selection)
+			case SDL_KEYDOWN:
+				switch (e.key.keysym.sym)
 				{
-				case 0:
-					pack_menu(surface);
-					break;
-					
-				case 1:
+				case SDLK_BACKQUOTE:
+				case SDLK_ESCAPE:
 					quit = true;
 					break;
+					
+				case SDLK_LEFT:
+					if (selection > 0)
+						--selection;
+					break;
+					
+				case SDLK_RIGHT:
+					if (selection < (signed)COUNTOF(menu_items) - 1)
+						++selection;
+					break;
+					
+				case SDLK_SPACE:
+				case SDLK_RETURN:
+					switch (selection)
+					{
+					case 0:
+						pack_menu(surface);
+						break;
+						
+					case 1:
+						quit = true;
+						break;
+					}
+					
+				default:
+					break;
 				}
-				
-			default:
 				break;
+				
+			case SDL_USEREVENT:
+				switch (e.user.code)
+				{
+				case USER_FRAME:
+					++frames;
+					break;
+					
+				case USER_UPDATE:
+					++updates;
+					break;
+				}
 			}
-			break;
+		}
+		
+		while (updates--)
+		{
+			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+				(*c)->update();
 			
-		case SDL_USEREVENT:
-			switch (e.user.code)
+			for (int i = 0; i < 4; ++i)
 			{
-			case USER_FRAME:
-				SDL_FillRect(surface, NULL, 0);
+				int x = surface->w * ((Fixed)((signed)selection + 1) / ((signed)COUNTOF(menu_items) + 1)),
+					y = surface->h - font.height(font_sprites[3]) * 2;
 				
-				ball.draw(surface);
-				
-				font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[4]), "Nanobounce", font_sprites[4], Font::majuscule, Font::center);
-				
-				for (unsigned int i = 0; i < COUNTOF(menu_items); ++i)
-				{
-					int x = surface->w * ((Fixed)((signed)i + 1) / ((signed)COUNTOF(menu_items) + 1)),
-						y = surface->h - font.height(font_sprites[3]) * 3;
-					
-					font.blit(surface, x, y, menu_items[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? SDL_ALPHA_OPAQUE : 128);
-				}
-				
-				font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.1 BETA", font_sprites[1], Font::majuscule, Font::left);
-				
-				font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]) * 2, "programming, graphics, and sound:", font_sprites[1], Font::majuscule, Font::right);
-				font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]), "Carl \"Mindless\" Reinke", font_sprites[1], Font::majuscule, Font::right);
-				
-				SDL_Flip(surface);
-				break;
-				
-			case USER_UPDATE:
-				for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-					(*c)->update();
-				
-				for (int i = 0; i < 4; ++i)
-				{
-					int x = surface->w * ((Fixed)((signed)selection + 1) / ((signed)COUNTOF(menu_items) + 1)),
-						y = surface->h - font.height(font_sprites[3]) * 2;
-					
-					ball.tick(ball.x > x ? -1 : 1);
-					if (ball.y > y)
-						ball.y_vel = -ball.y_term_vel;
-				}
-				break;
+				ball.tick(ball.x > x ? -1 : 1);
+				if (ball.y > y)
+					ball.y_vel = -ball.y_term_vel;
 			}
+			
+			update_volume_notification();
+		}
+		
+		if (frames--)
+		{
+			SDL_FillRect(surface, NULL, 0);
+			
+			ball.draw(surface);
+			
+			font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[4]), "Nanobounce", font_sprites[4], Font::majuscule, Font::center);
+			
+			for (unsigned int i = 0; i < COUNTOF(menu_items); ++i)
+			{
+				int x = surface->w * ((Fixed)((signed)i + 1) / ((signed)COUNTOF(menu_items) + 1)),
+					y = surface->h - font.height(font_sprites[3]) * 3;
+				
+				font.blit(surface, x, y, menu_items[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? SDL_ALPHA_OPAQUE : 128);
+			}
+			
+			font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.1 BETA", font_sprites[1], Font::majuscule, Font::left);
+			
+			font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]) * 2, "programming, graphics, and sound:", font_sprites[1], Font::majuscule, Font::right);
+			font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]), "Carl \"Mindless\" Reinke", font_sprites[1], Font::majuscule, Font::right);
+			
+			draw_volume_notification(surface);
+			
+			SDL_Flip(surface);
+			
+			if (frames > 0)
+				clog << "dropped " << frames << " frame(s)" << endl;
 		}
 	}
 }
@@ -163,96 +185,118 @@ void pack_menu( SDL_Surface *surface )
 	bool quit = false;
 	while (!quit && !global_quit)
 	{
-		SDL_Event e;
-		SDL_WaitEvent(&e);
+		SDL_WaitEvent(NULL);
 		
-		switch (e.type)
+		int updates = 0, frames = 0;
+		
+		SDL_Event e;
+		while (SDL_PollEvent(&e))
 		{
-		case SDL_QUIT:
-			global_quit = true;
-			break;
-			
-		case SDL_KEYDOWN:
-			switch (e.key.keysym.sym)
+			switch (e.type)
 			{
-			case SDLK_BACKQUOTE:
-			case SDLK_ESCAPE:
-				quit = true;
+			case SDL_QUIT:
+				global_quit = true;
 				break;
 				
-			case SDLK_UP:
-			case SDLK_LEFT:
-				if (selection > 0)
-					--selection;
-				else
-					selection = packs.size() - 1;
-				break;
-				
-			case SDLK_DOWN:
-			case SDLK_RIGHT:
-				if (selection < packs.size() - 1)
-					++selection;
-				else
-					selection = 0;
-				break;
-				
-			case SDLK_SPACE:
-			case SDLK_RETURN:
-				directory += packs[selection].directory;
-				play_pack(surface, directory);
-				
-				quit = true;
-				break;
-				
-			default:
-				break;
-			}
-			break;
-			
-		case SDL_USEREVENT:
-			switch (e.user.code)
-			{
-			case USER_FRAME:
-				SDL_FillRect(surface, NULL, 0);
-				
-				// draw list
+			case SDL_KEYDOWN:
+				switch (e.key.keysym.sym)
 				{
-					int y = font.height(font_sprites[3]) / 2;
-					int p = (signed)selection - 4;
+				case SDLK_BACKQUOTE:
+				case SDLK_ESCAPE:
+					quit = true;
+					break;
 					
-					for (unsigned int i = 0; i < 4; ++i)
-					{
-						if (p >= 0)
-							font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
-						y += font.height(font_sprites[3]);
-						++p;
-					}
+				case SDLK_UP:
+				case SDLK_LEFT:
+					if (selection > 0)
+						--selection;
+					else
+						selection = packs.size() - 1;
+					break;
 					
-					y += font.height(font_sprites[3]) / 2;
-					font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center);
+				case SDLK_DOWN:
+				case SDLK_RIGHT:
+					if (selection < packs.size() - 1)
+						++selection;
+					else
+						selection = 0;
+					break;
+					
+				case SDLK_SPACE:
+				case SDLK_RETURN:
+					directory += packs[selection].directory;
+					play_pack(surface, directory);
+					
+					quit = true;
+					break;
+					
+				default:
+					break;
+				}
+				break;
+				
+			case SDL_USEREVENT:
+				switch (e.user.code)
+				{
+				case USER_FRAME:
+					++frames;
+					break;
+					
+				case USER_UPDATE:
+					++updates;
+					break;
+				}
+			}
+		}
+		
+		while (updates--)
+		{
+			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+				(*c)->update();
+			
+			update_volume_notification();
+		}
+		
+		if (frames--)
+		{
+			SDL_FillRect(surface, NULL, 0);
+			
+			// draw list
+			{
+				int y = font.height(font_sprites[3]) / 2;
+				int p = (signed)selection - 4;
+				
+				for (unsigned int i = 0; i < 4; ++i)
+				{
+					if (p >= 0)
+						font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
 					y += font.height(font_sprites[3]);
-					font.blit(surface, surface->w / 2, y, packs[p].author, font_sprites[1], Font::center);
-					y += font.height(font_sprites[1]);
-					y += font.height(font_sprites[3]) / 2;
 					++p;
-					
-					for (unsigned int i = 0; i < 4; ++i)
-					{
-						if (p < (signed)packs.size())
-							font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
-						y += font.height(font_sprites[3]);
-						++p;
-					}
 				}
 				
-				SDL_Flip(surface);
-				break;
+				y += font.height(font_sprites[3]) / 2;
+				font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center);
+				y += font.height(font_sprites[3]);
+				font.blit(surface, surface->w / 2, y, packs[p].author, font_sprites[1], Font::center);
+				y += font.height(font_sprites[1]);
+				y += font.height(font_sprites[3]) / 2;
+				++p;
 				
-			case USER_UPDATE:
-				for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-					(*c)->update();
-				break;
+				for (unsigned int i = 0; i < 4; ++i)
+				{
+					if (p < (signed)packs.size())
+						font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
+					y += font.height(font_sprites[3]);
+					++p;
+				}
 			}
+			
+			draw_volume_notification(surface);
+			
+			SDL_Flip(surface);
+			
+			if (frames > 0)
+				clog << "dropped " << frames << " frame(s)" << endl;
 		}
 	}
 }
