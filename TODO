@@ -9,6 +9,4 @@ features
 
 misc
  * add a level pack class
-
-bugs
- * hitting a block's corner, in some cases, causes the game to freeze
+ * level class should throw when loading fails
