@@ -12,7 +12,10 @@ vector<string> directory_listing( const string &directory )
 		struct dirent *dir_ent;
 		while ((dir_ent = readdir(dir)) != NULL)
 		{
-			entries.push_back(dir_ent->d_name);
+			const string entry = dir_ent->d_name;
+			
+			if (entry != "." && entry != "..")
+				entries.push_back(entry);
 		}
 		
 		closedir(dir);

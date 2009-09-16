@@ -162,7 +162,7 @@ void pack_menu( SDL_Surface *surface )
 	{
 		vector<string> entries = directory_listing(directory);
 		
-		for (vector<string>::iterator entry = entries.begin(); entry != entries.end(); ++entry)
+		for (vector<string>::const_iterator entry = entries.begin(); entry != entries.end(); ++entry)
 		{
 			string filename = directory + *entry + "/" + "meta";
 			

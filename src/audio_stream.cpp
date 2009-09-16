@@ -6,7 +6,7 @@ using namespace std;
 Stream::Stream( const string &path )
 : Channel(),
   buffer(NULL), size(0),
-  start_position(0), end_position(0), end_of_file(false)
+  start_position(0), end_position(0), end_of_file(true)
 {
 #ifndef TARGET_WIN32
 	FILE *f = fopen(path.c_str(), "rb");
@@ -33,6 +33,8 @@ Stream::Stream( const string &path )
 	// make buffer sufficiently large
 	size = max(2 * (int)sizeof(Sint16) * spec.channels * spec.samples, 4096 * cvt.len_mult);
 	buffer = boost::shared_array<Uint8>(new Uint8[size]);
+	
+	end_of_file = false;
 }
 
 Stream::~Stream( void )

@@ -1,9 +1,12 @@
 #include "audio.hpp"
 #include "audio_stream.hpp"
+#include "file_system.hpp"
 
 using namespace std;
 
 void audio_callback( void *, Uint8 *stream, int len );
+
+void play_next_music( void );
 
 Audio_mode audio_mode = ALL_AUDIO;
 Fixed volume = 0.5f, music_volume = 0.75f;
@@ -46,7 +49,7 @@ void init_audio( void )
 	samples["won"] = Sample("smp/won.wav");
 	samples["lost"] = Sample("smp/lost.wav");
 	
-	music = auto_ptr<Stream>(new Stream("music/01 Papilio.ogg"));
+	play_next_music();
 }
 
 void deinit_audio( void )
@@ -71,7 +74,7 @@ void audio_callback( void *, Uint8 *stream, int len )
 		}
 		
 		if (music->empty())
-			music->rewind();
+			play_next_music();
 	}
 	
 	// channels
@@ -111,4 +114,33 @@ void play_sample( const Sample &sample, Fixed volume, Fixed pan )
 	channels.push_back(new Sample(sample, volume, pan));
 	
 	SDL_UnlockAudio();
+}
+
+void play_next_music( void )
+{
+	const string directory = "music/";
+	
+	static vector<string> entries = directory_listing(directory);
+	static vector<string>::iterator entry = entries.begin();
+	
+	music = auto_ptr<Stream>(NULL);
+	
+	// no music files?
+	if (entries.size() == 0)
+		return;
+	
+	if (entry == entries.end())
+		entry = entries.begin();
+	
+	string filename = directory + *entry;
+	music = auto_ptr<Stream>(new Stream(filename));
+	
+	// if music fails to load, try next one
+	if (music->empty())
+	{
+		entries.erase(entry);
+		play_next_music();
+	}
+	else
+		++entry;
 }
