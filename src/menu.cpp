@@ -1,5 +1,6 @@
 #include "ball.hpp"
 #include "controller.hpp"
+#include "file_system.hpp"
 #include "font.hpp"
 #include "game.hpp"
 #include "main.hpp"
@@ -159,17 +160,13 @@ void pack_menu( SDL_Surface *surface )
 	
 	// populate the pack list
 	{
-		DIR *dir = opendir(directory.c_str());
-		if (dir == NULL)
-			return;
+		vector<string> entries = directory_listing(directory);
 		
-		struct dirent *dir_ent;
-		while ((dir_ent = readdir(dir)) != NULL)
+		for (vector<string>::iterator entry = entries.begin(); entry != entries.end(); ++entry)
 		{
-			string filename = directory + dir_ent->d_name + "/" + "meta";
+			string filename = directory + *entry + "/" + "meta";
 			
-			struct stat buffer;
-			if (stat(filename.c_str(), &buffer) == 0)
+			if (path_exists(filename))
 			{
 				string pack_name, author;
 				
@@ -178,11 +175,9 @@ void pack_menu( SDL_Surface *surface )
 				getline(pack_data, author);
 				
 				if (pack_data.good())
-					packs.push_back(Pack_Entry(pack_name, author, string(dir_ent->d_name) + "/"));
+					packs.push_back(Pack_Entry(pack_name, author, *entry + "/"));
 			}
 		}
-		
-		closedir(dir);
 	}
 	
 	sort(packs.begin(), packs.end());
