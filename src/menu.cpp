@@ -67,6 +67,14 @@ void game_menu( SDL_Surface *surface )
 						quit = true;
 						break;
 					}
+					break;
+					
+				case SDLK_PLUS:
+					trigger_volume_change(0.1f);
+					break;
+				case SDLK_MINUS:
+					trigger_volume_change(-0.1f);
+					break;
 					
 				default:
 					break;
@@ -228,6 +236,13 @@ void pack_menu( SDL_Surface *surface )
 					play_pack(surface, directory);
 					
 					quit = true;
+					break;
+					
+				case SDLK_PLUS:
+					trigger_volume_change(0.1f);
+					break;
+				case SDLK_MINUS:
+					trigger_volume_change(-0.1f);
 					break;
 					
 				default:

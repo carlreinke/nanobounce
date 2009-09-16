@@ -352,6 +352,14 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 				case SDLK_RETURN:
 					done = true;
 					break;
+					
+				case SDLK_PLUS:
+					trigger_volume_change(0.1f);
+					break;
+				case SDLK_MINUS:
+					trigger_volume_change(-0.1f);
+					break;
+					
 				default:
 					break;
 				}
@@ -423,6 +431,21 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 			{
 			case SDL_QUIT:
 				global_quit = true;
+				break;
+				
+			case SDL_KEYDOWN:
+				switch (e.key.keysym.sym)
+				{
+				case SDLK_PLUS:
+					trigger_volume_change(0.1f);
+					break;
+				case SDLK_MINUS:
+					trigger_volume_change(-0.1f);
+					break;
+					
+				default:
+					break;
+				}
 				break;
 				
 			case SDL_USEREVENT:
@@ -502,12 +525,6 @@ void level_loop( SDL_Surface *surface, Game &game )
 			case SDL_KEYDOWN:
 				switch (e.key.keysym.sym)
 				{
-				case SDLK_PLUS:
-					trigger_volume_change(0.1f);
-					break;
-				case SDLK_MINUS:
-					trigger_volume_change(-0.1f);
-					break;
 				case SDLK_RETURN:
 					if (game.state == Game::none)
 						game.state = Game::paused;
@@ -517,6 +534,14 @@ void level_loop( SDL_Surface *surface, Game &game )
 				case SDLK_ESCAPE:
 					game.state = Game::quit;
 					break;
+					
+				case SDLK_PLUS:
+					trigger_volume_change(0.1f);
+					break;
+				case SDLK_MINUS:
+					trigger_volume_change(-0.1f);
+					break;
+					
 				default:
 					break;
 				}
