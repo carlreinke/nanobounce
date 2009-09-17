@@ -81,7 +81,7 @@ void Game::tick( void )
 	}
 }
 
-void Game::draw( SDL_Surface *surface, Uint8 alpha )
+void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	

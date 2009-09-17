@@ -15,7 +15,7 @@ public:
 	void reset( void );
 	
 	void tick( void );
-	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE );
+	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 	enum State
 	{
