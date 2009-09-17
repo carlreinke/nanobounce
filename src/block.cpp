@@ -10,13 +10,13 @@ Block::Block( int x, int y, types type )
 {
 	if (sprites.empty())
 	{
-		sprites[exit] = Sprite("img/blue.ppm");
-		sprites[normal] = Sprite("img/gray.ppm");
-		sprites[bomb] = Sprite("img/red.ppm");
-		sprites[cracked] = Sprite("img/dark_gray.ppm");
-		sprites[boost_up] = Sprite("img/green_up.ppm");
-		sprites[boost_left] = Sprite("img/green_left.ppm");
-		sprites[boost_right] = Sprite("img/green_right.ppm");
+		sprites[exit] = Sprite("img/exit.ppm");
+		sprites[normal] = Sprite("img/block.ppm");
+		sprites[bomb] = Sprite("img/nuke.ppm");
+		sprites[cracked] = Sprite("img/recycle.ppm");
+		sprites[boost_up] = Sprite("img/boost_up.ppm");
+		sprites[boost_left] = Sprite("img/boost_left.ppm");
+		sprites[boost_right] = Sprite("img/boost_right.ppm");
 	}
 }
 
