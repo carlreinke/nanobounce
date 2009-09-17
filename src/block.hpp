@@ -13,8 +13,8 @@ public:
 		ball = '.',
 		exit = 'x',
 		normal = '=',
-		bomb = '*',
-		cracked = '-',
+		nuke = '*',
+		recycle = '-',
 		boost_up = '^',
 		boost_left = '<',
 		boost_right = '>'

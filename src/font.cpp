@@ -4,7 +4,7 @@
 
 using namespace std;
 
-ifstream font_stream("img/font_04b21.pgm"), meta_stream("img/font_04b21.meta");
+ifstream font_stream("sprites/fonts/font_04b21.pgm"), meta_stream("sprites/fonts/font_04b21.meta");
 Font font(font_stream, meta_stream);
 
 Font::Font( std::istream &pgm, std::istream &is )

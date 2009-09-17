@@ -200,17 +200,17 @@ redo:
 	{
 		switch (block.type)
 		{
-		case Block::bomb:
+		case Block::nuke:
 			ball.no_vel = true;
 			
 			// TODO explode block and/or ball into particles
 			
 			state = lost;
 			
-			sample = &samples["explode"];
+			sample = &samples["nuke"];
 			break;
 			
-		case Block::cracked:
+		case Block::recycle:
 			block.ignore = true;
 			
 			// TODO explode block into particles

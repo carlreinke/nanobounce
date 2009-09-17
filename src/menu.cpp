@@ -154,7 +154,7 @@ public:
 
 void pack_menu( SDL_Surface *surface )
 {
-	string directory = "lvl/";
+	string directory = "levels/";
 	
 	vector<Pack_Entry> packs;
 	

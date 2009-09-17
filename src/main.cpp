@@ -31,9 +31,9 @@ int main( int argc, char *argv[] )
 	
 	{
 		font_sprites[1] = Sprite(1, 1, SDL_Color_RGBA(100, 100, 100));
-		font_sprites[2] = Sprite("img/font_gray_2.ppm");
-		font_sprites[3] = Sprite("img/font_gray_3.ppm");
-		font_sprites[4] = Sprite("img/font_gray_4.ppm");
+		font_sprites[2] = Sprite("sprites/fonts/font_gray_2.ppm");
+		font_sprites[3] = Sprite("sprites/fonts/font_gray_3.ppm");
+		font_sprites[4] = Sprite("sprites/fonts/font_gray_4.ppm");
 	}
 	
 	SDL_TimerID frame_timer = SDL_AddTimer(0, push_frame_event, NULL);
