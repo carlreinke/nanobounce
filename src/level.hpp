@@ -24,6 +24,7 @@ private:
 	std::vector<Block> blocks;
 	
 	friend class Game;
+	friend class Editor;
 };
 
 #endif // LEVEL_HPP

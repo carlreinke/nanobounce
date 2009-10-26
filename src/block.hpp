@@ -39,6 +39,7 @@ private:
 	static std::map<types, Sprite> sprites;
 	
 	friend class Game;
+	friend class Editor;
 };
 
 #endif // BLOCK_HPP
