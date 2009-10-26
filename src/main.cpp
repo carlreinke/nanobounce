@@ -39,12 +39,29 @@ int main( int argc, char *argv[] )
 	SDL_TimerID frame_timer = SDL_AddTimer(0, push_frame_event, NULL);
 	SDL_TimerID update_timer = SDL_AddTimer(0, push_update_event, NULL);
 	
-	if (argc == 3)
+	bool replay = false;
+	
+	int opt;
+	while ((opt = getopt(argc, argv, "r:")) != -1)
 	{
-		controllers.push_back(new Replay(argv[2]));
-		
+		switch (opt)
+		{
+		case 'r':
+			replay = true;
+			
+			controllers.push_back(new Replay(optarg));
+			break;
+		case '?':
+		default:
+			exit(EXIT_FAILURE);
+			break;
+		}
+	} 
+	
+	if (replay && optind < argc)
+	{
 		Game game;
-		game.load(argv[1]);
+		game.load(argv[optind]);
 		
 		level_loop(surface, game);
 	}
