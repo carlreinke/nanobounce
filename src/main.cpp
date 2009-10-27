@@ -1,5 +1,6 @@
 #include "audio.hpp"
 #include "controller.hpp"
+#include "editor.hpp"
 #include "game.hpp"
 #include "highscore.hpp"
 #include "main.hpp"
@@ -39,18 +40,23 @@ int main( int argc, char *argv[] )
 	SDL_TimerID frame_timer = SDL_AddTimer(0, push_frame_event, NULL);
 	SDL_TimerID update_timer = SDL_AddTimer(0, push_update_event, NULL);
 	
-	bool replay = false;
+	bool editor = false, replay = false;
 	
 	int opt;
-	while ((opt = getopt(argc, argv, "r:")) != -1)
+	while ((opt = getopt(argc, argv, "er:")) != -1)
 	{
 		switch (opt)
 		{
+		case 'e':
+			editor = true;
+			break;
+			
 		case 'r':
 			replay = true;
 			
 			controllers.push_back(new Replay(optarg));
 			break;
+			
 		case '?':
 		default:
 			exit(EXIT_FAILURE);
@@ -58,7 +64,26 @@ int main( int argc, char *argv[] )
 		}
 	} 
 	
-	if (replay && optind < argc)
+	if (optind >= argc)
+	{
+		editor = false;
+		replay = false;
+	}
+	
+	if (!replay)
+	{
+		controllers.push_back(new Keyboard());
+		controllers.push_back(new Joystick(0));
+	}
+	
+	if (editor)
+	{
+		Editor editor;
+		editor.load(argv[optind]);
+		
+		editor_loop(surface, editor);
+	}
+	else if (replay)
 	{
 		Game game;
 		game.load(argv[optind]);
@@ -67,9 +92,6 @@ int main( int argc, char *argv[] )
 	}
 	else
 	{
-		controllers.push_back(new Keyboard());
-		controllers.push_back(new Joystick(0));
-		
 		game_menu(surface);
 	}
 	

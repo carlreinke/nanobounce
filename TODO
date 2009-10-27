@@ -2,6 +2,7 @@ features
  * add a level editor
     - change level file format (arbitrary size, blocks to be stored as <x> <y> <type>)
  * add an in-game menu
+    - resume, restart, quit
  * viewable highscore list
     - add user-visible replay
  * add particle class for explosions
