@@ -81,7 +81,7 @@ int main( int argc, char *argv[] )
 		Editor editor;
 		editor.load(argv[optind]);
 		
-		editor_loop(surface, editor);
+		editor.loop(surface);
 	}
 	else if (replay)
 	{
