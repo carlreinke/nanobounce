@@ -3,19 +3,22 @@
 
 #include "highscore.hpp"
 #include "level.hpp"
+#include "loop.hpp"
 #include "sdl_ext.hpp"
-#include "video.hpp"
 
-class Game
+class Game : public Loop
 {
 public:
 	Game( void );
+	
+	void handle_event( SDL_Event & );
+	void update( void );
+	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 	bool load( const std::string &level_data_path );
 	void reset( void );
 	
 	void tick( void );
-	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 	enum State
 	{
@@ -45,11 +48,5 @@ private:
 	
 	friend void play_pack( SDL_Surface *, const std::string & ); // TODO fix this
 };
-
-void play_pack( SDL_Surface *surface, const std::string &directory );
-void pack_done_screen( SDL_Surface *surface, const std::string &pack_name );
-
-void level_screen( SDL_Surface *surface, const Level &level, const Highscore &highscore );
-void level_loop( SDL_Surface *surface, Game & );
 
 #endif // GAME_HPP
