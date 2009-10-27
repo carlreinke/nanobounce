@@ -88,7 +88,7 @@ int main( int argc, char *argv[] )
 		Game game;
 		game.load(argv[optind]);
 		
-		level_loop(surface, game);
+		game.loop(surface);
 	}
 	else
 	{
