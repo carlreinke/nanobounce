@@ -9,6 +9,7 @@ class Editor : public Loop
 public:
 	Editor( void );
 	
+	void handle_event( SDL_Event & );
 	void update( void );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
@@ -25,6 +26,7 @@ private:
 	Level level;
 	
 	static std::map<Block::types, Sprite> block_sprites;
+	static Sprite cursor;
 };
 
 #endif // EDITOR_HPP
