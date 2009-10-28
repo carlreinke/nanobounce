@@ -9,7 +9,7 @@ UNIX_EPREFIX := /usr
 UNIX_HOST := 
 
 WIN32_PREFIX := /usr/i486-mingw32
-WIN32_EPREFIX := $(UNIX_EPREFIX)
+WIN32_EPREFIX := /usr
 WIN32_HOST := i486-mingw32
 WIN32_EXT := .exe
 
@@ -46,6 +46,12 @@ endif
 CXX := $(BINDIR)/$(CXX)
 STRIP := $(BINDIR)/$(STRIP)
 
+SDL_CONFIG := sdl-config
+
+ifneq ($(PREFIX), )
+	SDL_CONFIG := $(PREFIX)/bin/$(SDL_CONFIG)
+endif
+
 # FLAGS ####################################################
 
 NDEBUG_FLAGS := -g0 -O2 -DNDEBUG
@@ -53,25 +59,19 @@ DEBUG_FLAGS := -g3 -O0 -Werror
 
 CXXFLAGS += --std=c++98 -pedantic -Wall -Wextra -Wno-long-long -Wno-missing-field-initializers
 CXXFLAGS += -I./src -I$(INCLUDEDIR)
-LDFLAGS += -L$(LIBDIR) -lm
+LDFLAGS += -L$(LIBDIR)
 
-ifneq ($(PREFIX), )
-	SLD_CONFIG_PREFIX := $(PREFIX)/bin
-else
-	SLD_CONFIG_PREFIX := $(BINDIR)
-endif
+SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags)
+SDL_LDLIBS := $(shell $(SDL_CONFIG) --libs)
 
-SDL_CFLAGS := $(shell $(SLD_CONFIG_PREFIX)/sdl-config --cflags)
-SDL_LDFLAGS := $(shell $(SLD_CONFIG_PREFIX)/sdl-config --libs)
+VORBIS_LDLIBS := -lvorbisfile
 
 ifeq ($(PLATFORM), GP2X)
-	VORBIS_LDFLAGS := -lvorbisidec
-else
-	VORBIS_LDFLAGS := -lvorbisfile
+	VORBIS_LDLIBS := -lvorbisidec
 endif
 
 CXXFLAGS += $($(PLATFORM)_CXXFLAGS) -DTARGET_$(PLATFORM) $(SDL_CFLAGS)
-LDFLAGS += $($(PLATFORM)_LDFLAGS) $(SDL_LDFLAGS) $(VORBIS_LDFLAGS)
+LDFLAGS += $($(PLATFORM)_LDFLAGS) $(SDL_LDLIBS) $(VORBIS_LDLIBS)
 
 # RULES ####################################################
 
