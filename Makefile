@@ -19,18 +19,19 @@ OBJS := $(SRCS:src/%.cpp=obj/%.o)
 # FLAGS ####################################################
 
 ifneq ($(MAKECMDGOALS), release)
-    CXXFLAGS += -g3 -O0 -Werror
+    EXTRA_CXXFLAGS += -g3 -O0 -Werror
 else
-    CXXFLAGS += -g0 -O2 -DNDEBUG
+    EXTRA_CXXFLAGS += -g0 -O2 -DNDEBUG
 endif
-CXXFLAGS += -pedantic -Wall -Wextra -Wno-long-long -Wno-missing-field-initializers
+EXTRA_CXXFLAGS += -MMD -pedantic -Wall -Wextra -Wno-long-long -Wno-missing-field-initializers
 
 SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags)
 SDL_LDLIBS := $(shell $(SDL_CONFIG) --libs)
 
 VORBIS_LDLIBS ?= -lvorbisfile
 
-ALL_CXXFLAGS = --std=c++98 -I./src -DTARGET_$(PLATFORM) $(SDL_CFLAGS) $(CXXFLAGS)
+ALL_CXXFLAGS += --std=c++98 -I./src -DTARGET_$(PLATFORM) $(EXTRA_CXXFLAGS) $(SDL_CFLAGS) $(CXXFLAGS)
+ALL_LDFLAGS += $(LDFLAGS)
 LDLIBS += $(SDL_LDLIBS) $(VORBIS_LDLIBS)
 
 # RULES ####################################################
@@ -51,11 +52,11 @@ ifneq ($(MAKECMDGOALS), clean)
 endif
 
 $(TARGET) : $(OBJS)
-	$(CXX) -o $@ $(LDFLAGS) $^ $(LDLIBS)
+	$(CXX) -o $@ $(ALL_LDFLAGS) $^ $(LDLIBS)
 
 src/precompiled.hpp.gch : src/precompiled.hpp
-	-$(CXX) -o $@ -c $(ALL_CXXFLAGS) $<
+	-$(CXX) -c -o $@ $(ALL_CXXFLAGS) $<
 
 obj/%.o : src/%.cpp src/precompiled.hpp.gch
 	@mkdir -p "$(dir $@)"
-	$(CXX) -o $@ -c -MMD -include "precompiled.hpp" $(ALL_CXXFLAGS) $< 
+	$(CXX) -c -o $@ $(ALL_CXXFLAGS) -include "precompiled.hpp" $< 

@@ -35,8 +35,8 @@ SDL_CONFIG := $(PREFIX)/bin/$(SDL_CONFIG)
 
 # FLAGS ####################################################
 
-CXXFLAGS += -I$(INCLUDEDIR) $($(PLATFORM)_CXXFLAGS)
-LDFLAGS += -L$(LIBDIR) $($(PLATFORM)_LDFLAGS)
+ALL_CXXFLAGS += -I$(INCLUDEDIR) $($(PLATFORM)_CXXFLAGS)
+ALL_LDFLAGS += -L$(LIBDIR) $($(PLATFORM)_LDFLAGS)
 
 ifeq ($(PLATFORM), GP2X)
     VORBIS_LDLIBS := -lvorbisidec
