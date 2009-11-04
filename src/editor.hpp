@@ -18,10 +18,13 @@ public:
 	
 	void reset( void );
 	
+	void set_block_at_position( int x, int y, Block::types );
+	
 private:
 	int x_offset, y_offset;
 	
 	int cursor_x, cursor_y;
+	Block::types cursor_block;
 	
 	Level level;
 	

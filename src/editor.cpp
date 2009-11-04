@@ -1,5 +1,6 @@
 #include "controller.hpp"
 #include "editor.hpp"
+#include "misc.hpp"
 #include "video.hpp"
 #include "volume.hpp"
 #include "sdl_ext.hpp"
@@ -9,10 +10,12 @@ using namespace std;
 map<Block::types, Sprite> Editor::block_sprites;
 
 Editor::Editor( void )
+: cursor_block(Block::none)
 {
 	if (block_sprites.empty())
 	{
 		block_sprites = Block(0, 0, Block::none).sprites;
+		block_sprites[Block::none] = Sprite(Block::width, Block::height, SDL_Color_RGBA(0, 0, 0));
 		block_sprites[Block::ball] = Sprite("sprites/editor/ball.ppm");
 		block_sprites[Block::exit] = Sprite("sprites/editor/exit.ppm");
 	}
@@ -47,6 +50,10 @@ void Editor::handle_event( SDL_Event &e )
 		case SDLK_UP:
 			if (cursor_y > 0)
 				cursor_y -= Block::height;
+			break;
+			
+		case SDLK_SPACE:
+			set_block_at_position(cursor_x, cursor_y, cursor_block);
 			break;
 			
 		default:
@@ -90,9 +97,48 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 	for (vector<Block>::const_iterator block = level.blocks.begin(); block != level.blocks.end(); ++block)
 		block_sprites[block->type].blit(surface, x_offset + block->x, y_offset + block->y, alpha);
 	
-	// TODO: replace this with a real cursor
-	Sprite(3, 2, SDL_Color_RGBA(255, 255, 255)).blit(surface, cursor_x, cursor_y);
-	Sprite(2, 3, SDL_Color_RGBA(  0,   0,   0)).blit(surface, cursor_x, cursor_y + Block::height - 3);
-	Sprite(2, 3, SDL_Color_RGBA(  0,   0,   0)).blit(surface, cursor_x + Block::width - 2, cursor_y);
-	Sprite(3, 2, SDL_Color_RGBA(255, 255, 255)).blit(surface, cursor_x + Block::width - 3, cursor_y + Block::height - 2);
+	// cursor
+	// TODO: replace this with a sprite cursor
+	Sprite sprite[2] =
+	{
+		Sprite(4, 2, SDL_Color_RGBA(255, 255, 255)),
+		Sprite(2, 4, SDL_Color_RGBA(255, 255, 255)),
+	};
+	
+	for (unsigned int i = 0; i < COUNTOF(sprite); ++i)
+	{
+		sprite[i].blit(surface, cursor_x - 1, cursor_y - 1);
+		sprite[i].blit(surface, cursor_x - 1, cursor_y + Block::height + 1 - sprite[i].height());
+		sprite[i].blit(surface, cursor_x + Block::width + 1 - sprite[i].width(), cursor_y - 1);
+		sprite[i].blit(surface, cursor_x + Block::width + 1 - sprite[i].width(), cursor_y + Block::height + 1 - sprite[i].height());
+	}
+	
+	// currently held block preview
+	{
+		int x = surface->w - (Block::width * 3) / 2,
+		    y = surface->h - (Block::height * 3) / 2;
+		
+		Sprite(Block::width + 2, Block::width + 2, SDL_Color_RGBA(255, 255, 255)).blit(surface, x - 1, y - 1);
+		block_sprites[cursor_block].blit(surface, x, y);
+	}
+}
+
+void Editor::set_block_at_position( int x, int y, Block::types type )
+{
+	x -= x % Block::width;
+	y -= y % Block::height;
+	
+	for (vector<Block>::iterator block = level.blocks.begin(); block != level.blocks.end(); ++block)
+	{
+		if (block->x == x && block->y == y)
+		{
+			if (type == Block::none)
+				level.blocks.erase(block);
+			else
+				block->type = type;
+			return;
+		}
+	}
+	
+	level.blocks.push_back(Block(x, y, type));
 }
