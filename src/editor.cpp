@@ -7,7 +7,7 @@
 
 using namespace std;
 
-map<Block::types, Sprite> Editor::block_sprites;
+vector<Sprite> Editor::block_sprites;
 
 Editor::Editor( void )
 : cursor_block(Block::none)

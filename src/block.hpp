@@ -9,15 +9,16 @@ class Block
 public:
 	enum types
 	{
-		none = ' ',
-		ball = '.',
-		exit = 'x',
-		normal = '=',
-		nuke = '*',
-		recycle = '-',
-		boost_up = '^',
-		boost_left = '<',
-		boost_right = '>'
+		none,
+		ball,
+		exit,
+		normal,
+		nuke,
+		recycle,
+		boost_up,
+		boost_left,
+		boost_right,
+		_max
 	};
 	
 	Block( int x, int y, types type );
@@ -36,7 +37,7 @@ private:
 	bool collideable;
 	bool ignore;
 	
-	static std::map<types, Sprite> sprites;
+	static std::vector<Sprite> sprites;
 	
 	friend class Game;
 	friend class Editor;

@@ -11,6 +11,7 @@
 #include <set>
 #include <sstream>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <vector>
 
 #include <boost/smart_ptr/shared_array.hpp>

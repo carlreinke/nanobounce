@@ -28,7 +28,7 @@ private:
 	
 	Level level;
 	
-	static std::map<Block::types, Sprite> block_sprites;
+	static std::vector<Sprite> block_sprites;
 	static Sprite cursor;
 };
 
