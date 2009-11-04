@@ -23,6 +23,8 @@ private:
 	int width, height;
 	std::vector<Block> blocks;
 	
+	static std::map<Block::types, char> block_chars;
+	
 	friend class Game;
 };
 

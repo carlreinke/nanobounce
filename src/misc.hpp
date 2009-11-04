@@ -26,4 +26,16 @@ T get_no_comments( std::istream &is )
 	return temp;
 }
 
+// this is only useful for one-to-one maps
+template <typename K, typename V>
+std::map<V, K> flip( const std::map<K, V> &map )
+{
+	std::map<V, K> temp;
+	
+	for (typename std::map<K, V>::const_iterator i = map.begin(); i != map.end(); ++i)
+		temp[i->second] = i->first;
+	
+	return temp;
+}
+
 #endif // MISC_HPP

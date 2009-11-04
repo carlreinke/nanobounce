@@ -3,13 +3,14 @@
 
 using namespace std;
 
-map<Block::types, Sprite> Block::sprites;
+std::vector<Sprite> Block::sprites;
 
 Block::Block( int x, int y, types type )
 : x(x), y(y), type(type)
 {
 	if (sprites.empty())
 	{
+		sprites.resize(_max);
 		sprites[exit] = Sprite("sprites/exit.ppm");
 		sprites[normal] = Sprite("sprites/block.ppm");
 		sprites[nuke] = Sprite("sprites/nuke.ppm");
