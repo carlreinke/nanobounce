@@ -79,7 +79,7 @@ int main( int argc, char *argv[] )
 	for (vector<Controller *>::iterator i = controllers.begin(); i != controllers.end(); )
 	{
 		delete *i;
-		controllers.erase(i);
+		i = controllers.erase(i);
 	}
 	
 	deinit_audio();

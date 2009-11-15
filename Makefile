@@ -18,10 +18,10 @@ OBJS := $(SRCS:src/%.cpp=obj/%.o)
 
 # FLAGS ####################################################
 
-ifneq ($(MAKECMDGOALS), release)
-    EXTRA_CXXFLAGS += -g3 -O0 -Werror
+ifeq ($(MAKECMDGOALS), release)
+    EXTRA_CXXFLAGS += -O2 -DNDEBUG
 else
-    EXTRA_CXXFLAGS += -g0 -O2 -DNDEBUG
+    EXTRA_CXXFLAGS += -g3 -O0 -Werror
 endif
 EXTRA_CXXFLAGS += -MMD -pedantic -Wall -Wextra -Wno-long-long -Wno-missing-field-initializers
 
