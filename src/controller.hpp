@@ -43,8 +43,9 @@ protected:
 	void push_function_event( Functions ) const;
 	
 private:
-	static const int down_repeat_ticks = 15;
-	std::vector<int> down_ticks;
+	static const Uint32 repeat_delay = SDL_DEFAULT_REPEAT_DELAY,
+	                    repeat_interval = SDL_DEFAULT_REPEAT_INTERVAL;
+	std::vector<Uint32> repeat_tick;
 };
 
 class Keyboard : public Controller

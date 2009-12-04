@@ -2,12 +2,14 @@
 
 using namespace std;
 
+const Uint32 Controller::repeat_delay, Controller::repeat_interval;
+
 vector<Controller *> controllers, disabled_controllers;
 
 bool Controller::drop_input_enabled = false;
 
 Controller::Controller( void )
-: is_down(functions_count, false), down_ticks(functions_count, false)
+: is_down(functions_count, false), repeat_tick(functions_count, false)
 {
 	if (!drop_input_enabled)
 	{
@@ -41,18 +43,25 @@ void Controller::update( void )
 {
 	update_down();
 	
+	const Uint32 tick = SDL_GetTicks();
+	
 	for (int i = 0; i < functions_count; ++i)
 	{
 		if (is_down[i])
 		{
-			if (down_ticks[i] == 0)
+			if (tick > repeat_tick[i])
+			{
 				push_function_event(Functions(i));
-			++down_ticks[i] %= down_repeat_ticks;
+				if (repeat_tick[i] == 0)  // if pressed
+					repeat_tick[i] = tick + repeat_delay;
+				else                      // if held
+					repeat_tick[i] += repeat_interval;
+			}
 		}
-		else if (down_ticks[i] != 0)
+		else if (repeat_tick[i] != 0)
 		{
 			push_function_event(Functions(i));
-			down_ticks[i] = 0;
+			repeat_tick[i] = 0;
 		}
 	}
 }
