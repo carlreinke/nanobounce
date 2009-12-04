@@ -12,7 +12,7 @@ Sprite::Sprite( void )
 	// good to go
 }
 
-Sprite::Sprite( unsigned int width, unsigned int height, const SDL_Color &color )
+Sprite::Sprite( uint width, uint height, const SDL_Color &color )
 : surface(NULL), color(color), w(width), h(height)
 {
 	assert(width > 0 && height > 0);
@@ -76,9 +76,9 @@ void Sprite::load_ppm( istream &ppm )
 	{
 		SDL_Color color =
 		{
-			(int)(get_no_comments<int>(ppm) * (component_max / (Fixed)255)),
-			(int)(get_no_comments<int>(ppm) * (component_max / (Fixed)255)),
-			(int)(get_no_comments<int>(ppm) * (component_max / (Fixed)255))
+			static_cast<int>(get_no_comments<int>(ppm) * (component_max / Fixed(255))),
+			static_cast<int>(get_no_comments<int>(ppm) * (component_max / Fixed(255))),
+			static_cast<int>(get_no_comments<int>(ppm) * (component_max / Fixed(255)))
 		};
 		
 		SDL_FillRect(surface, &rect, color);

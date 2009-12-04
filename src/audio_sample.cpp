@@ -72,13 +72,13 @@ Sample & Sample::operator=( const Sample &that )
 }
 
 
-Uint8 * Sample::get_buffer( int &len )
+Uint8 * Sample::get_buffer( uint &len )
 {
 	len = min(len, length - position);
 	return &buffer[position];
 }
 
-void Sample::flush( int len )
+void Sample::flush( uint len )
 {
 	position += len;
 }

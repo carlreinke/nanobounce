@@ -41,8 +41,8 @@ bool Level::load( istream &data )
 			line.ignore(1);
 			
 			// TODO level format should change to include only existing blocks
-			if ((Block::types)type != Block::none)
-				blocks.push_back(Block(x, y, (Block::types)type));
+			if (static_cast<Block::types>(type) != Block::none)
+				blocks.push_back(Block(x, y, static_cast<Block::types>(type)));
 		}
 	}
 	

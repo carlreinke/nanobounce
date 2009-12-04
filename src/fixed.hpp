@@ -35,12 +35,14 @@ public:
 	friend Fixed ceilf( const Fixed & );
 	
 private:
-	static Fixed from_value( int );
-	
 	typedef long int Value;
+	typedef long long int WideValue;
+	
 	Value value;
 	
-	static const int bits = 16;
+	static Fixed from_value( Value );
+	
+	static const uint bits = 16;
 	static const Value mask = (1 << bits) - 1;
 };
 
@@ -56,10 +58,10 @@ inline Fixed::Fixed( int that )
 
 inline Fixed::Fixed( float that )
 {
-	value = (int)(that * (1 << bits));
+	value = static_cast<Value>(that * (1 << bits));
 }
 
-inline Fixed Fixed::from_value( int value )
+inline Fixed Fixed::from_value( Value value )
 {
 	Fixed temp;
 	temp.value = value;
@@ -68,12 +70,12 @@ inline Fixed Fixed::from_value( int value )
 
 inline Fixed::operator int( void ) const
 {
-	return (int)value / (1 << bits);
+	return static_cast<int>(value) / (1 << bits);
 }
 
 inline Fixed::operator float( void ) const
 {
-	return (float)value / (1 << bits);
+	return static_cast<float>(value) / (1 << bits);
 }
 
 inline bool operator<( const Fixed &lhs, const Fixed &rhs )
@@ -84,13 +86,13 @@ inline bool operator<( const Fixed &lhs, const Fixed &rhs )
 template <class T>
 inline bool operator<( const T &lhs, const Fixed &rhs )
 {
-	return (Fixed)lhs < rhs;
+	return Fixed(lhs) < rhs;
 }
 
 template <class T>
 inline bool operator<( const Fixed &lhs, const T &rhs )
 {
-	return lhs < (Fixed)rhs;
+	return lhs < Fixed(rhs);
 }
 
 inline bool operator>( const Fixed &lhs, const Fixed &rhs )
@@ -101,13 +103,13 @@ inline bool operator>( const Fixed &lhs, const Fixed &rhs )
 template <class T>
 inline bool operator>( const T &lhs, const Fixed &rhs )
 {
-	return (Fixed)lhs > rhs;
+	return Fixed(lhs) > rhs;
 }
 
 template <class T>
 inline bool operator>( const Fixed &lhs, const T &rhs )
 {
-	return lhs > (Fixed)rhs;
+	return lhs > Fixed(rhs);
 }
 
 inline bool operator<=( const Fixed &lhs, const Fixed &rhs )
@@ -118,13 +120,13 @@ inline bool operator<=( const Fixed &lhs, const Fixed &rhs )
 template <class T>
 inline bool operator<=( const T &lhs, const Fixed &rhs )
 {
-	return (Fixed)lhs <= rhs;
+	return Fixed(lhs) <= rhs;
 }
 
 template <class T>
 inline bool operator<=( const Fixed &lhs, const T &rhs )
 {
-	return lhs <= (Fixed)rhs;
+	return lhs <= Fixed(rhs);
 }
 
 inline bool operator>=( const Fixed &lhs, const Fixed &rhs )
@@ -135,13 +137,13 @@ inline bool operator>=( const Fixed &lhs, const Fixed &rhs )
 template <class T>
 inline bool operator>=( const T &lhs, const Fixed &rhs )
 {
-	return (Fixed)lhs >= rhs;
+	return Fixed(lhs) >= rhs;
 }
 
 template <class T>
 inline bool operator>=( const Fixed &lhs, const T &rhs )
 {
-	return lhs >= (Fixed)rhs;
+	return lhs >= Fixed(rhs);
 }
 
 inline bool operator==( const Fixed &lhs, const Fixed &rhs )
@@ -152,13 +154,13 @@ inline bool operator==( const Fixed &lhs, const Fixed &rhs )
 template <class T>
 inline bool operator==( const T &lhs, const Fixed &rhs )
 {
-	return (Fixed)lhs == rhs;
+	return Fixed(lhs) == rhs;
 }
 
 template <class T>
 inline bool operator==( const Fixed &lhs, const T &rhs )
 {
-	return lhs == (Fixed)rhs;
+	return lhs == Fixed(rhs);
 }
 
 inline bool operator!=( const Fixed &lhs, const Fixed &rhs )
@@ -169,13 +171,13 @@ inline bool operator!=( const Fixed &lhs, const Fixed &rhs )
 template <class T>
 inline bool operator!=( const T &lhs, const Fixed &rhs )
 {
-	return (Fixed)lhs != rhs;
+	return Fixed(lhs) != rhs;
 }
 
 template <class T>
 inline bool operator!=( const Fixed &lhs, const T &rhs )
 {
-	return lhs != (Fixed)rhs;
+	return lhs != Fixed(rhs);
 }
 
 inline Fixed Fixed::operator+( void ) const
@@ -196,13 +198,13 @@ inline Fixed operator+( const Fixed &lhs, const Fixed &rhs )
 template <class T>
 inline Fixed operator+( const T &lhs, const Fixed &rhs )
 {
-	return (Fixed)lhs + rhs;
+	return Fixed(lhs) + rhs;
 }
 
 template <class T>
 inline Fixed operator+( const Fixed &lhs, const T &rhs )
 {
-	return lhs + (Fixed)rhs;
+	return lhs + Fixed(rhs);
 }
 
 inline Fixed operator-( const Fixed &lhs, const Fixed &rhs )
@@ -213,71 +215,71 @@ inline Fixed operator-( const Fixed &lhs, const Fixed &rhs )
 template <class T>
 inline Fixed operator-( const T &lhs, const Fixed &rhs )
 {
-	return (Fixed)lhs - rhs;
+	return Fixed(lhs) - rhs;
 }
 
 template <class T>
 inline Fixed operator-( const Fixed &lhs, const T &rhs )
 {
-	return lhs - (Fixed)rhs;
+	return lhs - Fixed(rhs);
 }
 
 inline Fixed operator*( const Fixed &lhs, const Fixed &rhs )
 {
-	return Fixed::from_value(((long long)lhs.value * rhs.value) / (1 << Fixed::bits));
+	return Fixed::from_value((static_cast<Fixed::WideValue>(lhs.value) * rhs.value) / (1 << Fixed::bits));
 }
 
 template <class T>
 inline Fixed operator*( const T &lhs, const Fixed &rhs )
 {
-	return (Fixed)lhs * rhs;
+	return Fixed(lhs) * rhs;
 }
 
 template <class T>
 inline Fixed operator*( const Fixed &lhs, const T &rhs )
 {
-	return lhs * (Fixed)rhs;
+	return lhs * Fixed(rhs);
 }
 
 inline Fixed operator/( const Fixed &lhs, const Fixed &rhs )
 {
-	return Fixed::from_value(((long long)lhs.value * (1 << Fixed::bits)) / rhs.value);
+	return Fixed::from_value((static_cast<Fixed::WideValue>(lhs.value) * (1 << Fixed::bits)) / rhs.value);
 }
 
 template <class T>
 inline Fixed operator/( const T &lhs, const Fixed &rhs )
 {
-	return (Fixed)lhs / rhs;
+	return Fixed(lhs) / rhs;
 }
 
 template <class T>
 inline Fixed operator/( const Fixed &lhs, const T &rhs )
 {
-	return lhs / (Fixed)rhs;
+	return lhs / Fixed(rhs);
 }
 
 template <class T>
 inline T & operator+=( T &lhs, const Fixed &rhs )
 {
-	return lhs = (Fixed)lhs + rhs;
+	return lhs = Fixed(lhs) + rhs;
 }
 
 template <class T>
 inline T & operator-=( T &lhs, const Fixed &rhs )
 {
-	return lhs = (Fixed)lhs - rhs;
+	return lhs = Fixed(lhs) - rhs;
 }
 
 template <class T>
 inline T & operator*=( T &lhs, const Fixed &rhs )
 {
-	return lhs = (Fixed)lhs * rhs;
+	return lhs = Fixed(lhs) * rhs;
 }
 
 template <class T>
 inline T & operator/=( T &lhs, const Fixed &rhs )
 {
-	return lhs = (Fixed)lhs / rhs;
+	return lhs = Fixed(lhs) / rhs;
 }
 
 inline Fixed fabsf( const Fixed &that )
@@ -292,7 +294,7 @@ inline Fixed ceilf( const Fixed &that )
 
 inline std::ostream & operator<< ( std::ostream &lhs, const Fixed &rhs )
 {
-	return (lhs << (float)rhs);
+	return (lhs << static_cast<float>(rhs));
 }
 
 #endif // HAS_FLOAT

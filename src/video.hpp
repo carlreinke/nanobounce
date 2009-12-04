@@ -23,8 +23,8 @@ public:
 	void update( void );
 	int value( void ) const { return alpha; }
 	
-	bool was_fading( Direction direction ) const { return (target == (int)direction); }
-	bool is_fading( Direction direction ) const { return (!is_done() && target == (int)direction); }
+	bool was_fading( Direction direction ) const { return (static_cast<Direction>(target) == direction); }
+	bool is_fading( Direction direction ) const { return (!is_done() && static_cast<Direction>(target) == direction); }
 	bool is_done( void ) const { return done; }
 	
 private:

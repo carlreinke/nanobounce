@@ -36,7 +36,7 @@ Fader::Fader( int step )
 void Fader::fade( Fader::Direction direction )
 {
 	done = false;
-	target = (int)direction;
+	target = static_cast<int>(direction);
 	step = (target < alpha) ? -abs(step) : abs(step);
 }
 

@@ -7,7 +7,7 @@ class Sprite
 {
 public:
 	Sprite( void );
-	Sprite( unsigned int width, unsigned int height, const SDL_Color &color );
+	Sprite( uint width, uint height, const SDL_Color &color );
 	
 	Sprite( const std::string &netpbm_file );
 	Sprite( std::istream &netpbm );
@@ -17,8 +17,8 @@ public:
 	
 	Sprite & operator=( const Sprite & );
 	
-	unsigned int width( void ) const { return (surface != NULL) ? surface->w : w; }
-	unsigned int height( void ) const { return (surface != NULL) ? surface->h : h; }
+	uint width( void ) const { return (surface != NULL) ? surface->w : w; }
+	uint height( void ) const { return (surface != NULL) ? surface->h : h; }
 	
 	void blit( SDL_Surface *, int x, int y, Uint8 alpha = SDL_ALPHA_OPAQUE) const;
 	
@@ -31,7 +31,7 @@ protected:
 	SDL_Surface *surface;
 	
 	SDL_Color color;
-	unsigned int w, h;
+	uint w, h;
 };
 
 #endif // SPRITE_HPP

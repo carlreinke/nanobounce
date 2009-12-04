@@ -32,7 +32,7 @@ void trigger_volume_change( Fixed delta )
 		volume = min(max(Fixed(0), volume + delta), Fixed(1));
 		
 		volume_text.str("");
-		volume_text << (int)(volume * 100 + 0.5f) << "%";
+		volume_text << static_cast<int>(volume * 100 + 0.5f) << "%";
 	}
 	
 	cout << "volume: " << volume_text.str() << endl;

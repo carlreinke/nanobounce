@@ -27,13 +27,13 @@ private:
 	void copy( const Stream & );
 	void destroy( void );
 	
-	Uint8 *get_buffer( int &len );
-	void flush( int len );
+	Uint8 *get_buffer( uint &len );
+	void flush( uint len );
 	
 	boost::shared_array<Uint8> buffer;
-	int size;
+	uint size;
 	
-	int start_position, end_position;
+	uint start_position, end_position;
 	bool end_of_file;
 	int bitstream;
 	

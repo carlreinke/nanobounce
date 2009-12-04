@@ -23,7 +23,7 @@ ifeq ($(MAKECMDGOALS), release)
 else
     EXTRA_CXXFLAGS += -g3 -O0 -Werror
 endif
-EXTRA_CXXFLAGS += -MMD -pedantic -Wall -Wextra -Wno-long-long -Wno-missing-field-initializers
+EXTRA_CXXFLAGS += -MMD -pedantic -Wall -Wextra -Wold-style-cast -Wno-long-long -Wno-missing-field-initializers
 
 SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags)
 SDL_LDLIBS := $(shell $(SDL_CONFIG) --libs)

@@ -40,7 +40,7 @@ Ball::Ball( Fixed x, Fixed y )
 	// build sprites
 	if (sprites.empty())
 	{
-		for (unsigned int i = 0; i < trail_max; ++i)
+		for (uint i = 0; i < trail_max; ++i)
 		{
 			int temp = 255 - i * (256 / trail_max);
 			sprites.push_back(Sprite(width, height, SDL_Color_RGBA(temp, temp, temp)));

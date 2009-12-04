@@ -45,7 +45,7 @@ private:
 	
 	typedef std::pair<int, int> coord;
 	
-	static const unsigned int trail_max = 50;
+	static const uint trail_max = 50;
 	std::deque<coord> trail;
 	
 	static std::vector<Sprite> sprites;

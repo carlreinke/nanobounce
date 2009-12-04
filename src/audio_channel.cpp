@@ -3,7 +3,7 @@
 using namespace std;
 
 Channel::Channel( Fixed volume, Fixed pan )
-: volume(min(max((Fixed)0, volume), (Fixed)1)), pan(min(max((Fixed)0, pan), (Fixed)1))
+: volume(min(max(Fixed(0), volume), Fixed(1))), pan(min(max(Fixed(0), pan), Fixed(1)))
 {
 	// good to go
 }

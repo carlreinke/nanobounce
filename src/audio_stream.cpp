@@ -31,7 +31,7 @@ Stream::Stream( const string &path )
 	}
 	
 	// make buffer sufficiently large
-	size = max(2 * (int)sizeof(Sint16) * spec.channels * spec.samples, 4096 * cvt.len_mult);
+	size = max(static_cast<uint>(2 * sizeof(Sint16) * spec.channels * spec.samples), static_cast<uint>(4096 * cvt.len_mult));
 	buffer = boost::shared_array<Uint8>(new Uint8[size]);
 	
 	end_of_file = false;
@@ -43,7 +43,7 @@ Stream::~Stream( void )
 }
 
 
-Uint8 * Stream::get_buffer( int &len )
+Uint8 * Stream::get_buffer( uint &len )
 {
 	assert(len <= size);
 	
@@ -59,14 +59,14 @@ Uint8 * Stream::get_buffer( int &len )
 	{
 		// fill empty section at end of buffer with raw audio
 #ifndef TARGET_GP2X
-		int read = ov_read(&vorbis_file, (char *)&buffer[end_position], (size - end_position) / cvt.len_mult, 0, 2, 1, &bitstream);
+		int read = ov_read(&vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, 0, 2, 1, &bitstream);
 #else
-		int read = ov_read(&vorbis_file, (char *)&buffer[end_position], (size - end_position) / cvt.len_mult, &bitstream);
+		int read = ov_read(&vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, &bitstream);
 #endif
 		if (read > 0)
 		{
 			// convert the section of raw audio
-			cvt.buf = (Uint8 *)&buffer[end_position];
+			cvt.buf = &buffer[end_position];
 			cvt.len = read;
 			
 			SDL_ConvertAudio(&cvt);
@@ -79,10 +79,10 @@ Uint8 * Stream::get_buffer( int &len )
 	
 	len = min(len, end_position - start_position);
 	
-	return (Uint8 *)&buffer[start_position];
+	return &buffer[start_position];
 }
 
-void Stream::flush( int len )
+void Stream::flush( uint len )
 {
 	start_position += len;
 }
