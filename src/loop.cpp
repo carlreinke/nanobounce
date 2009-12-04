@@ -1,3 +1,4 @@
+#include "controller.hpp"
 #include "loop.hpp"
 #include "main.hpp"
 #include "volume.hpp"
@@ -30,10 +31,10 @@ void Loop::loop( SDL_Surface *surface )
 			case SDL_KEYDOWN:
 				switch (e.key.keysym.sym)
 				{
-				case SDLK_PLUS:
+				case Controller::vol_up_key:
 					trigger_volume_change(0.1f);
 					break;
-				case SDLK_MINUS:
+				case Controller::vol_down_key:
 					trigger_volume_change(-0.1f);
 					break;
 					

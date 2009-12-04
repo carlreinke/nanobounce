@@ -7,20 +7,22 @@ class Controller
 {
 public:
 	Controller( void );
-	virtual ~Controller( void ) { } // work-around a gcc 4.1.1 warning
+	virtual ~Controller( void ) { }
 	
 	void update( void );
 	virtual void tick_update( void ) { };
 	
 	virtual bool is_keyboard( void ) { return false; }
 	
-	static const int functions_count = 10;
 	enum Functions
 	{
 		up = 0,
 		right,
 		down,
 		left,
+		
+		left_shoulder,
+		right_shoulder,
 		
 		select,
 		back,
@@ -29,7 +31,28 @@ public:
 		quit,
 		
 		vol_up,
-		vol_down
+		vol_down,
+		
+		functions_count
+	};
+	enum Keys
+	{
+		up_key             = SDLK_UP,
+		right_key          = SDLK_RIGHT,
+		down_key           = SDLK_DOWN,
+		left_key           = SDLK_LEFT,
+		
+		left_shoulder_key  = SDLK_LEFTBRACKET,
+		right_shoulder_key = SDLK_RIGHTBRACKET,
+		
+		select_key         = SDLK_SPACE,
+		back_key           = SDLK_BACKQUOTE,
+		
+		start_key          = SDLK_RETURN,
+		quit_key           = SDLK_ESCAPE,
+		
+		vol_up_key         = SDLK_PLUS,
+		vol_down_key       = SDLK_MINUS
 	};
 	
 	std::vector<bool> is_down;
@@ -43,8 +66,11 @@ protected:
 	void push_function_event( Functions ) const;
 	
 private:
-	static const int down_repeat_ticks = 15;
-	std::vector<int> down_ticks;
+	static const SDLKey push_as_key[functions_count];
+	
+	static const Uint32 repeat_delay = SDL_DEFAULT_REPEAT_DELAY,
+	                    repeat_interval = SDL_DEFAULT_REPEAT_INTERVAL;
+	std::vector<Uint32> repeat_tick;
 };
 
 class Keyboard : public Controller

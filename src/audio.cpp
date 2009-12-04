@@ -96,7 +96,7 @@ void audio_callback( void *, Uint8 *stream, int len )
 		if (channel->empty())
 		{
 			delete channel;
-			channels.erase(channel_i);
+			channel_i = channels.erase(channel_i);
 		}
 		else
 			++channel_i;
@@ -138,7 +138,7 @@ void play_next_music( void )
 	// if music fails to load, try next one
 	if (music->empty())
 	{
-		entries.erase(entry);
+		entry = entries.erase(entry);
 		play_next_music();
 	}
 	else
