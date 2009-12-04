@@ -28,32 +28,43 @@ void Editor::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_RETURN:
+		case Controller::start_key:
 			// TODO: menu
 			break;
-		case SDLK_ESCAPE:
+		case Controller::quit_key:
 			loop_quit = true;
 			break;
 			
-		case SDLK_RIGHT:
+		case Controller::right_key:
 			cursor_x += Block::width;
 			if (cursor_x < level.width)
 				break;
-		case SDLK_LEFT:
+		case Controller::left_key:
 			if (cursor_x > 0)
 				cursor_x -= Block::width;
 			break;
-		case SDLK_DOWN:
+		case Controller::down_key:
 			cursor_y += Block::height;
 			if (cursor_y < level.height)
 				break;
-		case SDLK_UP:
+		case Controller::up_key:
 			if (cursor_y > 0)
 				cursor_y -= Block::height;
 			break;
 			
-		case SDLK_SPACE:
-			set_block_at_position(cursor_x, cursor_y, cursor_block);
+		case Controller::select_key:
+			set_block_at_position(cursor_x, cursor_y, static_cast<Block::types>(cursor_block));
+			break;
+			
+		case Controller::left_shoulder_key:
+			if (cursor_block == 0)
+				cursor_block = Block::_max;
+			--cursor_block;
+			break;
+			
+		case Controller::right_shoulder_key:
+		case Controller::back_key:
+			++cursor_block %= Block::_max;
 			break;
 			
 		default:

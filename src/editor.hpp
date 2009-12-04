@@ -24,7 +24,7 @@ private:
 	int x_offset, y_offset;
 	
 	int cursor_x, cursor_y;
-	Block::types cursor_block;
+	uint cursor_block;
 	
 	Level level;
 	
