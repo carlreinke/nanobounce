@@ -48,11 +48,13 @@ void game_menu( SDL_Surface *surface )
 					break;
 					
 				case Controller::left_key:
+				case Controller::left_shoulder_key:
 					if (selection > 0)
 						--selection;
 					break;
 					
 				case Controller::right_key:
+				case Controller::right_shoulder_key:
 					if (selection < (signed)COUNTOF(menu_items) - 1)
 						++selection;
 					break;
@@ -211,6 +213,7 @@ void pack_menu( SDL_Surface *surface )
 					
 				case Controller::up_key:
 				case Controller::left_key:
+				case Controller::left_shoulder_key:
 					if (selection > 0)
 						--selection;
 					else
@@ -219,6 +222,7 @@ void pack_menu( SDL_Surface *surface )
 					
 				case Controller::down_key:
 				case Controller::right_key:
+				case Controller::right_shoulder_key:
 					if (selection < packs.size() - 1)
 						++selection;
 					else

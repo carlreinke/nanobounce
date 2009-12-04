@@ -106,9 +106,12 @@ void Game::tick( void )
 	
 	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
 	{
-		x_direction += (*c)->is_down[Controller::left] ? -1 : 0;
-		x_direction += (*c)->is_down[Controller::right] ? 1 : 0;
+		const bool left = (*c)->is_down[Controller::left] || (*c)->is_down[Controller::left_shoulder],
+		           right = (*c)->is_down[Controller::right] || (*c)->is_down[Controller::right_shoulder];
 		
+		x_direction += (left ? -1 : 0) + (right ? 1 : 0);
+		
+		// skip-level cheat
 		if ((*c)->is_down[Controller::up] &&
 		    (*c)->is_down[Controller::down] &&
 		    (*c)->is_down[Controller::left] &&

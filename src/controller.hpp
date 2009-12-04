@@ -21,6 +21,9 @@ public:
 		down,
 		left,
 		
+		left_shoulder,
+		right_shoulder,
+		
 		select,
 		back,
 		
@@ -34,19 +37,22 @@ public:
 	};
 	enum Keys
 	{
-		up_key       = SDLK_UP,
-		right_key    = SDLK_RIGHT,
-		down_key     = SDLK_DOWN,
-		left_key     = SDLK_LEFT,
+		up_key             = SDLK_UP,
+		right_key          = SDLK_RIGHT,
+		down_key           = SDLK_DOWN,
+		left_key           = SDLK_LEFT,
 		
-		select_key   = SDLK_SPACE,
-		back_key     = SDLK_BACKQUOTE,
+		left_shoulder_key  = SDLK_LEFTBRACKET,
+		right_shoulder_key = SDLK_RIGHTBRACKET,
 		
-		start_key    = SDLK_RETURN,
-		quit_key     = SDLK_ESCAPE,
+		select_key         = SDLK_SPACE,
+		back_key           = SDLK_BACKQUOTE,
 		
-		vol_up_key   = SDLK_PLUS,
-		vol_down_key = SDLK_MINUS
+		start_key          = SDLK_RETURN,
+		quit_key           = SDLK_ESCAPE,
+		
+		vol_up_key         = SDLK_PLUS,
+		vol_down_key       = SDLK_MINUS
 	};
 	
 	std::vector<bool> is_down;

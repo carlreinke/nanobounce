@@ -9,6 +9,9 @@ const SDLKey Controller::push_as_key[] =
 	static_cast<SDLKey>(down_key),
 	static_cast<SDLKey>(left_key),
 	
+	static_cast<SDLKey>(left_shoulder_key),
+	static_cast<SDLKey>(right_shoulder_key),
+	
 	static_cast<SDLKey>(select_key),
 	static_cast<SDLKey>(back_key),
 	
@@ -16,7 +19,7 @@ const SDLKey Controller::push_as_key[] =
 	static_cast<SDLKey>(quit_key),
 	
 	static_cast<SDLKey>(vol_up_key),
-	static_cast<SDLKey>(vol_down_key)
+	static_cast<SDLKey>(vol_down_key),
 };
 const Uint32 Controller::repeat_delay, Controller::repeat_interval;
 
@@ -103,20 +106,23 @@ Keyboard::Keyboard( void )
 
 void Keyboard::update_down( void )
 {
-	is_down[left]  = key_state[SDLK_LEFT];
-	is_down[right] = key_state[SDLK_RIGHT];
+	is_down[left]  = key_state[left_key];
+	is_down[right] = key_state[right_key];
 	
-	is_down[up]   = key_state[SDLK_UP];
-	is_down[down] = key_state[SDLK_DOWN];
+	is_down[left_shoulder]  = key_state[left_shoulder_key];
+	is_down[right_shoulder] = key_state[right_shoulder_key];
 	
-	is_down[select] = key_state[SDLK_SPACE];
-	is_down[back]   = key_state[SDLK_BACKQUOTE];
+	is_down[up]   = key_state[up_key];
+	is_down[down] = key_state[down_key];
 	
-	is_down[start] = key_state[SDLK_RETURN];
-	is_down[quit]  = key_state[SDLK_ESCAPE];
+	is_down[select] = key_state[select_key];
+	is_down[back]   = key_state[back_key];
 	
-	is_down[vol_up]   = key_state[SDLK_PLUS] || key_state[SDLK_EQUALS];
-	is_down[vol_down] = key_state[SDLK_MINUS] || key_state[SDLK_UNDERSCORE];
+	is_down[start] = key_state[start_key];
+	is_down[quit]  = key_state[quit_key];
+	
+	is_down[vol_up]   = key_state[vol_up_key] || key_state[SDLK_EQUALS];
+	is_down[vol_down] = key_state[vol_down_key] || key_state[SDLK_UNDERSCORE];
 }
 
 Joystick::Joystick( int j )
@@ -160,12 +166,13 @@ void Joystick::update_down( void )
 #ifdef TARGET_GP2X
 	is_down[left]  = SDL_JoystickGetButton(joystick, GP2X_VK_UP_LEFT) ||
 	                 SDL_JoystickGetButton(joystick, GP2X_VK_LEFT) ||
-	                 SDL_JoystickGetButton(joystick, GP2X_VK_DOWN_LEFT) ||
-	                 SDL_JoystickGetButton(joystick, GP2X_VK_FL);
+	                 SDL_JoystickGetButton(joystick, GP2X_VK_DOWN_LEFT);
 	is_down[right] = SDL_JoystickGetButton(joystick, GP2X_VK_UP_RIGHT) ||
 	                 SDL_JoystickGetButton(joystick, GP2X_VK_RIGHT) ||
-	                 SDL_JoystickGetButton(joystick, GP2X_VK_DOWN_RIGHT) ||
-	                 SDL_JoystickGetButton(joystick, GP2X_VK_FR);
+	                 SDL_JoystickGetButton(joystick, GP2X_VK_DOWN_RIGHT)
+	
+	is_down[left_shoulder]  = SDL_JoystickGetButton(joystick, GP2X_VK_FL);
+	is_down[right_shoulder] = SDL_JoystickGetButton(joystick, GP2X_VK_FR);
 	
 	is_down[up]   = SDL_JoystickGetButton(joystick, GP2X_VK_UP_LEFT) ||
 	                SDL_JoystickGetButton(joystick, GP2X_VK_UP) ||
