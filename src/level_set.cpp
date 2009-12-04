@@ -97,17 +97,17 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 			case SDL_KEYDOWN:
 				switch (e.key.keysym.sym)
 				{
-				case SDLK_BACKQUOTE:
-				case SDLK_ESCAPE:
-				case SDLK_SPACE:
-				case SDLK_RETURN:
+				case Controller::back_key:
+				case Controller::quit_key:
+				case Controller::select_key:
+				case Controller::start_key:
 					fader.fade(Fader::out);
 					break;
 					
-				case SDLK_PLUS:
+				case Controller::vol_up_key:
 					trigger_volume_change(0.1f);
 					break;
-				case SDLK_MINUS:
+				case Controller::vol_down_key:
 					trigger_volume_change(-0.1f);
 					break;
 					
@@ -184,10 +184,10 @@ void level_screen( SDL_Surface *surface, const Level &level, const Highscore &hi
 			case SDL_KEYDOWN:
 				switch (e.key.keysym.sym)
 				{
-				case SDLK_PLUS:
+				case Controller::vol_up_key:
 					trigger_volume_change(0.1f);
 					break;
-				case SDLK_MINUS:
+				case Controller::vol_down_key:
 					trigger_volume_change(-0.1f);
 					break;
 					

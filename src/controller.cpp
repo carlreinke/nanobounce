@@ -2,6 +2,22 @@
 
 using namespace std;
 
+const SDLKey Controller::push_as_key[] = 
+{
+	static_cast<SDLKey>(up_key),
+	static_cast<SDLKey>(right_key),
+	static_cast<SDLKey>(down_key),
+	static_cast<SDLKey>(left_key),
+	
+	static_cast<SDLKey>(select_key),
+	static_cast<SDLKey>(back_key),
+	
+	static_cast<SDLKey>(start_key),
+	static_cast<SDLKey>(quit_key),
+	
+	static_cast<SDLKey>(vol_up_key),
+	static_cast<SDLKey>(vol_down_key)
+};
 const Uint32 Controller::repeat_delay, Controller::repeat_interval;
 
 vector<Controller *> controllers, disabled_controllers;
@@ -68,29 +84,12 @@ void Controller::update( void )
 
 void Controller::push_function_event( Functions function ) const
 {
-	SDLKey keys[functions_count] = 
-	{
-		SDLK_UP,
-		SDLK_RIGHT,
-		SDLK_DOWN,
-		SDLK_LEFT,
-		
-		SDLK_SPACE,
-		SDLK_BACKQUOTE,
-		
-		SDLK_RETURN,
-		SDLK_ESCAPE,
-		
-		SDLK_PLUS,
-		SDLK_MINUS
-	};
-	
 	SDL_Event event;
 	event.type = is_down[function] ? SDL_KEYDOWN : SDL_KEYUP;
 	event.key.type = event.type;
 	event.key.state = is_down[function] ? SDL_PRESSED : SDL_RELEASED;
 	event.key.keysym.scancode = 0;
-	event.key.keysym.sym = keys[function];
+	event.key.keysym.sym = push_as_key[function];
 	event.key.keysym.mod = KMOD_NONE;
 	event.key.keysym.unicode = 0;
 	

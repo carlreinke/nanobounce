@@ -17,13 +17,13 @@ void Game::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_RETURN:
+		case Controller::start_key:
 			if (state == none)
 				state = paused;
 			else if (state == paused)
 				state = none;
 			break;
-		case SDLK_ESCAPE:
+		case Controller::quit_key:
 			state = quit;
 			break;
 		

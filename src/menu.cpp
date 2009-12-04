@@ -42,23 +42,23 @@ void game_menu( SDL_Surface *surface )
 			case SDL_KEYDOWN:
 				switch (e.key.keysym.sym)
 				{
-				case SDLK_BACKQUOTE:
-				case SDLK_ESCAPE:
+				case Controller::back_key:
+				case Controller::quit_key:
 					quit = true;
 					break;
 					
-				case SDLK_LEFT:
+				case Controller::left_key:
 					if (selection > 0)
 						--selection;
 					break;
 					
-				case SDLK_RIGHT:
+				case Controller::right_key:
 					if (selection < (signed)COUNTOF(menu_items) - 1)
 						++selection;
 					break;
 					
-				case SDLK_SPACE:
-				case SDLK_RETURN:
+				case Controller::select_key:
+				case Controller::start_key:
 					switch (selection)
 					{
 					case 0:
@@ -71,10 +71,10 @@ void game_menu( SDL_Surface *surface )
 					}
 					break;
 					
-				case SDLK_PLUS:
+				case Controller::vol_up_key:
 					trigger_volume_change(0.1f);
 					break;
-				case SDLK_MINUS:
+				case Controller::vol_down_key:
 					trigger_volume_change(-0.1f);
 					break;
 					
@@ -204,39 +204,39 @@ void pack_menu( SDL_Surface *surface )
 			case SDL_KEYDOWN:
 				switch (e.key.keysym.sym)
 				{
-				case SDLK_BACKQUOTE:
-				case SDLK_ESCAPE:
+				case Controller::back_key:
+				case Controller::quit_key:
 					quit = true;
 					break;
 					
-				case SDLK_UP:
-				case SDLK_LEFT:
+				case Controller::up_key:
+				case Controller::left_key:
 					if (selection > 0)
 						--selection;
 					else
 						selection = packs.size() - 1;
 					break;
 					
-				case SDLK_DOWN:
-				case SDLK_RIGHT:
+				case Controller::down_key:
+				case Controller::right_key:
 					if (selection < packs.size() - 1)
 						++selection;
 					else
 						selection = 0;
 					break;
 					
-				case SDLK_SPACE:
-				case SDLK_RETURN:
+				case Controller::select_key:
+				case Controller::start_key:
 					directory += packs[selection].directory;
 					play_pack(surface, directory);
 					
 					quit = true;
 					break;
 					
-				case SDLK_PLUS:
+				case Controller::vol_up_key:
 					trigger_volume_change(0.1f);
 					break;
-				case SDLK_MINUS:
+				case Controller::vol_down_key:
 					trigger_volume_change(-0.1f);
 					break;
 					
