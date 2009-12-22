@@ -92,6 +92,11 @@ bool Editor::load( const string &level_data_path )
 	return temp;
 }
 
+bool Editor::save( const string &level_data_path ) const
+{
+	return level.save(level_data_path);
+}
+
 void Editor::reset( void )
 {
 	x_offset = 0;

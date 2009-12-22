@@ -41,6 +41,7 @@ private:
 	
 	friend class Game;
 	friend class Editor;
+	friend class Level;
 };
 
 #endif // BLOCK_HPP

@@ -29,52 +29,70 @@ bool Level::load( istream &data )
 {
 	getline(data, m_name);
 	
-	{
-		istringstream line;
-		getline(data, line);
-		
-		line >> width >> height;
-		
-		// TODO levels should be allowed an arbitrary size
-		width *= Block::width;
-		height *= Block::height;
-	}
+	data >> width >> height;
+	
+	width *= Block::width;
+	height *= Block::height;
 	
 	blocks.clear();
 	
-	for (int y = 0; y < height && data.good(); y += Block::height)
+	const map<char, Block::types> block_chars_temp = flip(block_chars);
+	
+	int x, y;
+	char type_char;
+	
+	while (data >> x >> y >> type_char)
 	{
-		istringstream line;
-		getline(data, line);
+		x *= Block::width;
+		y *= Block::height;
+		Block::types type = block_chars_temp.find(type_char)->second;
 		
-		map<char, Block::types> block_chars_temp = flip(block_chars);
-		
-		for (int x = 0; x < width; x += Block::width)
-		{
-			char type_char;
-			line.get(type_char);
-			line.ignore(1);
-			
-			Block::types type = block_chars_temp.find(type_char)->second;
-			
-			// TODO level format should change to include only existing blocks
-			if (type != Block::none)
-				blocks.push_back(Block(x, y, type));
-		}
+		blocks.push_back(Block(x, y, type));
 	}
 	
-	if (data.good())
+	if (data.eof() && !blocks.empty())
 		cout << "loaded level '" << name << "'" << endl;
 	else
 		cout << "warning: level failed to load" << endl;
 	
-	return data.good();
+	return (data.eof() && !blocks.empty());
 }
 
 bool Level::load( const string &data_path )
 {
 	ifstream data(data_path.c_str());
 	return load(data);
+}
+
+bool Level::save( ostream &data ) const
+{
+	data << m_name << endl;
+	
+	data << (width / Block::width) << " "
+	     << (height / Block::height) << endl;
+	
+	for (vector<Block>::const_iterator i = blocks.begin(); i != blocks.end(); ++i)
+	{
+		if (i->type != Block::none)
+		{
+			data << (i->x / Block::width) << " "
+			     << (i->y / Block::height) << " "
+			     << block_chars[i->type] << endl;
+		}
+	}
+	
+	if (data.good())
+		cout << "saved level '" << name << "'" << endl;
+	else
+		cout << "warning: level '" << name << "' failed to save" << endl;
+	
+	return data.good();
+}
+
+bool Level::save( const string &data_path ) const
+{
+	ofstream data(data_path.c_str());
+	return save(data);
 }
 
 void Level::reset( void )

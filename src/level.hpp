@@ -12,6 +12,10 @@ public:
 	
 	bool load( std::istream & );
 	bool load( const std::string & );
+	
+	bool save( std::ostream & ) const;
+	bool save( const std::string & ) const;
+	
 	void reset( void );
 	
 	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
