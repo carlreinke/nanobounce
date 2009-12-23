@@ -315,6 +315,7 @@ void Game::menu( void )
 	const string entries[] =
 	{
 		"Continue",
+		"Restart",
 		"Quit",
 	};
 	for (uint i = 0; i < COUNTOF(entries); ++i)
@@ -329,6 +330,9 @@ void Game::menu( void )
 		case 0:
 			break;
 		case 1:
+			reset();
+			break;
+		case 2:
 			state = quit;
 			break;
 		}
