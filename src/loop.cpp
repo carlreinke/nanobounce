@@ -39,7 +39,8 @@ void Loop::loop( SDL_Surface *surface )
 					break;
 					
 				default:
-					handle_event(e);
+					if (!loop_quit)  // ignore input during fade-out
+						handle_event(e);
 					break;
 				}
 				break;
@@ -70,7 +71,7 @@ void Loop::loop( SDL_Surface *surface )
 				fader.fade(Fader::out);
 			
 			fader.update();
-			done = fader.is_done() && fader.was_fading(Fader::out);
+			done = (no_fade || fader.is_done()) && fader.was_fading(Fader::out);
 			
 			update_volume_notification();
 		}

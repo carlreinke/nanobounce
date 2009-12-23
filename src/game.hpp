@@ -10,6 +10,7 @@ class Game : public Loop
 {
 public:
 	Game( void );
+	Game( const Level & );
 	
 	void handle_event( SDL_Event & );
 	void update( void );
@@ -23,7 +24,6 @@ public:
 	enum State
 	{
 		none,
-		paused,
 		quit,
 		won,
 		cheat_won,
@@ -47,6 +47,8 @@ private:
 	std::vector<Ball> balls;
 	
 	friend void play_pack( SDL_Surface *, const std::string & ); // TODO fix this
+	
+	void menu( void );
 };
 
 #endif // GAME_HPP

@@ -21,6 +21,14 @@ private:
 	SDL_Surface *surface;
 };
 
+inline SDL_Surface *SDL_DuplicateRGBSurface( SDL_Surface *src )
+{
+	SDL_Surface *dst = SDL_CreateRGBSurface(SDL_HWSURFACE, src->w, src->h, src->format->BitsPerPixel, src->format->Rmask, src->format->Gmask, src->format->Bmask, src->format->Amask);
+	if (dst != NULL)
+		SDL_BlitSurface(src, NULL, dst, NULL);
+	return dst;
+}
+
 inline int SDL_FillRect( SDL_Surface *dst, SDL_Rect *dstrect, const SDL_Color &color )
 {
 	return SDL_FillRect(dst, dstrect, SDL_MapRGB(dst->format, color.r, color.g, color.b));

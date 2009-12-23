@@ -1,6 +1,8 @@
 #include "audio.hpp"
 #include "game.hpp"
 #include "main.hpp"
+#include "menu.hpp"
+#include "misc.hpp"
 
 using namespace std;
 
@@ -8,6 +10,12 @@ Game::Game( void )
 : state(none)
 {
 	// good to go
+}
+
+Game::Game( const Level &level )
+{
+	this->level = level;
+	reset();
 }
 
 void Game::handle_event( SDL_Event &e )
@@ -18,10 +26,7 @@ void Game::handle_event( SDL_Event &e )
 		switch (e.key.keysym.sym)
 		{
 		case Controller::start_key:
-			if (state == none)
-				state = paused;
-			else if (state == paused)
-				state = none;
+			menu();
 			break;
 		case Controller::quit_key:
 			state = quit;
@@ -43,7 +48,7 @@ void Game::update( void )
 	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
 	
-	if (state != paused && !fader.is_fading(Fader::in))
+	if (!fader.is_fading(Fader::in))
 	{
 		for (int i = 0; i < 4; ++i)
 		{
@@ -55,7 +60,7 @@ void Game::update( void )
 		}
 	}
 	
-	if (state != none && state != paused)
+	if (state != none)
 		loop_quit = true;
 }
 
@@ -67,10 +72,6 @@ void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	for (vector<Ball>::const_iterator ball = balls.begin(); ball != balls.end(); ++ball)
 		ball->draw(surface, x_offset, y_offset, alpha);
-	
-	// paused message
-	if (state == paused)
-		font.blit(surface, surface->w / 2, surface->h / 2, "Paused", font_sprites[3], Font::majuscule, Font::center, 128);
 }
 
 bool Game::load( const string &level_data_path )
@@ -191,7 +192,7 @@ redo:
 			
 			goto redo;
 		}
-		else if (block.type == Block::exit && state != won)
+		else if (block.type == Block::exit && state != quit && state != won)
 		{
 			state = won;
 			
@@ -306,4 +307,30 @@ bool Game::is_outside( const Ball &ball, const Level &level ) const
 {
 	return (int)ball.x + ball.width <= 0 || (int)ball.x >= level.width ||
 	       (int)ball.y + ball.height <= 0 || (int)ball.y >= level.height;
+}
+
+void Game::menu( void )
+{
+	SimpleMenu menu;
+	const string entries[] =
+	{
+		"Continue",
+		"Quit",
+	};
+	for (uint i = 0; i < COUNTOF(entries); ++i)
+		menu.entries.push_back(entries[i]);
+	
+	menu.loop(SDL_GetVideoSurface());
+	
+	if (!menu.no_selection)
+	{
+		switch (menu.selection)
+		{
+		case 0:
+			break;
+		case 1:
+			state = quit;
+			break;
+		}
+	}
 }

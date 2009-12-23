@@ -25,6 +25,14 @@ Level::Level( void )
 	}
 }
 
+void Level::copy( const Level &that )
+{
+	m_name = that.m_name;
+	width = that.width;
+	height = that.height;
+	blocks = that.blocks;
+}
+
 bool Level::load( istream &data )
 {
 	getline(data, m_name);

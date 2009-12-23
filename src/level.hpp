@@ -10,6 +10,9 @@ class Level
 public:
 	Level( void );
 	
+	void copy( const Level & );
+	Level &operator=( const Level &that ) { copy(that); return *this; }
+	
 	bool load( std::istream & );
 	bool load( const std::string & );
 	

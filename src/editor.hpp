@@ -30,6 +30,8 @@ private:
 	
 	static std::vector<Sprite> block_sprites;
 	static Sprite cursor;
+	
+	void menu( void );
 };
 
 #endif // EDITOR_HPP

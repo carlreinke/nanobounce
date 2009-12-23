@@ -1,5 +1,7 @@
 #include "controller.hpp"
 #include "editor.hpp"
+#include "game.hpp"
+#include "menu.hpp"
 #include "misc.hpp"
 #include "video.hpp"
 #include "volume.hpp"
@@ -29,7 +31,7 @@ void Editor::handle_event( SDL_Event &e )
 		switch (e.key.keysym.sym)
 		{
 		case Controller::start_key:
-			// TODO: menu
+			menu();
 			break;
 		case Controller::quit_key:
 			loop_quit = true;
@@ -82,6 +84,43 @@ void Editor::update( void )
 	// update controller
 	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
+}
+
+void Editor::menu( void )
+{
+	SimpleMenu menu;
+	const string entries[] =
+	{
+		"Play",
+		"Save",
+		"Continue",
+		"Quit",
+	};
+	for (uint i = 0; i < COUNTOF(entries); ++i)
+		menu.entries.push_back(entries[i]);
+	
+	menu.loop(SDL_GetVideoSurface());
+	
+	if (!menu.no_selection)
+	{
+		switch (menu.selection)
+		{
+		case 0:
+			{
+				Game game(level);
+				game.loop(SDL_GetVideoSurface());
+			}
+			break;
+		case 1:
+			save("temp"); // TODO
+			break;
+		case 2:
+			break;
+		case 3:
+			loop_quit = true;
+			break;
+		}
+	}
 }
 
 bool Editor::load( const string &level_data_path )

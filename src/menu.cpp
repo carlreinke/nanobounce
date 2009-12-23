@@ -7,9 +7,90 @@
 #include "main.hpp"
 #include "menu.hpp"
 #include "misc.hpp"
+#include "sdl_ext.hpp"
 #include "volume.hpp"
 
 using namespace std;
+
+SimpleMenu::SimpleMenu( bool no_fade )
+: Loop(no_fade),
+  selection(0), no_selection(false)
+{
+	background = SDL_DuplicateRGBSurface(SDL_GetVideoSurface());
+}
+
+SimpleMenu::~SimpleMenu( void )
+{
+	SDL_FreeSurface(background);
+}
+
+void SimpleMenu::handle_event( SDL_Event &e )
+{
+	switch (e.type)
+	{
+	case SDL_KEYDOWN:
+		switch (e.key.keysym.sym)
+		{
+		case Controller::back_key:
+		case Controller::quit_key:
+			no_selection = true;
+		case Controller::select_key:
+		case Controller::start_key:
+			loop_quit = true;
+			break;
+			
+		case Controller::left_shoulder_key:
+		case Controller::left_key:
+		case Controller::up_key:
+			if (selection == 0)
+				selection = entries.size();
+			--selection;
+			break;
+			
+		case Controller::right_shoulder_key:
+		case Controller::right_key:
+		case Controller::down_key:
+			++selection;
+			if (selection == entries.size())
+				selection = 0;
+			break;
+			
+		default:
+			break;
+		}
+		break;
+		
+	default:
+		break;
+	}
+}
+
+void SimpleMenu::update( void )
+{
+	// update controller
+	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+		(*c)->update();
+}
+
+void SimpleMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
+{
+	(void)alpha;
+	
+	SDL_FillRect(surface, NULL, 0);
+	
+	SDL_SetAlpha(background, SDL_SRCALPHA, SDL_ALPHA_OPAQUE - alpha / 2);
+	SDL_BlitSurface(background, NULL, surface, NULL);
+	
+	const uint x = surface->w / 2;
+	const uint delta_y = font.height(font_sprites[3]) + font.height(font_sprites[3]) / 4;
+	uint y = (surface->h - delta_y * entries.size()) / 2;
+	
+	for (uint i = 0; i < entries.size(); ++i)
+	{
+		font.blit(surface, x, y, entries[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? alpha : alpha / 2);
+		y += delta_y;
+	}
+}
 
 void game_menu( SDL_Surface *surface )
 {
