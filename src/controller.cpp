@@ -191,11 +191,11 @@ void Joystick::update_down( void )
 	is_down[vol_up]   = SDL_JoystickGetButton(joystick, GP2X_VK_VOL_UP);
 	is_down[vol_down] = SDL_JoystickGetButton(joystick, GP2X_VK_VOL_DOWN);
 #else
-	is_down[left]  = SDL_JoystickGetAxis(joystick, 0) < SHRT_MIN / 2;
-	is_down[right] = SDL_JoystickGetAxis(joystick, 0) > SHRT_MAX / 2;
+	is_down[left]  = SDL_JoystickGetAxis(joystick, 0) < numeric_limits<Sint16>::min() / 2;
+	is_down[right] = SDL_JoystickGetAxis(joystick, 0) > numeric_limits<Sint16>::max() / 2;
 	
-	is_down[up]   = SDL_JoystickGetAxis(joystick, 1) < SHRT_MIN / 2;
-	is_down[down] = SDL_JoystickGetAxis(joystick, 1) > SHRT_MAX / 2;
+	is_down[up]   = SDL_JoystickGetAxis(joystick, 1) < numeric_limits<Sint16>::min() / 2;
+	is_down[down] = SDL_JoystickGetAxis(joystick, 1) > numeric_limits<Sint16>::max() / 2;
 	
 	is_down[select] = SDL_JoystickGetButton(joystick, 0);
 	is_down[back]   = SDL_JoystickGetButton(joystick, 1);

@@ -27,7 +27,7 @@ protected:
 };
 
 
-template <class T>
+template <typename T>
 void Channel::mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream_, uint len, Fixed global_volume )
 {
 	T *stream = reinterpret_cast<T *>(stream_);
@@ -50,8 +50,8 @@ void Channel::mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream_, uint l
 	{
 		for (int c = 0; c < spec.channels; ++c)
 		{
-			const Sint32 clip = stream[i] + buffer[i] * channel_volume[c];
-			stream[i++] = std::min(std::max(SHRT_MIN, clip), SHRT_MAX);
+			const Sint32 clip = stream[i] + static_cast<Sint32>(buffer[i] * channel_volume[c]);
+			stream[i++] = std::min(std::max(static_cast<Sint32>(std::numeric_limits<T>::min()), clip), static_cast<Sint32>(std::numeric_limits<T>::max()));
 		}
 	}
 	
