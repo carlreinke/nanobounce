@@ -13,24 +13,24 @@ public:
 	Channel( const Channel & );
 	
 	template <class T>
-	void mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream, int len, Fixed global_volume = 1 );
+	void mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream, uint len, Fixed global_volume = 1 );
 	
 	virtual bool empty( void ) const = 0;
 	
 protected:
 	void copy( const Channel & );
 	
-	virtual Uint8 *get_buffer( int &len ) = 0;
-	virtual void flush( int len ) = 0;
+	virtual Uint8 *get_buffer( uint &len ) = 0;
+	virtual void flush( uint len ) = 0;
 	
 	Fixed volume, pan;
 };
 
 
 template <class T>
-void Channel::mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream_, int len, Fixed global_volume )
+void Channel::mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream_, uint len, Fixed global_volume )
 {
-	T *stream = (T *)stream_;
+	T *stream = reinterpret_cast<T *>(stream_);
 	
 	std::vector<Fixed> channel_volume(spec.channels, global_volume * volume);
 	switch (spec.channels)
@@ -44,10 +44,9 @@ void Channel::mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream_, int le
 		break;
 	}
 	
-	int buffer_len = len;
-	T *buffer = (T *)get_buffer(buffer_len);
+	T *buffer = reinterpret_cast<T *>(get_buffer(len));
 	
-	for (int i = 0; i < buffer_len / (signed)sizeof(T); )
+	for (uint i = 0; i < len / sizeof(T); )
 	{
 		for (int c = 0; c < spec.channels; ++c)
 		{
@@ -56,7 +55,7 @@ void Channel::mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream_, int le
 		}
 	}
 	
-	flush(buffer_len);
+	flush(len);
 }
 
 #endif // AUDIO_CHANNEL_HPP

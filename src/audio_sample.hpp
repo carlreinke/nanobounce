@@ -19,13 +19,13 @@ public:
 private:
 	void copy( const Sample & );
 	
-	Uint8 *get_buffer( int &len );
-	void flush( int len );
+	Uint8 *get_buffer( uint &len );
+	void flush( uint len );
 	
 	boost::shared_array<Uint8> buffer;
-	int length;
+	uint length;
 	
-	int position;
+	uint position;
 };
 
 #endif // AUDIO_SAMPLE_HPP

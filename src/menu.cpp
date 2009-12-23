@@ -94,7 +94,7 @@ void SimpleMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 
 void game_menu( SDL_Surface *surface )
 {
-	unsigned int selection = 0;
+	uint selection = 0;
 	string menu_items[] =
 	{
 		"Play",
@@ -136,7 +136,7 @@ void game_menu( SDL_Surface *surface )
 					
 				case Controller::right_key:
 				case Controller::right_shoulder_key:
-					if (selection < (signed)COUNTOF(menu_items) - 1)
+					if (selection < COUNTOF(menu_items) - 1)
 						++selection;
 					break;
 					
@@ -186,7 +186,7 @@ void game_menu( SDL_Surface *surface )
 			
 			for (int i = 0; i < 4; ++i)
 			{
-				int x = surface->w * ((Fixed)((signed)selection + 1) / ((signed)COUNTOF(menu_items) + 1)),
+				int x = surface->w * (Fixed(static_cast<int>(selection) + 1) / (static_cast<int>(COUNTOF(menu_items)) + 1)),
 					y = surface->h - font.height(font_sprites[3]) * 2;
 				
 				ball.tick(ball.x > x ? -1 : 1);
@@ -205,9 +205,9 @@ void game_menu( SDL_Surface *surface )
 			
 			font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[4]), "Nanobounce", font_sprites[4], Font::majuscule, Font::center);
 			
-			for (unsigned int i = 0; i < COUNTOF(menu_items); ++i)
+			for (uint i = 0; i < COUNTOF(menu_items); ++i)
 			{
-				int x = surface->w * ((Fixed)((signed)i + 1) / ((signed)COUNTOF(menu_items) + 1)),
+				int x = surface->w * (Fixed(static_cast<int>(i) + 1) / (static_cast<int>(COUNTOF(menu_items)) + 1)),
 					y = surface->h - font.height(font_sprites[3]) * 3;
 				
 				font.blit(surface, x, y, menu_items[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? SDL_ALPHA_OPAQUE : 128);
@@ -266,7 +266,7 @@ void pack_menu( SDL_Surface *surface )
 	
 	sort(packs.begin(), packs.end());
 	
-	unsigned int selection = 0;
+	uint selection = 0;
 	
 	bool quit = false;
 	while (!quit && !global_quit)
@@ -358,9 +358,9 @@ void pack_menu( SDL_Surface *surface )
 			// draw list
 			{
 				int y = font.height(font_sprites[3]) / 2;
-				int p = (signed)selection - 4;
+				int p = static_cast<int>(selection) - 4;
 				
-				for (unsigned int i = 0; i < 4; ++i)
+				for (uint i = 0; i < 4; ++i)
 				{
 					if (p >= 0)
 						font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
@@ -376,9 +376,9 @@ void pack_menu( SDL_Surface *surface )
 				y += font.height(font_sprites[3]) / 2;
 				++p;
 				
-				for (unsigned int i = 0; i < 4; ++i)
+				for (uint i = 0; i < 4; ++i)
 				{
-					if (p < (signed)packs.size())
+					if (static_cast<uint>(p) < packs.size())
 						font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
 					y += font.height(font_sprites[3]);
 					++p;

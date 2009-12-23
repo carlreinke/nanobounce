@@ -169,10 +169,10 @@ void Game::check_unboost( Ball &ball )
 void Game::check_collide( Ball &ball, Block &block )
 {
 redo:
-	bool x_in = (int)ball.x + ball.width > block.x &&
-	            (int)ball.x < block.x + block.width;
-	bool y_in = (int)ball.y + ball.height > block.y &&
-	            (int)ball.y < block.y + block.height;
+	bool x_in = static_cast<int>(ball.x) + ball.width > block.x &&
+	            static_cast<int>(ball.x) < block.x + block.width;
+	bool y_in = static_cast<int>(ball.y) + ball.height > block.y &&
+	            static_cast<int>(ball.y) < block.y + block.height;
 	
 	if (x_in && y_in)
 	{
@@ -209,8 +209,8 @@ redo:
 	
 	if (x_in)
 	{
-		hit_top         = ball.is_moving_down() && (int)ball.y + ball.height == block.y;
-		bool hit_bottom = ball.is_moving_up() && (int)ball.y == block.y + block.height;
+		hit_top         = ball.is_moving_down() && static_cast<int>(ball.y) + ball.height == block.y;
+		bool hit_bottom = ball.is_moving_up() && static_cast<int>(ball.y) == block.y + block.height;
 		
 		if (hit_top || hit_bottom)
 		{
@@ -225,8 +225,8 @@ redo:
 	
 	if (y_in)
 	{
-		bool hit_left  = ball.is_moving_right() && (int)ball.x + ball.width == block.x;
-		bool hit_right = ball.is_moving_left() && (int)ball.x == block.x + block.width;
+		bool hit_left  = ball.is_moving_right() && static_cast<int>(ball.x) + ball.width == block.x;
+		bool hit_right = ball.is_moving_left() && static_cast<int>(ball.x) == block.x + block.width;
 		
 		if (hit_left || hit_right)
 		{
@@ -305,8 +305,8 @@ redo:
 
 bool Game::is_outside( const Ball &ball, const Level &level ) const
 {
-	return (int)ball.x + ball.width <= 0 || (int)ball.x >= level.width ||
-	       (int)ball.y + ball.height <= 0 || (int)ball.y >= level.height;
+	return static_cast<int>(ball.x) + ball.width <= 0 || static_cast<int>(ball.x) >= level.width ||
+	       static_cast<int>(ball.y) + ball.height <= 0 || static_cast<int>(ball.y) >= level.height;
 }
 
 void Game::menu( void )

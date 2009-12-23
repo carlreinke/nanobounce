@@ -30,7 +30,7 @@ inline Audio_mode & operator++( Audio_mode &audio_mode )
 	if (audio_mode == ALL_AUDIO)
 		audio_mode = NO_SAMPLES;
 	else
-		audio_mode = Audio_mode((int)audio_mode + 1);
+		audio_mode = Audio_mode(static_cast<uint>(audio_mode) + 1);
 	return audio_mode;
 }
 

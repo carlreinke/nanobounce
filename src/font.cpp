@@ -34,7 +34,7 @@ void Font::load_pgm( istream &pgm )
 	
 	while (pgm.good() && y < h)
 	{
-		int g = get_no_comments<int>(pgm) * (component_max / (Fixed)255);
+		int g = get_no_comments<int>(pgm) * (component_max / Fixed(255));
 		graymap[y].push_back(g);
 		
 		if (++x == w)
@@ -50,7 +50,7 @@ void Font::load_char_widths( istream &is )
 	if (graymap.size() == 0)
 		return;
 	
-	unsigned int x = 0;
+	uint x = 0;
 	
 	while (is.good() && x < graymap[0].size())
 	{
@@ -86,9 +86,9 @@ void Font::blit( SDL_Surface *surface, int x, int y, const std::string &text, co
 		
 		for (string::const_iterator c = text.begin(); c != text.end(); ++c)
 		{
-			unsigned int g_x = char_positions[*c];
+			uint g_x = char_positions[*c];
 			
-			for (unsigned int x = 0; x < char_widths[*c]; ++x)
+			for (uint x = 0; x < char_widths[*c]; ++x)
 			{
 				if ((*y_line)[g_x + x] > 0)
 					sprite.blit(surface, x_temp, y, alpha);
@@ -121,11 +121,11 @@ void Font::blit( SDL_Surface *surface, int x, int y, std::string text, const Spr
 	blit(surface, x, y, text, sprite, justify, alpha);
 }
 
-unsigned int Font::width( const std::string &text, const Sprite &sprite ) const
+uint Font::width( const std::string &text, const Sprite &sprite ) const
 {
-	unsigned int width = 0;
+	uint width = 0;
 	
-	for (unsigned int i = 0; i < text.length(); ++i)
+	for (uint i = 0; i < text.length(); ++i)
 		width += char_widths[text[i]] * sprite.width();
 	
 	return width;

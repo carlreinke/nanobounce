@@ -28,8 +28,8 @@ public:
 	void blit( SDL_Surface *, int x, int y, const std::string &, const Sprite &, justifications = left, Uint8 alpha = SDL_ALPHA_OPAQUE );
 	void blit( SDL_Surface *, int x, int y, std::string, const Sprite &, styles, justifications = left, Uint8 alpha = SDL_ALPHA_OPAQUE );
 	
-	unsigned int height( const Sprite &sprite ) const { return graymap.size() * sprite.height(); };
-	unsigned int width( const std::string &, const Sprite & ) const;
+	uint height( const Sprite &sprite ) const { return graymap.size() * sprite.height(); };
+	uint width( const std::string &, const Sprite & ) const;
 	
 private:
 	void blit_char( SDL_Surface *, int x, int y, char, const Sprite &, Uint8 alpha );
@@ -37,7 +37,7 @@ private:
 	typedef std::vector< std::vector<unsigned char> > graymap_t;
 	
 	graymap_t graymap;
-	std::vector<unsigned int> char_positions, char_widths;
+	std::vector<uint> char_positions, char_widths;
 };
 
 extern Font font;

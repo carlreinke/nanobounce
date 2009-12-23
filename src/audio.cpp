@@ -35,7 +35,7 @@ void init_audio( void )
 		return;
 	}
 	
-	cout << "audio: " << spec.freq << " Hz, " << (int)spec.channels << " channels, " << spec.samples << " samples" << endl;
+	cout << "audio: " << spec.freq << " Hz, " << +spec.channels << " channels, " << spec.samples << " samples" << endl;
 	
 	SDL_PauseAudio(0);
 	
