@@ -1,6 +1,8 @@
 #ifndef FIXED_HPP
 #define FIXED_HPP
 
+#include "misc.hpp"
+
 #ifdef HAS_FLOAT
 
 typedef float Fixed;

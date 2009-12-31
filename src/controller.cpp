@@ -169,7 +169,7 @@ void Joystick::update_down( void )
 	                 SDL_JoystickGetButton(joystick, GP2X_VK_DOWN_LEFT);
 	is_down[right] = SDL_JoystickGetButton(joystick, GP2X_VK_UP_RIGHT) ||
 	                 SDL_JoystickGetButton(joystick, GP2X_VK_RIGHT) ||
-	                 SDL_JoystickGetButton(joystick, GP2X_VK_DOWN_RIGHT)
+	                 SDL_JoystickGetButton(joystick, GP2X_VK_DOWN_RIGHT);
 	
 	is_down[left_shoulder]  = SDL_JoystickGetButton(joystick, GP2X_VK_FL);
 	is_down[right_shoulder] = SDL_JoystickGetButton(joystick, GP2X_VK_FR);

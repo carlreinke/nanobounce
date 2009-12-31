@@ -1,6 +1,7 @@
 #ifndef SPRITE_HPP
 #define SPRITE_HPP
 
+#include "misc.hpp"
 #include "SDL.h"
 
 class Sprite

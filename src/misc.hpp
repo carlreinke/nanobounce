@@ -5,6 +5,8 @@
 
 #define sqr(x) ((x) * (x))
 
+typedef unsigned int uint;
+
 void getline( std::istream &is, std::istringstream &iss );
 
 template <class T>
