@@ -92,13 +92,15 @@ void Game::reset( void )
 	{
 		if (b->type == Block::ball)
 		{
-			balls.push_back(Ball(b->x + Block::width / 2 - Ball::width / 2,
-			                     b->y + Block::height / 2 - Ball::height / 2));
+			balls.push_back(Ball(b->x + (Block::width - Ball::width) / 2,
+			                     b->y + (Block::height - Ball::height) / 2));
 		}
 	}
 	
 	state = none;
-	x_offset = y_offset = 0;
+	
+	x_offset = 0; //-(level.width - screen_width) / 2;
+	y_offset = 0; //-(level.height - screen_height) / 2;
 }
 
 void Game::tick( void )
@@ -141,6 +143,24 @@ void Game::tick( void )
 			state = lost;
 			
 			play_sample(samples["lost"], 1, sample_pan(ball->x));
+		}
+		else  // panning
+		{
+			if (level.width > screen_width)
+			{
+				if (ball->x + x_offset < screen_width / 4)  // ball in pan-left zone
+					x_offset = min(static_cast<int>(x_offset + ceilf(ball->x_term_vel)), 0);
+				else if (ball->x + x_offset > screen_width - screen_width / 4)  // ball in pan-right zone
+					x_offset = max(screen_width - level.width, static_cast<int>(x_offset - ceilf(ball->x_term_vel)));
+			}
+			
+			if (level.height > screen_height)
+			{
+				if (ball->y + y_offset < screen_height / 4)  // ball in pan-up zone
+					y_offset = min(static_cast<int>(y_offset + ceilf(ball->y_term_vel)), 0);
+				else if (ball->y + y_offset > screen_height - screen_height / 4)  // ball in pan-down zone
+					y_offset = max(screen_height - level.height, static_cast<int>(y_offset - ceilf(ball->y_term_vel)));
+			}
 		}
 	}
 }

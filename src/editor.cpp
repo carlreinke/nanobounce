@@ -1,5 +1,6 @@
 #include "controller.hpp"
 #include "editor.hpp"
+#include "font.hpp"
 #include "game.hpp"
 #include "menu.hpp"
 #include "misc.hpp"
@@ -40,18 +41,32 @@ void Editor::handle_event( SDL_Event &e )
 		case Controller::right_key:
 			cursor_x += Block::width;
 			if (cursor_x < level.width)
+			{
+				x_offset = min(x_offset, screen_width - cursor_x - Block::width);
 				break;
+			}
+			// if cursor outside level, undo movement
 		case Controller::left_key:
 			if (cursor_x > 0)
+			{
 				cursor_x -= Block::width;
+				x_offset = max(x_offset, -cursor_x);
+			}
 			break;
 		case Controller::down_key:
 			cursor_y += Block::height;
 			if (cursor_y < level.height)
+			{
+				y_offset = min(y_offset, screen_height - cursor_y - Block::height);
 				break;
+			}
+			// if cursor outside level, undo movement
 		case Controller::up_key:
 			if (cursor_y > 0)
+			{
 				cursor_y -= Block::height;
+				y_offset = max(y_offset, -cursor_y);
+			}
 			break;
 			
 		case Controller::select_key:
@@ -162,19 +177,35 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	for (unsigned int i = 0; i < COUNTOF(sprite); ++i)
 	{
-		sprite[i].blit(surface, cursor_x - 1, cursor_y - 1);
-		sprite[i].blit(surface, cursor_x - 1, cursor_y + Block::height + 1 - sprite[i].height());
-		sprite[i].blit(surface, cursor_x + Block::width + 1 - sprite[i].width(), cursor_y - 1);
-		sprite[i].blit(surface, cursor_x + Block::width + 1 - sprite[i].width(), cursor_y + Block::height + 1 - sprite[i].height());
+		sprite[i].blit(surface, x_offset + cursor_x - 1, y_offset + cursor_y - 1);
+		sprite[i].blit(surface, x_offset + cursor_x - 1, y_offset + cursor_y + Block::height + 1 - sprite[i].height());
+		sprite[i].blit(surface, x_offset + cursor_x + Block::width + 1 - sprite[i].width(), y_offset + cursor_y - 1);
+		sprite[i].blit(surface, x_offset + cursor_x + Block::width + 1 - sprite[i].width(), y_offset + cursor_y + Block::height + 1 - sprite[i].height());
 	}
 	
 	// currently held block preview
 	{
-		int x = surface->w - (Block::width * 3) / 2,
-		    y = surface->h - (Block::height * 3) / 2;
+		const int x = surface->w - (Block::width * 3) / 2,
+		          y = (y_offset + cursor_y < screen_height * 3 / 4)  // if cursor on upper section of screen
+		            ? (surface->h - (Block::height * 3) / 2)
+		            : (Block::height / 2);
 		
 		Sprite(Block::width + 2, Block::width + 2, SDL_Color_RGBA(255, 255, 255)).blit(surface, x - 1, y - 1);
-		block_sprites[cursor_block].blit(surface, x, y);
+		block_sprites[cursor_block].blit(surface, x, y, alpha);
+	}
+	
+	// cursor position message
+	{
+		const Sprite sprite(1, 1, SDL_Color_RGBA(255, 255, 255));
+		
+		const int x = font.width("N", sprite),
+		          y = (y_offset + cursor_y < screen_height * 3 / 4)  // if cursor on upper section of screen
+		            ? (surface->h - (font.height(sprite) * 3) / 2)
+		            : (font.height(sprite) / 2);
+		
+		ostringstream buffer;
+		buffer << (cursor_x / Block::width) << ", " << (cursor_y / Block::height);
+		font.blit(surface, x, y, buffer.str(), sprite, Font::majuscule, Font::left, alpha);
 	}
 }
 

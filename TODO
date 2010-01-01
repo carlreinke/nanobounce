@@ -1,5 +1,4 @@
 features
- * allow levels to be arbitrary size
  * viewable highscore list
     - add user-visible replay
  * add particle class for explosions
