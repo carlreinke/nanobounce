@@ -22,6 +22,40 @@ bool global_quit = false;
 
 int main( int argc, char *argv[] )
 {
+	bool editor = false, replay = false;
+	
+	int opt;
+	while ((opt = getopt(argc, argv, "er:s")) != -1)
+	{
+		switch (opt)
+		{
+		case 'e':
+			editor = true;
+			break;
+			
+		case 'r':
+			replay = true;
+			
+			controllers.push_back(new Replay(optarg));
+			break;
+			
+		case 's':
+			audio_disabled = true;
+			break;
+			
+		case '?':
+		default:
+			exit(EXIT_FAILURE);
+			break;
+		}
+	} 
+	
+	if (optind >= argc)
+	{
+		editor = false;
+		replay = false;
+	}
+	
 	if (SDL_Init(SDL_INIT_TIMER) == -1)
 	{
 		cerr << SDL_GetError() << endl;
@@ -39,36 +73,6 @@ int main( int argc, char *argv[] )
 	
 	SDL_TimerID frame_timer = SDL_AddTimer(0, push_frame_event, NULL);
 	SDL_TimerID update_timer = SDL_AddTimer(0, push_update_event, NULL);
-	
-	bool editor = false, replay = false;
-	
-	int opt;
-	while ((opt = getopt(argc, argv, "er:")) != -1)
-	{
-		switch (opt)
-		{
-		case 'e':
-			editor = true;
-			break;
-			
-		case 'r':
-			replay = true;
-			
-			controllers.push_back(new Replay(optarg));
-			break;
-			
-		case '?':
-		default:
-			exit(EXIT_FAILURE);
-			break;
-		}
-	} 
-	
-	if (optind >= argc)
-	{
-		editor = false;
-		replay = false;
-	}
 	
 	if (!replay)
 	{

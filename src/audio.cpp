@@ -18,10 +18,13 @@ auto_ptr<Stream> music;
 
 std::map<std::string, Sample> samples;
 
-static bool audio_disabled = false;
+bool audio_disabled = false;
 
 void init_audio( void )
 {
+	if (audio_disabled)
+		return;
+	
 	spec.freq = 11025 * 2;
 	spec.format = AUDIO_S16SYS;
 	spec.channels = 2;

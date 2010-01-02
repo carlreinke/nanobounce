@@ -19,6 +19,8 @@ extern SDL_AudioSpec spec;
 
 extern std::map<std::string, Sample> samples;
 
+extern bool audio_disabled;
+
 void init_audio( void );
 void deinit_audio( void );
 
