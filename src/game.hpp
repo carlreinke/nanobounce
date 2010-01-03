@@ -4,6 +4,7 @@
 #include "highscore.hpp"
 #include "level.hpp"
 #include "loop.hpp"
+#include "particle.hpp"
 #include "sdl_ext.hpp"
 
 class Game : public Loop
@@ -45,6 +46,8 @@ private:
 	
 	Level level;
 	std::vector<Ball> balls;
+	
+	std::list<Particle> particles;
 	
 	friend void play_pack( SDL_Surface *, const std::string & ); // TODO fix this
 	

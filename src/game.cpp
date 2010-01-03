@@ -72,6 +72,9 @@ void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	for (vector<Ball>::const_iterator ball = balls.begin(); ball != balls.end(); ++ball)
 		ball->draw(surface, x_offset, y_offset, alpha);
+	
+	for (list<Particle>::const_iterator i = particles.begin(); i != particles.end(); ++i)
+		i->draw(surface, x_offset, y_offset, alpha);
 }
 
 bool Game::load( const string &level_data_path )
@@ -163,6 +166,8 @@ void Game::tick( void )
 			}
 		}
 	}
+	
+	Particle::tick_all(particles);
 }
 
 void Game::check_unboost( Ball &ball )
@@ -299,7 +304,11 @@ redo:
 		case Block::nuke:
 			ball.no_vel = true;
 			
-			// TODO explode block and/or ball into particles
+			block.ignore = true;
+			
+			for (int y = 0; y < Block::height; y += 2)
+				for (int x = 0; x < Block::width; x += 2)
+					particles.push_back(ExplosionParticle(block.x + x, block.y + y));
 			
 			state = lost;
 			
@@ -309,7 +318,9 @@ redo:
 		case Block::recycle:
 			block.ignore = true;
 			
-			// TODO explode block into particles
+			for (int y = 0; y < Block::height; y += 3)
+				for (int x = 0; x < Block::width; x += 3)
+					particles.push_back(DustParticle(block.x + x, block.y + y));
 			
 			sample = &samples["recycle"];
 			break;

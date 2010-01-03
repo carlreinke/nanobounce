@@ -64,6 +64,7 @@ private:
 	bool was_pushed_right( void ) const { return (x_accel > 0); }
 	
 	friend class Game;
+	friend class Particle;
 	friend void game_menu( SDL_Surface * );
 };
 
