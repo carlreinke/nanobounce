@@ -15,9 +15,15 @@ public:
 		normal,
 		nuke,
 		recycle,
+		
 		boost_up,
 		boost_left,
 		boost_right,
+		
+		push_up,
+		push_left,
+		push_right,
+		
 		_max
 	};
 	

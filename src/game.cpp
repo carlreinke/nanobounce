@@ -212,11 +212,33 @@ redo:
 			
 			goto redo;
 		}
-		else if (block.type == Block::exit && state != quit && state != won)
+		else
 		{
-			state = won;
-			
-			play_sample(samples["won"], 1, sample_pan(ball.x));
+			switch (block.type)
+			{
+			case Block::exit:
+				if (state != quit && state != won)
+				{
+					state = won;
+					ball.no_accel = true;
+					
+					play_sample(samples["won"], 1, sample_pan(ball.x));
+				}
+				break;
+				
+			case Block::push_up:
+				ball.y_vel -= ball.y_accel * 3 / 2;
+				break;
+			case Block::push_left:
+				ball.x_vel -= ball.y_accel / 2;
+				break;
+			case Block::push_right:
+				ball.x_vel += ball.y_accel / 2;
+				break;
+				
+			default:
+				break;
+			}
 		}
 	}
 	
@@ -237,7 +259,7 @@ redo:
 			if (ball.can_unboost)
 				ball.unboost();
 			
-			ball.y_vel = hit_top ? -ball.y_term_vel : -ball.y_vel / 3;
+			ball.y_vel = hit_top ? -ball.y_term_vel : max(-ball.y_vel, ball.y_term_vel / 2) / 3;
 			
 			sample = &samples["bounce"];
 		}

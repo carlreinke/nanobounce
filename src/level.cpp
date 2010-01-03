@@ -19,9 +19,14 @@ Level::Level( void )
 		block_chars[Block::normal] = '=';
 		block_chars[Block::nuke] = '*';
 		block_chars[Block::recycle] = '-';
+		
 		block_chars[Block::boost_up] = '^';
 		block_chars[Block::boost_left] = '<';
 		block_chars[Block::boost_right] = '>';
+		
+		block_chars[Block::push_up] = 'u';
+		block_chars[Block::push_left] = 'l';
+		block_chars[Block::push_right] = 'r';
 	}
 }
 

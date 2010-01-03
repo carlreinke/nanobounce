@@ -69,8 +69,8 @@ void Ball::tick( int x_push_direction )
 		
 		if (!no_vel_limits)
 		{
-			x_vel = max(-x_term_vel, min(x_vel, x_term_vel));
-			y_vel = min(y_vel, y_term_vel); // no max up speed for y boost
+			x_vel = min(max(-x_term_vel, x_vel), x_term_vel);
+			y_vel = min(max(-y_boost_block, y_vel), y_term_vel);
 		}
 		
 		x += x_vel;

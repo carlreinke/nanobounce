@@ -15,9 +15,14 @@ Block::Block( int x, int y, types type )
 		sprites[normal] = Sprite("sprites/block.ppm");
 		sprites[nuke] = Sprite("sprites/nuke.ppm");
 		sprites[recycle] = Sprite("sprites/recycle.ppm");
+		
 		sprites[boost_up] = Sprite("sprites/boost_up.ppm");
 		sprites[boost_left] = Sprite("sprites/boost_left.ppm");
 		sprites[boost_right] = Sprite("sprites/boost_right.ppm");
+		
+		sprites[push_up] = Sprite("sprites/push_up.ppm");
+		sprites[push_left] = Sprite("sprites/push_left.ppm");
+		sprites[push_right] = Sprite("sprites/push_right.ppm");
 	}
 }
 
@@ -31,6 +36,9 @@ void Block::reset( void )
 		collideable = false;
 		break;
 	case exit:
+	case push_up:
+	case push_left:
+	case push_right:
 		collideable = false;
 		ignore = false;
 		break;
