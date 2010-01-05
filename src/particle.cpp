@@ -4,19 +4,28 @@
 
 using namespace std;
 
-Particle::Particle( Fixed x, Fixed y, uint ticks_to_live )
+Particle::Particle( Fixed x, Fixed y, uint ticks_to_live, Sprite &sprite )
 : x(x), y(y),
   x_vel(0), y_vel(0),
   x_accel(0), y_accel(Ball::y_accel),
   x_term_vel(Ball::x_term_vel), y_term_vel(Ball::y_term_vel),
-  ticks_to_live(ticks_to_live)
+  ticks_to_live(ticks_to_live),
+  alpha(SDL_ALPHA_OPAQUE), alpha_per_tick(0),
+  sprite(sprite)
 {
 	/* nothing to do */
 }
 
 void Particle::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
 {
-	sprite->blit(surface, x_offset + x, y_offset + y, alpha);
+	alpha = this->alpha * alpha >> 8;
+	Uint8 alpha_trail = alpha / trail.size();
+	
+	for (deque<coord>::const_reverse_iterator i = trail.rbegin(); i != trail.rend(); ++i)
+	{
+		sprite.blit(surface, x_offset + i->first, y_offset + i->second, alpha);
+		alpha -= alpha_trail;
+	}
 }
 
 void Particle::tick( void )
@@ -33,8 +42,11 @@ void Particle::tick( void )
 	x += x_vel;
 	y += y_vel;
 	
-	if (sprite != last_sprite && ticks_to_live % next_sprite == 0)
-		++sprite;
+	alpha = min(max(Fixed(SDL_ALPHA_TRANSPARENT), alpha + alpha_per_tick), Fixed(SDL_ALPHA_OPAQUE));
+	
+	trail.push_back(coord(x, y));
+	if (trail.size() > trail_max)
+		trail.pop_front();
 }
 
 void Particle::tick_all( list<Particle> &particles )
@@ -50,50 +62,36 @@ void Particle::tick_all( list<Particle> &particles )
 	}
 }
 
-vector<Sprite> ExplosionParticle::sprites;
+Sprite ExplosionParticle::sprite;
 
 ExplosionParticle::ExplosionParticle( Fixed x, Fixed y )
-: Particle(x, y, rand() % 25 + 25)
+: Particle(x, y, rand() % 50 + 20, sprite)
 {
-	if (sprites.empty())
+	if (sprite.width() == 0)
 	{
-		for (int i = 3; i > 0; --i)
-		{
-			uint c = 255 - 128 * i / 4;
-			sprites.push_back(Sprite(i, i, SDL_Color_RGBA(c, c / 4, c / 4)));
-		}
+		sprite = Sprite(1, 1, SDL_Color_RGBA(255, 0, 0));
 	}
 	
 	x_vel = Fixed(rand() % (1024 * 2) - 1024) / 1024;
 	y_vel = Fixed(rand() % (1024 * 2) - 1024) / 1024;
 	
-	y_accel /= 2;
-	
-	sprite = sprites.begin();
-	last_sprite = sprites.end() - 1;
-	
-	next_sprite = ticks_to_live / 3;
+	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 50 - 20;
+	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
 }
 
-vector<Sprite> DustParticle::sprites;
+Sprite DustParticle::sprite;
 
 DustParticle::DustParticle( Fixed x, Fixed y )
-: Particle(x, y, rand() % 50 + 50)
+: Particle(x, y, rand() % 60 + 20, sprite)
 {
-	if (sprites.empty())
+	if (sprite.width() == 0)
 	{
-		for (int i = 3; i > 0; --i)
-		{
-			uint c = 128;
-			sprites.push_back(Sprite(i, i, SDL_Color_RGBA(c, c, c)));
-		}
+		sprite = Sprite(1, 1, SDL_Color_RGBA(128, 128, 128));
 	}
 	
 	x_vel = (Fixed(rand() % (1024 * 2) - 1024) / 1024) / 5;
 	y_vel = (Fixed(rand() % 1024) / 1024) / 5;
 	
-	sprite = sprites.begin();
-	last_sprite = sprites.end() - 1;
-	
-	next_sprite = ticks_to_live / 3;
+	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 60 - 20;
+	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
 }

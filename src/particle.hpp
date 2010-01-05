@@ -15,8 +15,14 @@ public:
 	
 	uint ticks_to_live;
 	
-	std::vector<Sprite>::const_iterator sprite, last_sprite;
-	uint next_sprite;
+	Fixed alpha, alpha_per_tick;
+	
+	typedef std::pair<int, int> coord;
+	
+	static const uint trail_max = 15;
+	std::deque<coord> trail;
+	
+	Sprite sprite;
 	
 	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha ) const;
 	
@@ -25,7 +31,7 @@ public:
 	static void tick_all( std::list<Particle> & );
 	
 protected:
-	Particle( Fixed x, Fixed y, uint ticks_to_live );
+	Particle( Fixed x, Fixed y, uint ticks_to_live, Sprite &sprite );
 	
 private:
 	Particle( void );
@@ -36,7 +42,7 @@ class ExplosionParticle : public Particle
 public:
 	ExplosionParticle( Fixed x, Fixed y );
 	
-	static std::vector<Sprite> sprites;
+	static Sprite sprite;
 };
 
 class DustParticle : public Particle
@@ -44,7 +50,7 @@ class DustParticle : public Particle
 public:
 	DustParticle( Fixed x, Fixed y );
 	
-	static std::vector<Sprite> sprites;
+	static Sprite sprite;
 };
 
 #endif // PARTICLE_HPP

@@ -29,15 +29,21 @@ inline SDL_Surface *SDL_DuplicateRGBSurface( SDL_Surface *src )
 	return dst;
 }
 
+// rectangle
+
 inline int SDL_FillRect( SDL_Surface *dst, SDL_Rect *dstrect, const SDL_Color &color )
 {
 	return SDL_FillRect(dst, dstrect, SDL_MapRGB(dst->format, color.r, color.g, color.b));
 }
 
-inline int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, const SDL_Color &color )
+void SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, Uint32 pixel, Uint8 alpha );
+
+inline int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, const SDL_Color &color, Uint8 alpha )
 {
-	return SDL_FillRect(dst, dstrect, SDL_MapRGBA(dst->format, color.r, color.g, color.b, color.unused));
+	SDL_FillRectA(dst, dstrect, SDL_MapRGBA(dst->format, color.r, color.g, color.b, color.unused), alpha);
+	return 0;
 }
+
 
 inline SDL_Color SDL_Color_RGBA( int r, int g, int b, int a = 0 )
 {

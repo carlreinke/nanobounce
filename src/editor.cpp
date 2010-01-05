@@ -179,10 +179,10 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	for (unsigned int i = 0; i < COUNTOF(sprite); ++i)
 	{
-		sprite[i].blit(surface, x_offset + cursor_x - 1, y_offset + cursor_y - 1);
-		sprite[i].blit(surface, x_offset + cursor_x - 1, y_offset + cursor_y + Block::height + 1 - sprite[i].height());
-		sprite[i].blit(surface, x_offset + cursor_x + Block::width + 1 - sprite[i].width(), y_offset + cursor_y - 1);
-		sprite[i].blit(surface, x_offset + cursor_x + Block::width + 1 - sprite[i].width(), y_offset + cursor_y + Block::height + 1 - sprite[i].height());
+		sprite[i].blit(surface, x_offset + cursor_x - 1, y_offset + cursor_y - 1, alpha);
+		sprite[i].blit(surface, x_offset + cursor_x - 1, y_offset + cursor_y + Block::height + 1 - sprite[i].height(), alpha);
+		sprite[i].blit(surface, x_offset + cursor_x + Block::width + 1 - sprite[i].width(), y_offset + cursor_y - 1, alpha);
+		sprite[i].blit(surface, x_offset + cursor_x + Block::width + 1 - sprite[i].width(), y_offset + cursor_y + Block::height + 1 - sprite[i].height(), alpha);
 	}
 	
 	// currently held block preview
@@ -192,7 +192,7 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 		            ? (surface->h - (Block::height * 3) / 2)
 		            : (Block::height / 2);
 		
-		Sprite(Block::width + 2, Block::width + 2, SDL_Color_RGBA(255, 255, 255)).blit(surface, x - 1, y - 1);
+		Sprite(Block::width + 2, Block::width + 2, SDL_Color_RGBA(255, 255, 255)).blit(surface, x - 1, y - 1, alpha);
 		block_sprites[cursor_block].blit(surface, x, y, alpha);
 	}
 	

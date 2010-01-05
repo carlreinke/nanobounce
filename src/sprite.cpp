@@ -125,8 +125,7 @@ void Sprite::blit( SDL_Surface *surface, int x, int y, Uint8 alpha ) const
 	}
 	else
 	{
-		// TODO this doesn't alpha blend
 		SDL_Rect rect = { x, y, w, h };
-		SDL_FillRect(surface, &rect, color);
+		SDL_FillRectA(surface, &rect, color, alpha);
 	}
 }
