@@ -233,12 +233,24 @@ redo:
 				
 			case Block::push_up:
 				ball.y_vel -= ball.y_accel * 3 / 2;
+				
+				if (SDL_GetTicks() % 2 == 0)
+					particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
+				
 				break;
 			case Block::push_left:
 				ball.x_vel -= ball.y_accel / 2;
+				
+				if (SDL_GetTicks() % 2 == 0)
+					particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
+				
 				break;
 			case Block::push_right:
 				ball.x_vel += ball.y_accel / 2;
+				
+				if (SDL_GetTicks() % 2 == 0)
+					particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
+				
 				break;
 				
 			default:
@@ -288,6 +300,9 @@ redo:
 			{
 				ball.wall_jump();
 				
+				for (int i = 0; i < 10; ++i)
+					particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(255, 255, 255)));
+				
 				sample = &samples["wall_jump"];
 			}
 			else if (fabsf(ball.x_vel) > 3 * ball.push_x_accel)
@@ -306,9 +321,14 @@ redo:
 			
 			block.ignore = true;
 			
-			for (int y = 0; y < Block::height; y += 2)
-				for (int x = 0; x < Block::width; x += 2)
+			for (int y = 0; y < Block::height; y += 3)
+				for (int x = 0; x < Block::width; x += 3)
 					particles.push_back(ExplosionParticle(block.x + x, block.y + y));
+			
+			for (int i = 0; i < 18; ++i)
+				particles.push_back(SparkParticle(ball.x, ball.y, i / 6 - 1, ball.y_vel + i % 2, SDL_Color_RGBA(255, 255, 255)));
+			for (int i = 0; i < 9; ++i)
+				particles.push_back(SparkParticle(ball.x, ball.y, i / 3 - 1, ball.y_vel + i % 2, SDL_Color_RGBA(255, 128, 0)));
 			
 			state = lost;
 			
@@ -328,6 +348,9 @@ redo:
 		case Block::boost_up:
 			ball.y_boost(-ball.y_boost_block);
 			
+			for (int i = 0; i < 10; ++i)
+				particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(0, 255, 0)));
+			
 			sample = &samples["boost"];
 			break;
 			
@@ -336,6 +359,9 @@ redo:
 			ball.y += Ball::height;
 			ball.x_boost(-ball.x_boost_block);
 			
+			for (int i = 0; i < 10; ++i)
+				particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(0, 255, 0)));
+			
 			sample = &samples["boost"];
 			break;
 			
@@ -343,6 +369,9 @@ redo:
 			ball.x = block.x + Block::width;
 			ball.y += Ball::height;
 			ball.x_boost(ball.x_boost_block);
+			
+			for (int i = 0; i < 10; ++i)
+				particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(0, 255, 0)));
 			
 			sample = &samples["boost"];
 			break;

@@ -16,3 +16,4 @@
 #include <vector>
 
 #include <boost/smart_ptr/shared_array.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>

@@ -22,7 +22,7 @@ public:
 	static const uint trail_max = 15;
 	std::deque<coord> trail;
 	
-	Sprite sprite;
+	boost::shared_ptr<Sprite> sprite;
 	
 	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha ) const;
 	
@@ -31,7 +31,7 @@ public:
 	static void tick_all( std::list<Particle> & );
 	
 protected:
-	Particle( Fixed x, Fixed y, uint ticks_to_live, Sprite &sprite );
+	Particle( Fixed x, Fixed y, uint ticks_to_live, const boost::shared_ptr<Sprite> &sprite );
 	
 private:
 	Particle( void );
@@ -42,7 +42,7 @@ class ExplosionParticle : public Particle
 public:
 	ExplosionParticle( Fixed x, Fixed y );
 	
-	static Sprite sprite;
+	static boost::shared_ptr<Sprite> sprite;
 };
 
 class DustParticle : public Particle
@@ -50,7 +50,13 @@ class DustParticle : public Particle
 public:
 	DustParticle( Fixed x, Fixed y );
 	
-	static Sprite sprite;
+	static boost::shared_ptr<Sprite> sprite;
+};
+
+class SparkParticle : public Particle
+{
+public:
+	SparkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const SDL_Color &color );
 };
 
 #endif // PARTICLE_HPP
