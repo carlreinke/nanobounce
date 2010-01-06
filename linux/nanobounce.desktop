@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Nanobounce
+Comment=A frustrating, bouncing-ball game
+Icon=nanobounce
+Categories=Game;ArcadeGame;
+TryExec=nanobounce
+Exec=nanobounce
+Terminal=false
+
