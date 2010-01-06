@@ -156,8 +156,8 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 				
 				for (uint i = 0; i < 40; ++i)
 				{
-					const Fixed radius = (Fixed(rand() % (1024)) / 1024),
-					            angle = (Fixed(rand() % (31415 * 2)) / 10000),
+					const Fixed radius = (Fixed(rand() % (1024 * 2) - 1024) / 1024),
+					            angle = (Fixed(rand() % 31415) / 10000),
 					            x_vel = cosf(angle) * radius,
 					            y_vel = sinf(angle) * radius;
 					
