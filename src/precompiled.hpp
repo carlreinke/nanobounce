@@ -2,7 +2,6 @@
 #include <cassert>
 #include <cmath>
 #include <deque>
-#include <dirent.h>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -11,9 +10,11 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <vector>
+
+#include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <vector>
 
 #include <boost/smart_ptr/shared_array.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>

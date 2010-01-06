@@ -13,7 +13,7 @@ Fixed volume = 0.5f, music_volume = 1.0f;
 
 SDL_AudioSpec spec;
 
-vector<Channel *> channels;
+list<Channel *> channels;
 auto_ptr<Stream> music;
 
 std::map<std::string, Sample> samples;
@@ -81,7 +81,7 @@ void audio_callback( void *, Uint8 *stream, int len )
 	}
 	
 	// channels
-	for (vector<Channel *>::iterator channel_i = channels.begin(); channel_i != channels.end(); )
+	for (list<Channel *>::iterator channel_i = channels.begin(); channel_i != channels.end(); )
 	{
 		Channel *channel = *channel_i;
 		

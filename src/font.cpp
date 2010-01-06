@@ -80,7 +80,7 @@ void Font::blit( SDL_Surface *surface, int x, int y, const std::string &text, co
 		break;
 	}
 	
-	for (graymap_t::const_iterator y_line = graymap.begin(); y_line != graymap.end(); ++y_line)
+	for (Graymap::const_iterator y_line = graymap.begin(); y_line != graymap.end(); ++y_line)
 	{
 		int x_temp = x;
 		

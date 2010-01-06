@@ -34,9 +34,9 @@ public:
 private:
 	void blit_char( SDL_Surface *, int x, int y, char, const Sprite &, Uint8 alpha );
 	
-	typedef std::vector< std::vector<unsigned char> > graymap_t;
+	typedef std::vector< std::vector<unsigned char> > Graymap;
 	
-	graymap_t graymap;
+	Graymap graymap;
 	std::vector<uint> char_positions, char_widths;
 };
 

@@ -40,7 +40,7 @@ private:
 	
 	types type;
 	
-	bool collideable;
+	bool collidable;
 	bool ignore;
 	
 	static std::vector<Sprite> sprites;

@@ -33,17 +33,17 @@ void Block::reset( void )
 	case none:
 	case ball:
 		ignore = true;
-		collideable = false;
+		collidable = false;
 		break;
 	case exit:
 	case push_up:
 	case push_left:
 	case push_right:
-		collideable = false;
+		collidable = false;
 		ignore = false;
 		break;
 	default:
-		collideable = true;
+		collidable = true;
 		ignore = false;
 		break;
 	}

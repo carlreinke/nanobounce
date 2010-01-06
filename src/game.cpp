@@ -26,7 +26,8 @@ void Game::handle_event( SDL_Event &e )
 		switch (e.key.keysym.sym)
 		{
 		case Controller::start_key:
-			menu();
+			if (state != quit)
+				menu();
 			break;
 		case Controller::quit_key:
 			state = quit;
@@ -140,14 +141,14 @@ void Game::tick( void )
 			if (!block->ignore)
 				check_collide(*ball, *block);
 		
-		// check ball outside level
+		// if ball outside level, it's dead
 		if (state == none && is_outside(*ball, level))
 		{
 			state = lost;
 			
 			play_sample(samples["lost"], 1, sample_pan(ball->x));
 		}
-		else  // panning
+		else  // level view panning
 		{
 			if (level.width > screen_width)
 			{
@@ -176,8 +177,7 @@ void Game::check_unboost( Ball &ball )
 	{
 		if (ball.user_can_unboost)
 		{
-			// if boost is not time-based, user can cancel the boost
-			// by pushing ball in opposite direction
+			// if boost is not time-bound, user can cancel the boost by pushing ball in opposite direction
 			if ((ball.was_pushed_left() && ball.is_moving_right()) ||
 			    (ball.was_pushed_right() && ball.is_moving_left()))
 			{
@@ -199,11 +199,11 @@ redo:
 	bool y_in = static_cast<int>(ball.y) + ball.height > block.y &&
 	            static_cast<int>(ball.y) < block.y + block.height;
 	
-	if (x_in && y_in)
+	if (x_in && y_in)  // if ball inside block
 	{
-		if (block.collideable)
+		if (block.collidable)
 		{
-			// keep ball outside blocks
+			// force ball outside block
 			if (fabsf(ball.y_vel) > 1)
 			{
 				ball.y -= ball.is_moving_up() ? -1 : 1;
@@ -219,6 +219,7 @@ redo:
 		}
 		else
 		{
+			// handle ball interaction with non-collidable blocks
 			switch (block.type)
 			{
 			case Block::exit:
@@ -226,6 +227,7 @@ redo:
 				{
 					state = won;
 					ball.no_accel = true;
+					// TODO: maybe trap ball inside block?
 					
 					play_sample(samples["won"], 1, sample_pan(ball.x));
 				}
@@ -259,9 +261,10 @@ redo:
 		}
 	}
 	
-	if (!block.collideable)
+	if (!block.collidable)  // rest of function deals with collisions
 		return;
 	
+	// play no more than one sample per tick, otherwise both "bounce" and "nuke" might happen in the same tick, for example
 	Sample *sample = NULL;
 	
 	bool hit_top = false;
@@ -305,7 +308,7 @@ redo:
 				
 				sample = &samples["wall_jump"];
 			}
-			else if (fabsf(ball.x_vel) > 3 * ball.push_x_accel)
+			else if (fabsf(ball.x_vel) > 3 * ball.push_x_accel)  // if ball has enough force
 			{
 				sample = &samples["bounce"];
 			}
@@ -317,8 +320,8 @@ redo:
 		switch (block.type)
 		{
 		case Block::nuke:
+			state = lost;
 			ball.no_vel = true;
-			
 			block.ignore = true;
 			
 			for (int y = 0; y < Block::height; y += 3)
@@ -329,8 +332,6 @@ redo:
 				particles.push_back(SparkParticle(ball.x, ball.y, i / 6 - 1, ball.y_vel + i % 2, SDL_Color_RGBA(255, 255, 255)));
 			for (int i = 0; i < 9; ++i)
 				particles.push_back(SparkParticle(ball.x, ball.y, i / 3 - 1, ball.y_vel + i % 2, SDL_Color_RGBA(255, 128, 0)));
-			
-			state = lost;
 			
 			sample = &samples["nuke"];
 			break;
