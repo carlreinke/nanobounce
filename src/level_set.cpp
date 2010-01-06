@@ -1,3 +1,4 @@
+#include "audio.hpp"
 #include "game.hpp"
 #include "level_set.hpp"
 #include "main.hpp"
@@ -78,6 +79,8 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 	Fader fader(20);
 	fader.fade(Fader::in);
 	
+	std::list<Particle> particles;
+	
 	bool done = false;
 	while (!done && !global_quit)
 	{
@@ -134,6 +137,38 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
 				(*c)->update();
 			
+			// random fireworks
+			if (rand() % 20 == 0)
+			{
+				const int x = rand() % (screen_width - screen_width / 4) + (screen_width / 8),
+				          y = rand() % (screen_height - screen_height / 3) + (screen_height / 8);
+				
+				const SDL_Color colors[] =
+				{
+					SDL_Color_RGBA(224, 64, 64),   // red
+					SDL_Color_RGBA(224, 224, 64),  // yellow
+					SDL_Color_RGBA(64, 224, 64),   // green
+					SDL_Color_RGBA(64, 64, 224),   // blue
+					SDL_Color_RGBA(224, 64, 224),  // violet
+					SDL_Color_RGBA(255, 255, 255), // white
+				};
+				const SDL_Color &color = colors[(x + y) % COUNTOF(colors)];
+				
+				for (uint i = 0; i < 40; ++i)
+				{
+					const Fixed radius = (Fixed(rand() % (1024)) / 1024),
+					            angle = (Fixed(rand() % (31415 * 2)) / 10000),
+					            x_vel = cosf(angle) * radius,
+					            y_vel = sinf(angle) * radius;
+					
+					particles.push_back(FireworkParticle(x, y, x_vel, y_vel, color));
+				}
+				
+				play_sample(samples["nuke"], Fixed(1) / 5, Fixed(x) / screen_width);
+			}
+			
+			Particle::tick_all(particles);
+			
 			fader.update();
 			done = fader.is_done() && fader.was_fading(Fader::out);
 			
@@ -143,6 +178,9 @@ void pack_done_screen( SDL_Surface *surface, const string &pack_name )
 		if (frames--)
 		{
 			SDL_FillRect(surface, NULL, 0);
+			
+			for (list<Particle>::const_iterator i = particles.begin(); i != particles.end(); ++i)
+				i->draw(surface, 0, 0, fader.value());
 			
 			font.blit(surface, surface->w / 2, surface->h / 4, "Congratulations!", font_sprites[3], Font::majuscule, Font::center, fader.value());
 			font.blit(surface, surface->w / 2, surface->h / 2, pack_name, font_sprites[4], Font::center, fader.value());

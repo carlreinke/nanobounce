@@ -59,4 +59,11 @@ public:
 	SparkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const SDL_Color &color );
 };
 
+class FireworkParticle : public Particle
+{
+public:
+	FireworkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const SDL_Color &color );
+};
+
+
 #endif // PARTICLE_HPP

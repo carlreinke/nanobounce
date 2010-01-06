@@ -95,3 +95,17 @@ SparkParticle::SparkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const 
 	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 20 - 20;
 	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
 }
+
+FireworkParticle::FireworkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const SDL_Color &color )
+: Particle(x, y, rand() % 20 + 30, boost::shared_ptr<Sprite>(new Sprite(1, 1, color)))
+{
+	this->x_vel = x_vel;
+	this->y_vel = y_vel;
+	
+	y_accel /= 2;
+	
+	x_term_vel = y_term_vel = 100;  // large enough to be irrelevant
+	
+	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 20 - 30;
+	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
+}
