@@ -109,22 +109,42 @@ void CongratsLoop::update( void )
 	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
 	
+	// firework colors
+	static const SDL_Color red = SDL_Color_RGBA(224, 32, 32),
+	                       yellow = SDL_Color_RGBA(224, 160, 32),
+	                       green = SDL_Color_RGBA(32, 224, 64),
+	                       blue = SDL_Color_RGBA(64, 32, 224),
+	                       purple = SDL_Color_RGBA(224, 32, 192),
+	                       white = SDL_Color_RGBA(255, 255, 255);
+	static const SDL_Color *preset_colors[][3] =
+	{
+		// solids
+		{ &red, &red, &red },
+		{ &green, &green, &green },
+		{ &blue, &blue, &blue },
+		{ &white, &white, &white },
+		
+		// almost solids
+		{ &red, &red, &yellow },
+		{ &blue, &blue, &purple },
+		
+		// white highlights
+		{ &red, &red, &white },
+		{ &green, &green, &white },
+		{ &blue, &blue, &white },
+		{ &purple, &purple, &white },
+		
+		{ &red, &green, &blue },
+		{ &red, &white, &blue },  // yay, US
+	};
+	
 	// random fireworks
 	if (rand() % 20 == 0)
 	{
 		const int x = rand() % (screen_width - screen_width / 4) + (screen_width / 8),
 		          y = rand() % (screen_height - screen_height / 3) + (screen_height / 8);
 		
-		const SDL_Color colors[] =
-		{
-			SDL_Color_RGBA(224, 64, 64),   // red
-			SDL_Color_RGBA(224, 224, 64),  // yellow
-			SDL_Color_RGBA(64, 224, 64),   // green
-			SDL_Color_RGBA(64, 64, 224),   // blue
-			SDL_Color_RGBA(224, 64, 224),  // violet
-			SDL_Color_RGBA(255, 255, 255), // white
-		};
-		const SDL_Color &color = colors[(x + y) % COUNTOF(colors)];
+		const SDL_Color **colors = preset_colors[(x + y) % COUNTOF(preset_colors)];
 		
 		for (uint i = 0; i < 40; ++i)
 		{
@@ -133,7 +153,7 @@ void CongratsLoop::update( void )
 			            x_vel = cosf(angle) * radius,
 			            y_vel = sinf(angle) * radius;
 			
-			particles.push_back(FireworkParticle(x, y, x_vel, y_vel, color));
+			particles.push_back(FireworkParticle(x, y, x_vel, y_vel, *colors[i % COUNTOF(*preset_colors)]));
 		}
 		
 		play_sample(samples["nuke"], Fixed(1) / 5, Fixed(x) / screen_width);
