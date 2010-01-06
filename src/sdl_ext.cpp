@@ -88,6 +88,9 @@ int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, Uint32 pixel, Uint8 alph
 	}
 	crop_rect(dst, dstrect);
 	
+	if (SDL_MUSTLOCK(dst))
+		SDL_LockSurface(dst);
+	
 	const Uint32 Rmask = dst->format->Rmask, Rshift = dst->format->Rshift,
 	             Gmask = dst->format->Gmask, Gshift = dst->format->Gshift,
 	             Bmask = dst->format->Bmask, Bshift = dst->format->Bshift,
@@ -144,6 +147,9 @@ int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, Uint32 pixel, Uint8 alph
 		assert(false);
 		break;
 	}
+	
+	if (SDL_MUSTLOCK(dst))
+		SDL_UnlockSurface(dst);
 	
 	return 0;
 }
