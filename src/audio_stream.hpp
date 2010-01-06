@@ -40,6 +40,8 @@ private:
 	OggVorbis_File vorbis_file;
 	
 	SDL_AudioCVT cvt;
+	
+	friend class Sample;
 };
 
 #endif // AUDIO_STREAM_HPP

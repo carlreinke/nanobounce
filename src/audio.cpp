@@ -42,15 +42,15 @@ void init_audio( void )
 	
 	SDL_PauseAudio(0);
 	
-	samples["bounce"] = Sample("samples/bounce.wav");
-	samples["wall_jump"] = Sample("samples/wall_jump.wav");
-	samples["recycle"] = Sample("samples/recycle.wav");
-	samples["nuke"] = Sample("samples/nuke.wav");
-	samples["boost"] = Sample("samples/boost.wav");
-	samples["unboost"] = Sample("samples/unboost.wav");
+	samples["bounce"] = Sample("samples/bounce.ogg");
+	samples["wall_jump"] = Sample("samples/wall_jump.ogg");
+	samples["recycle"] = Sample("samples/recycle.ogg");
+	samples["nuke"] = Sample("samples/nuke.ogg");
+	samples["boost"] = Sample("samples/boost.ogg");
+	samples["unboost"] = Sample("samples/unboost.ogg");
 	
-	samples["won"] = Sample("samples/won.wav");
-	samples["lost"] = Sample("samples/lost.wav");
+	samples["won"] = Sample("samples/won.ogg");
+	samples["lost"] = Sample("samples/lost.ogg");
 	
 	play_next_music();
 }

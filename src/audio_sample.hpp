@@ -2,6 +2,7 @@
 #define AUDIO_SAMPLE_HPP
 
 #include "audio_channel.hpp"
+#include "audio_stream.hpp"
 
 class Sample : public Channel
 {

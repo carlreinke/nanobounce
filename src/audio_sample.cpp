@@ -14,36 +14,27 @@ Sample::Sample( const string &path )
 : Channel(),
   position(0)
 {
-	SDL_AudioSpec wav_spec;
-	SDL_AudioCVT wav_cvt;
-	Uint8 *wav_buffer;
-	Uint32 wav_length;
+	Stream stream(path);
 	
-	if (SDL_LoadWAV(path.c_str(), &wav_spec, &wav_buffer, &wav_length) == NULL)
+	if (stream.empty())
 	{
-		cerr << "error: '" << path << "' failed to load: " << SDL_GetError() << endl;
+		cerr << "error: '" << path << "' failed to load" << endl;
 		return;
 	}
 	
-	if (SDL_BuildAudioCVT(&wav_cvt,
-	                      wav_spec.format, wav_spec.channels, wav_spec.freq,
-	                      spec.format,     spec.channels,     spec.freq) == -1)
+	length = sizeof(Sint16) * spec.channels * ov_pcm_total(&stream.vorbis_file, -1);
+	buffer = boost::shared_array<Uint8>(new Uint8[length]);
+	
+	// copy entire stream into buffer
+	while (position < length && !stream.empty())
 	{
-		cerr << "error: '" << path << "' failed to load: " << SDL_GetError() << endl;
-		return;
+		uint amount = min(stream.size, length - position);
+		memcpy(&buffer[position], stream.get_buffer(amount), amount);
+		stream.flush(amount);
+		position += amount;
 	}
 	
-	wav_cvt.len = wav_length;
-	wav_cvt.buf = new Uint8[wav_cvt.len * wav_cvt.len_mult];
-	
-	memcpy(wav_cvt.buf, wav_buffer, wav_length);
-	
-	SDL_FreeWAV(wav_buffer);
-	
-	SDL_ConvertAudio(&wav_cvt);
-	
-	length = wav_cvt.len_cvt;
-	buffer = boost::shared_array<Uint8>(wav_cvt.buf);
+	position = 0;
 }
 
 Sample::Sample( const Sample &that )
