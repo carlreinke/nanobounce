@@ -1,8 +1,6 @@
 features
  * viewable highscore list
     - add user-visible replay
- * add particle class for explosions
-    - render text screens into particle matrixes
 
 misc
  * add a level pack class
