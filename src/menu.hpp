@@ -22,7 +22,22 @@ private:
 	SDL_Surface *background;
 };
 
-void game_menu( SDL_Surface *surface );
+class GameMenu : public Loop
+{
+public:
+	GameMenu( void );
+	
+	void handle_event( SDL_Event & );
+	void update( void );
+	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	
+private:
+	std::vector<std::string> entries;
+	uint selection;
+	
+	Ball ball;
+};
+
 void pack_menu( SDL_Surface *surface );
 
 #endif // MENU_HPP

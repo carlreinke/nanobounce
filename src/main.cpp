@@ -96,7 +96,8 @@ int main( int argc, char *argv[] )
 	}
 	else
 	{
-		game_menu(surface);
+		GameMenu menu;
+		menu.loop(surface);
 	}
 	
 	SDL_RemoveTimer(frame_timer);

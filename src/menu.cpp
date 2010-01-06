@@ -74,8 +74,6 @@ void SimpleMenu::update( void )
 
 void SimpleMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
-	(void)alpha;
-	
 	SDL_FillRect(surface, NULL, 0);
 	
 	SDL_SetAlpha(background, SDL_SRCALPHA, SDL_ALPHA_OPAQUE - alpha / 2);
@@ -92,140 +90,100 @@ void SimpleMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	}
 }
 
-void game_menu( SDL_Surface *surface )
+GameMenu::GameMenu( void )
+: selection(0), ball(screen_width / 2, screen_height)
 {
-	uint selection = 0;
-	string menu_items[] =
+	const string menu_items[] =
 	{
 		"Play",
-//		"Scores",
 		"Quit"
 	};
-	
-	Ball ball(surface->w / 2, surface->h);
-	
-	bool quit = false;
-	while (!quit && !global_quit)
+	for (uint i = 0; i < COUNTOF(menu_items); ++i)
+		entries.push_back(menu_items[i]);
+}
+
+void GameMenu::handle_event( SDL_Event &e )
+{
+	switch (e.type)
 	{
-		SDL_WaitEvent(NULL);
-		
-		int updates = 0, frames = 0;
-		
-		SDL_Event e;
-		while (SDL_PollEvent(&e))
+	case SDL_KEYDOWN:
+		switch (e.key.keysym.sym)
 		{
-			switch (e.type)
+		case Controller::back_key:
+		case Controller::quit_key:
+			loop_quit = true;
+			break;
+			
+		case Controller::left_key:
+		case Controller::left_shoulder_key:
+			if (selection > 0)
+				--selection;
+			break;
+			
+		case Controller::right_key:
+		case Controller::right_shoulder_key:
+			if (selection < entries.size() - 1)
+				++selection;
+			break;
+			
+		case Controller::select_key:
+		case Controller::start_key:
+			switch (selection)
 			{
-			case SDL_QUIT:
-				global_quit = true;
+			case 0:
+				pack_menu(SDL_GetVideoSurface());
 				break;
 				
-			case SDL_KEYDOWN:
-				switch (e.key.keysym.sym)
-				{
-				case Controller::back_key:
-				case Controller::quit_key:
-					quit = true;
-					break;
-					
-				case Controller::left_key:
-				case Controller::left_shoulder_key:
-					if (selection > 0)
-						--selection;
-					break;
-					
-				case Controller::right_key:
-				case Controller::right_shoulder_key:
-					if (selection < COUNTOF(menu_items) - 1)
-						++selection;
-					break;
-					
-				case Controller::select_key:
-				case Controller::start_key:
-					switch (selection)
-					{
-					case 0:
-						pack_menu(surface);
-						break;
-						
-					case 1:
-						quit = true;
-						break;
-					}
-					break;
-					
-				case Controller::vol_up_key:
-					trigger_volume_change(0.1f);
-					break;
-				case Controller::vol_down_key:
-					trigger_volume_change(-0.1f);
-					break;
-					
-				default:
-					break;
-				}
+			case 1:
+				loop_quit = true;
 				break;
-				
-			case SDL_USEREVENT:
-				switch (e.user.code)
-				{
-				case USER_UPDATE:
-					++updates;
-					break;
-				case USER_FRAME:
-					++frames;
-					break;
-				}
 			}
+			break;
+			
+		default:
+			break;
 		}
-		
-		while (updates--)
-		{
-			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-				(*c)->update();
-			
-			for (int i = 0; i < 4; ++i)
-			{
-				int x = surface->w * (Fixed(static_cast<int>(selection) + 1) / (static_cast<int>(COUNTOF(menu_items)) + 1)),
-					y = surface->h - font.height(font_sprites[3]) * 2;
-				
-				ball.tick(ball.x > x ? -1 : 1);
-				if (ball.y > y)
-					ball.y_vel = -ball.y_term_vel;
-			}
-			
-			update_volume_notification();
-		}
-		
-		if (frames--)
-		{
-			SDL_FillRect(surface, NULL, 0);
-			
-			ball.draw(surface);
-			
-			font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[4]), "Nanobounce", font_sprites[4], Font::majuscule, Font::center);
-			
-			for (uint i = 0; i < COUNTOF(menu_items); ++i)
-			{
-				int x = surface->w * (Fixed(static_cast<int>(i) + 1) / (static_cast<int>(COUNTOF(menu_items)) + 1)),
-					y = surface->h - font.height(font_sprites[3]) * 3;
-				
-				font.blit(surface, x, y, menu_items[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? SDL_ALPHA_OPAQUE : 128);
-			}
-			
-			font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.1 BETA", font_sprites[1], Font::majuscule, Font::left);
-			
-			font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]) * 2, "programming, graphics, and sound:", font_sprites[1], Font::majuscule, Font::right);
-			font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]), "Carl \"Mindless\" Reinke", font_sprites[1], Font::majuscule, Font::right);
-			
-			draw_volume_notification(surface);
-			
-			SDL_Flip(surface);
-			
-			if (frames > 0)
-				clog << "dropped " << frames << " frame(s)" << endl;
-		}
+		break;
 	}
+}
+
+void GameMenu::update( void )
+{
+	// update controller
+	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+		(*c)->update();
+	
+	for (int i = 0; i < 4; ++i)
+	{
+		int x = screen_width * (selection + 1) / (entries.size() + 1),
+			y = screen_height - font.height(font_sprites[3]) * 2;
+		
+		ball.tick(ball.x > x ? -1 : 1);
+		if (ball.y > y)
+			ball.y_vel = -ball.y_term_vel;
+	}
+}
+
+void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
+{
+	SDL_FillRect(surface, NULL, 0);
+	
+	ball.draw(surface, 0, 0, alpha);
+	
+	font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[4]), "Nanobounce", font_sprites[4], Font::majuscule, Font::center, alpha);
+	
+	for (uint i = 0; i < entries.size(); ++i)
+	{
+		int x = surface->w * (i + 1) / (entries.size() + 1),
+			y = surface->h - font.height(font_sprites[3]) * 3;
+		
+		font.blit(surface, x, y, entries[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? alpha : alpha / 2);
+	}
+	
+	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.1 BETA", font_sprites[1], Font::majuscule, Font::left, alpha);
+	
+	font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]) * 2, "programming, graphics, and sound:", font_sprites[1], Font::majuscule, Font::right, alpha);
+	font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]), "Carl \"Mindless\" Reinke", font_sprites[1], Font::majuscule, Font::right, alpha);
 }
 
 class Pack_Entry

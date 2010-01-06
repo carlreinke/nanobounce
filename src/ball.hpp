@@ -65,7 +65,7 @@ private:
 	
 	friend class Game;
 	friend class Particle;
-	friend void game_menu( SDL_Surface * );
+	friend class GameMenu;
 };
 
 #endif // BALL_HPP
