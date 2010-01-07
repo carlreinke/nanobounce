@@ -5,6 +5,23 @@
 #include "loop.hpp"
 #include "particle.hpp"
 
+class LevelSet
+{
+public:
+	LevelSet( const std::string &directory );
+	bool invalid( void ) const { return !valid; }
+	bool operator<( const LevelSet &that ) const { return this->name < that.name; }
+	
+	void play( SDL_Surface * );
+	
+	std::string name, author;
+	
+private:
+	bool valid;
+	
+	std::string directory;
+};
+
 class CongratsLoop : public Loop
 {
 public:

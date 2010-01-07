@@ -3,7 +3,6 @@
 #include "file_system.hpp"
 #include "font.hpp"
 #include "highscore.hpp"
-#include "level_set.hpp"
 #include "main.hpp"
 #include "menu.hpp"
 #include "misc.hpp"
@@ -131,7 +130,13 @@ void GameMenu::handle_event( SDL_Event &e )
 			switch (selection)
 			{
 			case 0:
-				pack_menu(SDL_GetVideoSurface());
+				{
+					LevelSetMenu menu;
+					menu.loop(SDL_GetVideoSurface());
+					
+					if (!menu.no_selection)
+						menu.entries[menu.selection].play(SDL_GetVideoSurface());
+				}
 				break;
 				
 			case 1:
@@ -186,169 +191,112 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]), "Carl \"Mindless\" Reinke", font_sprites[1], Font::majuscule, Font::right, alpha);
 }
 
-class Pack_Entry
+LevelSetMenu::LevelSetMenu( void )
+: selection(0), no_selection(false),
+  y(0), y_vel(0), y_accel(1)
 {
-public:
-	Pack_Entry( string name, string author, string directory ) : name(name), author(author), directory(directory) {  }
-	string name, author, directory;
-	bool operator<( const Pack_Entry &that ) const { return this->name < that.name; }
-};
-
-void pack_menu( SDL_Surface *surface )
-{
-	string directory = "levels/";
+	string directory = "levels";
 	
-	vector<Pack_Entry> packs;
+	vector<string> dir_entries = directory_listing(directory);
 	
-	// populate the pack list
+	// populate the level set list
+	for (vector<string>::const_iterator dir_entry = dir_entries.begin(); dir_entry != dir_entries.end(); ++dir_entry)
 	{
-		vector<string> entries = directory_listing(directory);
-		
-		for (vector<string>::const_iterator entry = entries.begin(); entry != entries.end(); ++entry)
-		{
-			string filename = directory + *entry + "/" + "meta";
-			
-			if (path_exists(filename))
-			{
-				string pack_name, author;
-				
-				ifstream pack_data(filename.c_str());
-				getline(pack_data, pack_name);
-				getline(pack_data, author);
-				
-				if (pack_data.good())
-					packs.push_back(Pack_Entry(pack_name, author, *entry + "/"));
-			}
-		}
+		LevelSet entry(directory + "/" + *dir_entry);
+		if (!entry.invalid())
+			entries.push_back(entry);
 	}
 	
-	sort(packs.begin(), packs.end());
-	
-	uint selection = 0;
-	
-	bool quit = false;
-	while (!quit && !global_quit)
+	sort(entries.begin(), entries.end());
+}
+
+void LevelSetMenu::handle_event( SDL_Event &e )
+{
+	switch (e.type)
 	{
-		SDL_WaitEvent(NULL);
-		
-		int updates = 0, frames = 0;
-		
-		SDL_Event e;
-		while (SDL_PollEvent(&e))
+	case SDL_KEYDOWN:
+		switch (e.key.keysym.sym)
 		{
-			switch (e.type)
-			{
-			case SDL_QUIT:
-				global_quit = true;
-				break;
-				
-			case SDL_KEYDOWN:
-				switch (e.key.keysym.sym)
-				{
-				case Controller::back_key:
-				case Controller::quit_key:
-					quit = true;
-					break;
-					
-				case Controller::up_key:
-				case Controller::left_key:
-				case Controller::left_shoulder_key:
-					if (selection > 0)
-						--selection;
-					else
-						selection = packs.size() - 1;
-					break;
-					
-				case Controller::down_key:
-				case Controller::right_key:
-				case Controller::right_shoulder_key:
-					if (selection < packs.size() - 1)
-						++selection;
-					else
-						selection = 0;
-					break;
-					
-				case Controller::select_key:
-				case Controller::start_key:
-					directory += packs[selection].directory;
-					play_pack(surface, directory);
-					
-					quit = true;
-					break;
-					
-				case Controller::vol_up_key:
-					trigger_volume_change(0.1f);
-					break;
-				case Controller::vol_down_key:
-					trigger_volume_change(-0.1f);
-					break;
-					
-				default:
-					break;
-				}
-				break;
-				
-			case SDL_USEREVENT:
-				switch (e.user.code)
-				{
-				case USER_UPDATE:
-					++updates;
-					break;
-				case USER_FRAME:
-					++frames;
-					break;
-				}
-			}
+		case Controller::back_key:
+		case Controller::quit_key:
+			no_selection = true;
+			loop_quit = true;
+			break;
+			
+		case Controller::up_key:
+		case Controller::left_key:
+		case Controller::left_shoulder_key:
+			if (selection == 0)
+				selection = entries.size();
+			--selection;
+			break;
+			
+		case Controller::down_key:
+		case Controller::right_key:
+		case Controller::right_shoulder_key:
+			if (++selection >= entries.size())
+				selection = 0;
+			break;
+			
+		case Controller::select_key:
+		case Controller::start_key:
+			loop_quit = true;
+			break;
+			
+		default:
+			break;
 		}
-		
-		while (updates--)
+		break;
+	}
+}
+
+void LevelSetMenu::update( void )
+{
+	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+		(*c)->update();
+	
+	// smooth menu movement
+	const int target_y = -font.height(font_sprites[3]) * selection;
+	const Fixed y_off = target_y - y;
+	
+	if ((y_off > 0 && y_accel < 0) || (y_off < 0 && y_accel > 0))
+		y_accel = -y_accel;
+	
+	const Fixed ticks_to_decelerate = y_vel / y_accel,
+	            ticks_until_target = (y_vel == 0) ? (y_off / y_accel) : (y_off / y_vel);
+	
+	if (ticks_to_decelerate < ticks_until_target || ticks_until_target < 0)
+		y_vel += y_accel;
+	else if (ticks_to_decelerate > ticks_until_target)
+		y_vel -= y_accel;
+	
+	y += y_vel;
+}
+
+void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
+{
+	SDL_FillRect(surface, NULL, 0);
+	
+	int y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[3]) - font.height(font_sprites[3]) / 2) / 2;
+	
+	for (uint i = 0; i < entries.size(); ++i)
+	{
+		if (i == selection)
 		{
-			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-				(*c)->update();
-			
-			update_volume_notification();
+			y += font.height(font_sprites[4]) / 3;
+			font.blit(surface, surface->w / 2, y, entries[i].name, font_sprites[4], Font::center, alpha);
+			y += font.height(font_sprites[4]);
+			font.blit(surface, surface->w / 2, y, entries[i].author, font_sprites[1], Font::center, alpha);
+			y += font.height(font_sprites[1]);
+			y += font.height(font_sprites[4]) / 3;
 		}
-		
-		if (frames--)
+		else
 		{
-			SDL_FillRect(surface, NULL, 0);
-			
-			// draw list
-			{
-				int y = font.height(font_sprites[3]) / 2;
-				int p = static_cast<int>(selection) - 4;
-				
-				for (uint i = 0; i < 4; ++i)
-				{
-					if (p >= 0)
-						font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
-					y += font.height(font_sprites[3]);
-					++p;
-				}
-				
-				y += font.height(font_sprites[3]) / 2;
-				font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center);
-				y += font.height(font_sprites[3]);
-				font.blit(surface, surface->w / 2, y, packs[p].author, font_sprites[1], Font::center);
-				y += font.height(font_sprites[1]);
-				y += font.height(font_sprites[3]) / 2;
-				++p;
-				
-				for (uint i = 0; i < 4; ++i)
-				{
-					if (static_cast<uint>(p) < packs.size())
-						font.blit(surface, surface->w / 2, y, packs[p].name, font_sprites[3], Font::center, 128);
-					y += font.height(font_sprites[3]);
-					++p;
-				}
-			}
-			
-			draw_volume_notification(surface);
-			
-			SDL_Flip(surface);
-			
-			if (frames > 0)
-				clog << "dropped " << frames << " frame(s)" << endl;
+			if (y > surface->h)
+				break;
+			else if (y > -static_cast<int>(font.height(font_sprites[3])))
+				font.blit(surface, surface->w / 2, y, entries[i].name, font_sprites[3], Font::center, alpha / 2);
+			y += font.height(font_sprites[3]);
 		}
 	}
 }

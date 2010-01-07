@@ -1,4 +1,5 @@
 #include "audio.hpp"
+#include "file_system.hpp"
 #include "game.hpp"
 #include "level_set.hpp"
 #include "main.hpp"
@@ -6,14 +7,29 @@
 
 using namespace std;
 
-void play_pack( SDL_Surface *surface, const string &directory )
+LevelSet::LevelSet( const std::string &directory )
+: valid(false), directory(directory)
 {
-	string meta_path;
-	meta_path = directory + "meta";
+	const string meta_path = directory + "/" + "meta";
+	
+	if (path_exists(meta_path))
+	{
+		ifstream meta(meta_path.c_str());
+		getline(meta, name);
+		getline(meta, author);
+		
+		valid = meta.good();
+	}
+}
+
+void LevelSet::play( SDL_Surface *surface )
+{
+	assert(valid);
+	
+	const string meta_path = directory + "/" + "meta";
 	ifstream meta(meta_path.c_str());
 	
-	string pack_name, author;
-	getline(meta, pack_name);
+	getline(meta, name);
 	getline(meta, author);
 	
 	string level_path;
@@ -31,17 +47,15 @@ void play_pack( SDL_Surface *surface, const string &directory )
 		}
 		else
 		{
-			string level_file;
-			getline(meta, level_file);
+			getline(meta, level_path);
+			level_path = directory + "/" + level_path;
 			
-			if (!meta.good())
+			if (!meta.good())  // if end of level list
 			{
-				CongratsLoop congrats(pack_name);
+				CongratsLoop congrats(name);
 				congrats.loop(surface);
 				return;
 			}
-			
-			level_path = directory + level_file;
 			
 			cout << "loading '" << level_path << "'" << endl;
 			

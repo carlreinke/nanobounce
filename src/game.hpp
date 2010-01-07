@@ -49,9 +49,9 @@ private:
 	
 	std::list<Particle> particles;
 	
-	friend void play_pack( SDL_Surface *, const std::string & ); // TODO fix this
-	
 	void menu( void );
+	
+	friend class LevelSet;
 };
 
 #endif // GAME_HPP
