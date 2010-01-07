@@ -44,8 +44,8 @@ int Controller::drop_input( const SDL_Event *e )
 	{
 	case SDL_KEYDOWN:
 	case SDL_KEYUP:
-	case SDL_MOUSEMOTION:
-	case SDL_MOUSEBUTTONDOWN:
+	// case SDL_MOUSEMOTION:
+	// case SDL_MOUSEBUTTONDOWN:
 	case SDL_MOUSEBUTTONUP:
 	case SDL_JOYAXISMOTION:
 	case SDL_JOYBALLMOTION:

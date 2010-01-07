@@ -18,7 +18,10 @@ public:
 	
 	void reset( void );
 	
-	void set_block_at_position( int x, int y, Block::types );
+	int align( int value, int mod ) { return value - value % mod; }
+	
+	std::vector<Block>::iterator block_at_position( int x, int y );
+	void set_block_at_position( int x, int y, Block::Type );
 	
 private:
 	int x_offset, y_offset;

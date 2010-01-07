@@ -5,7 +5,7 @@ using namespace std;
 
 std::vector<Sprite> Block::sprites;
 
-Block::Block( int x, int y, types type )
+Block::Block( int x, int y, Type type )
 : x(x), y(y), type(type)
 {
 	if (sprites.empty())

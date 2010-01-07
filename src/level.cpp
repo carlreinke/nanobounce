@@ -6,7 +6,7 @@
 
 using namespace std;
 
-map<Block::types, char> Level::block_chars;
+map<Block::Type, char> Level::block_chars;
 
 Level::Level( void )
 : name(m_name)
@@ -49,7 +49,7 @@ bool Level::load( istream &data )
 	
 	blocks.clear();
 	
-	const map<char, Block::types> block_chars_temp = flip(block_chars);
+	const map<char, Block::Type> block_chars_temp = flip(block_chars);
 	
 	int x, y;
 	char type_char;
@@ -58,7 +58,7 @@ bool Level::load( istream &data )
 	{
 		x *= Block::width;
 		y *= Block::height;
-		Block::types type = block_chars_temp.find(type_char)->second;
+		Block::Type type = block_chars_temp.find(type_char)->second;
 		
 		blocks.push_back(Block(x, y, type));
 	}

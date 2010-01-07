@@ -7,7 +7,7 @@
 class Block
 {
 public:
-	enum types
+	enum Type
 	{
 		none,
 		ball,
@@ -27,7 +27,7 @@ public:
 		_max
 	};
 	
-	Block( int x, int y, types type );
+	Block( int x, int y, Type type );
 	
 	void reset( void );
 	
@@ -38,7 +38,7 @@ public:
 private:
 	int x, y;
 	
-	types type;
+	Type type;
 	
 	bool collidable;
 	bool ignore;

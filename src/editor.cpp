@@ -70,7 +70,7 @@ void Editor::handle_event( SDL_Event &e )
 			break;
 			
 		case Controller::select_key:
-			set_block_at_position(cursor_x, cursor_y, static_cast<Block::types>(cursor_block));
+			set_block_at_position(cursor_x, cursor_y, static_cast<Block::Type>(cursor_block));
 			break;
 			
 		case Controller::left_shoulder_key:
@@ -78,13 +78,41 @@ void Editor::handle_event( SDL_Event &e )
 				cursor_block = Block::_max;
 			--cursor_block;
 			break;
-			
 		case Controller::right_shoulder_key:
 		case Controller::back_key:
 			++cursor_block %= Block::_max;
 			break;
 			
 		default:
+			break;
+		}
+		break;
+		
+	case SDL_MOUSEMOTION:
+		cursor_x = align(e.motion.x, Block::width);
+		cursor_y = align(e.motion.y, Block::height);
+		break;
+	case SDL_MOUSEBUTTONDOWN:
+		switch (e.button.button)
+		{
+		case SDL_BUTTON_LEFT:
+			set_block_at_position(e.button.x, e.button.y, static_cast<Block::Type>(cursor_block));
+			break;
+		case SDL_BUTTON_RIGHT:
+			{
+				vector<Block>::iterator block = block_at_position(e.button.x, e.button.y);
+				cursor_block = (block == level.blocks.end()) ? Block::none : block->type;
+			}
+			break;
+			
+		case SDL_BUTTON_WHEELUP:
+			if (cursor_block == 0)
+				cursor_block = Block::_max;
+			--cursor_block;
+			break;
+		case SDL_BUTTON_MIDDLE:
+		case SDL_BUTTON_WHEELDOWN:
+			++cursor_block %= Block::_max;
 			break;
 		}
 		break;
@@ -170,7 +198,6 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 		block_sprites[block->type].blit(surface, x_offset + block->x, y_offset + block->y, alpha);
 	
 	// cursor
-	// TODO: replace this with a sprite cursor
 	Sprite sprite[2] =
 	{
 		Sprite(4, 2, SDL_Color_RGBA(255, 255, 255)),
@@ -211,22 +238,34 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 	}
 }
 
-void Editor::set_block_at_position( int x, int y, Block::types type )
+vector<Block>::iterator Editor::block_at_position( int x, int y )
 {
 	x -= x % Block::width;
 	y -= y % Block::height;
 	
-	for (vector<Block>::iterator block = level.blocks.begin(); block != level.blocks.end(); ++block)
-	{
+	for (vector<Block>::reverse_iterator block = level.blocks.rbegin(); block != level.blocks.rend(); ++block)
 		if (block->x == x && block->y == y)
-		{
-			if (type == Block::none)
-				level.blocks.erase(block);
-			else
-				block->type = type;
-			return;
-		}
-	}
+			return block.base() - 1;
 	
-	level.blocks.push_back(Block(x, y, type));
+	return level.blocks.end();
+}
+
+void Editor::set_block_at_position( int x, int y, Block::Type type )
+{
+	x -= x % Block::width;
+	y -= y % Block::height;
+	
+	vector<Block>::iterator block = block_at_position(x, y);
+	
+	if (block != level.blocks.end())
+	{
+		if (type == Block::none)
+			level.blocks.erase(block);
+		else
+			block->type = type;
+	}
+	else
+	{
+		level.blocks.push_back(Block(x, y, type));
+	}
 }
