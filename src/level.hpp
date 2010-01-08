@@ -30,7 +30,7 @@ private:
 	int width, height;
 	std::vector<Block> blocks;
 	
-	static std::map<Block::Type, char> block_chars;
+	static boost::bimap<Block::Type, char> block_chars;
 	
 	friend class Game;
 	friend class Editor;

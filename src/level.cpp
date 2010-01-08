@@ -6,27 +6,27 @@
 
 using namespace std;
 
-map<Block::Type, char> Level::block_chars;
+boost::bimap<Block::Type, char> Level::block_chars;
 
 Level::Level( void )
 : valid(false)
 {
 	if (block_chars.empty())
 	{
-		block_chars[Block::none] = ' ';
-		block_chars[Block::ball] = '.';
-		block_chars[Block::exit] = 'x';
-		block_chars[Block::normal] = '=';
-		block_chars[Block::nuke] = '*';
-		block_chars[Block::recycle] = '-';
+		block_chars.insert(make_bipair(Block::none, ' '));
+		block_chars.insert(make_bipair(Block::ball, '.'));
+		block_chars.insert(make_bipair(Block::exit, 'x'));
+		block_chars.insert(make_bipair(Block::normal, '='));
+		block_chars.insert(make_bipair(Block::nuke, '*'));
+		block_chars.insert(make_bipair(Block::recycle, '-'));
 		
-		block_chars[Block::boost_up] = '^';
-		block_chars[Block::boost_left] = '<';
-		block_chars[Block::boost_right] = '>';
+		block_chars.insert(make_bipair(Block::boost_up, '^'));
+		block_chars.insert(make_bipair(Block::boost_left, '<'));
+		block_chars.insert(make_bipair(Block::boost_right, '>'));
 		
-		block_chars[Block::push_up] = 'u';
-		block_chars[Block::push_left] = 'l';
-		block_chars[Block::push_right] = 'r';
+		block_chars.insert(make_bipair(Block::push_up, 'u'));
+		block_chars.insert(make_bipair(Block::push_left, 'l'));
+		block_chars.insert(make_bipair(Block::push_right, 'r'));
 	}
 }
 
@@ -57,8 +57,6 @@ bool Level::load( istream &data )
 	
 	blocks.clear();
 	
-	const map<char, Block::Type> block_chars_temp = flip(block_chars);
-	
 	int x, y;
 	char type_char;
 	
@@ -66,7 +64,7 @@ bool Level::load( istream &data )
 	{
 		x *= Block::width;
 		y *= Block::height;
-		Block::Type type = block_chars_temp.find(type_char)->second;
+		Block::Type type = block_chars.right.at(type_char);
 		
 		blocks.push_back(Block(x, y, type));
 	}
@@ -109,7 +107,7 @@ bool Level::save( ostream &data ) const
 		{
 			data << (i->x / Block::width) << " "
 			     << (i->y / Block::height) << " "
-			     << block_chars[i->type] << endl;
+			     << block_chars.left.at(i->type) << endl;
 		}
 	}
 	
