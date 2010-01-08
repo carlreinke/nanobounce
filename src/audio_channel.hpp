@@ -4,6 +4,8 @@
 #include "fixed.hpp"
 #include "SDL.h"
 
+extern bool reverse_stereo;
+
 class Channel
 {
 public:
@@ -39,14 +41,12 @@ void Channel::mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream_, uint l
 		break;
 	case 2:
 	default:
-#ifdef TARGET_GP2X
-		// reverse stereo
-		channel_volume[0] *= pan;
-		channel_volume[1] *= 1 - pan;
-#else
 		channel_volume[0] *= 1 - pan;
 		channel_volume[1] *= pan;
-#endif
+		
+		if (reverse_stereo)
+			std::swap(channel_volume[0], channel_volume[1]);
+		
 		break;
 	}
 	

@@ -25,7 +25,7 @@ int main( int argc, char *argv[] )
 	bool editor = false, replay = false;
 	
 	int opt;
-	while ((opt = getopt(argc, argv, "aemr:")) != -1)
+	while ((opt = getopt(argc, argv, "aemr:s")) != -1)
 	{
 		switch (opt)
 		{
@@ -45,6 +45,10 @@ int main( int argc, char *argv[] )
 			replay = true;
 			
 			controllers.push_back(boost::shared_ptr<Controller>(new Replay(optarg)));
+			break;
+			
+		case 's':
+			reverse_stereo = true;
 			break;
 			
 		case '?':
