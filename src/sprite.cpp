@@ -70,9 +70,9 @@ void Sprite::load_ppm( istream &ppm )
 	
 	surface = SDL_CreateRGBSurface(SDL_HWSURFACE || SDL_HWACCEL, w, h, screen_bpp, 0, 0, 0, 0);
 	
-	SDL_Rect rect = { 0, 0, 1, 1 };
+	int x = 0, y = 0;
 	
-	while (ppm.good() && rect.y < h)
+	while (ppm.good() && y < h)
 	{
 		SDL_Color color =
 		{
@@ -81,12 +81,12 @@ void Sprite::load_ppm( istream &ppm )
 			static_cast<int>(get_no_comments<int>(ppm) * (component_max / Fixed(255)))
 		};
 		
-		SDL_FillRect(surface, &rect, color);
+		SDL_SetPixel(surface, x, y, color);
 		
-		if (++rect.x == w)
+		if (++x == w)
 		{
-			rect.x = 0;
-			++rect.y;
+			x = 0;
+			++y;
 		}
 	}
 }

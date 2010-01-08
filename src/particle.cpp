@@ -4,26 +4,26 @@
 
 using namespace std;
 
-Particle::Particle( Fixed x, Fixed y, uint ticks_to_live, const boost::shared_ptr<Sprite> &sprite )
+Particle::Particle( Fixed x, Fixed y, uint ticks_to_live, const SDL_Color &color )
 : x(x), y(y),
   x_vel(0), y_vel(0),
   x_accel(0), y_accel(Ball::y_accel),
   x_term_vel(Ball::x_term_vel), y_term_vel(Ball::y_term_vel),
   ticks_to_live(ticks_to_live),
   alpha(SDL_ALPHA_OPAQUE), alpha_per_tick(0),
-  sprite(sprite)
+  color(color)
 {
 	/* nothing to do */
 }
 
 void Particle::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
 {
-	alpha = this->alpha * alpha >> 8;
+	alpha = static_cast<int>(this->alpha) * alpha / 256;
 	Uint8 alpha_trail = alpha / trail.size();
 	
 	for (deque<coord>::const_reverse_iterator i = trail.rbegin(); i != trail.rend(); ++i)
 	{
-		sprite->blit(surface, x_offset + i->first, y_offset + i->second, alpha);
+		SDL_SetPixelA(surface, x_offset + i->first, y_offset + i->second, color, alpha);
 		alpha -= alpha_trail;
 	}
 }
@@ -62,10 +62,8 @@ void Particle::tick_all( list<Particle> &particles )
 	}
 }
 
-boost::shared_ptr<Sprite> ExplosionParticle::sprite(new Sprite(1, 1, SDL_Color_RGBA(255, 0, 0)));
-
 ExplosionParticle::ExplosionParticle( Fixed x, Fixed y )
-: Particle(x, y, rand() % 50 + 20, sprite)
+: Particle(x, y, rand() % 50 + 20, SDL_Color_RGBA(255, 0, 0))
 {
 	x_vel = Fixed(rand() % (1024 * 2) - 1024) / 1024;
 	y_vel = Fixed(rand() % (1024 * 2) - 1024) / 1024;
@@ -74,10 +72,8 @@ ExplosionParticle::ExplosionParticle( Fixed x, Fixed y )
 	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
 }
 
-boost::shared_ptr<Sprite> DustParticle::sprite(new Sprite(1, 1, SDL_Color_RGBA(128, 128, 128)));
-
 DustParticle::DustParticle( Fixed x, Fixed y )
-: Particle(x, y, rand() % 60 + 20, sprite)
+: Particle(x, y, rand() % 60 + 20, SDL_Color_RGBA(128, 128, 128))
 {
 	x_vel = (Fixed(rand() % (1024 * 2) - 1024) / 1024) / 5;
 	y_vel = (Fixed(rand() % 1024) / 1024) / 5;
@@ -87,7 +83,7 @@ DustParticle::DustParticle( Fixed x, Fixed y )
 }
 
 SparkParticle::SparkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const SDL_Color &color )
-: Particle(x, y, rand() % 20 + 20, boost::shared_ptr<Sprite>(new Sprite(1, 1, color)))
+: Particle(x, y, rand() % 20 + 20, color)
 {
 	this->x_vel = (Fixed(rand() % (1024 * 2) - 1024) / 1024) / 5 + x_vel;
 	this->y_vel = (Fixed(rand() % (1024 * 2) - 1024) / 1024) / 5 + y_vel;
@@ -97,7 +93,7 @@ SparkParticle::SparkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const 
 }
 
 FireworkParticle::FireworkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const SDL_Color &color )
-: Particle(x, y, rand() % 20 + 30, boost::shared_ptr<Sprite>(new Sprite(1, 1, color)))
+: Particle(x, y, rand() % 20 + 30, color)
 {
 	this->x_vel = x_vel;
 	this->y_vel = y_vel;

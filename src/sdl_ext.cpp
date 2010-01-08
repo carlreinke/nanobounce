@@ -153,3 +153,96 @@ int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, Uint32 pixel, Uint8 alph
 	
 	return 0;
 }
+
+void SDL_SetPixel( SDL_Surface *dst, int x, int y, Uint32 pixel )
+{
+	if (x < 0 || x >= dst->w || y < 0 || y >= dst->h)
+		return;
+	
+	if (SDL_MUSTLOCK(dst))
+		SDL_LockSurface(dst);
+	
+	Uint8 *pixels = reinterpret_cast<Uint8 *>(dst->pixels) + dst->pitch * y + dst->format->BytesPerPixel * x;
+	
+	switch (dst->format->BytesPerPixel)
+	{
+	case 4:
+		set_pixel<Uint32>(pixels, pixel);
+		break;
+		
+	case 2:
+		set_pixel<Uint16>(pixels, pixel);
+		break;
+		
+	default:
+		assert(false);
+		break;
+	}
+	
+	if (SDL_MUSTLOCK(dst))
+		SDL_UnlockSurface(dst);
+}
+
+void SDL_SetPixelA( SDL_Surface *dst, int x, int y, Uint32 pixel, Uint8 alpha )
+{
+	if (x < 0 || x >= dst->w || y < 0 || y >= dst->h)
+		return;
+	
+	if (alpha == SDL_ALPHA_OPAQUE)
+		return SDL_SetPixel(dst, x, y, pixel);
+	
+	if (SDL_MUSTLOCK(dst))
+		SDL_LockSurface(dst);
+	
+	const Uint32 Rmask = dst->format->Rmask, Rshift = dst->format->Rshift,
+	             Gmask = dst->format->Gmask, Gshift = dst->format->Gshift,
+	             Bmask = dst->format->Bmask, Bshift = dst->format->Bshift,
+	             Amask = dst->format->Amask;
+	const Uint32 dR = (pixel & Rmask) >> Rshift,
+	             dG = (pixel & Gmask) >> Gshift,
+	             dB = (pixel & Bmask) >> Bshift;
+	
+	Uint8 *pixels = reinterpret_cast<Uint8 *>(dst->pixels) + dst->pitch * y + dst->format->BytesPerPixel * x;
+	
+	Uint32 s;
+	
+	switch (dst->format->BytesPerPixel)
+	{
+	case 4:
+		s = get_pixel<Uint32>(pixels);
+		break;
+		
+	case 2:
+		s = get_pixel<Uint16>(pixels);
+		break;
+		
+	default:
+		assert(false);
+		break;
+	}
+	
+	Uint32 sR = s & Rmask, sG = s & Gmask, sB = s & Bmask, sA = s & Amask;
+	sR = (sR + ((((dR - (sR >> Rshift)) * alpha) >> 8) << Rshift)) & Rmask;
+	sG = (sG + ((((dG - (sG >> Gshift)) * alpha) >> 8) << Gshift)) & Gmask;
+	sB = (sB + ((((dB - (sB >> Bshift)) * alpha) >> 8) << Bshift)) & Bmask;
+	set_pixel<Uint16>(pixels, sR | sG | sB | sA);
+	
+	switch (dst->format->BytesPerPixel)
+	{
+	case 4:
+		set_pixel<Uint32>(pixels, sR | sG | sB | sA);
+		break;
+		
+	case 2:
+		set_pixel<Uint16>(pixels, sR | sG | sB | sA);
+		break;
+		
+	default:
+		assert(false);
+		break;
+	}
+	
+	if (SDL_MUSTLOCK(dst))
+		SDL_UnlockSurface(dst);
+}
+
