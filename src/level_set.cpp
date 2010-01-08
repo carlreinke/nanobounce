@@ -201,14 +201,14 @@ void LevelSet::CongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), "completed!", font_sprites[3], Font::majuscule, Font::center, alpha);
 }
 
-LevelSet::LevelIntroLoop::LevelIntroLoop( const Level &level, const Highscore &score )
+LevelIntroLoop::LevelIntroLoop( const Level &level, const Highscore &score )
 : level_name(level.name), score(score),
   ticks(0)
 {
 	// nothing to do
 }
 
-void LevelSet::LevelIntroLoop::handle_event( SDL_Event &e )
+void LevelIntroLoop::handle_event( SDL_Event &e )
 {
 	switch (e.type)
 	{
@@ -231,7 +231,7 @@ void LevelSet::LevelIntroLoop::handle_event( SDL_Event &e )
 	}
 }
 
-void LevelSet::LevelIntroLoop::update( void )
+void LevelIntroLoop::update( void )
 {
 	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
@@ -240,7 +240,7 @@ void LevelSet::LevelIntroLoop::update( void )
 		loop_quit = true;
 }
 
-void LevelSet::LevelIntroLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
+void LevelIntroLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	

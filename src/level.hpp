@@ -37,6 +37,7 @@ private:
 	friend class GameMenu;
 	friend class LevelMenu;
 	friend class LevelSet;
+	friend class LevelIntroLoop;
 };
 
 #endif // LEVEL_HPP
