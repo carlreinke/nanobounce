@@ -44,7 +44,7 @@ int main( int argc, char *argv[] )
 		case 'r':
 			replay = true;
 			
-			controllers.push_back(new Replay(optarg));
+			controllers.push_back(boost::shared_ptr<Controller>(new Replay(optarg)));
 			break;
 			
 		case '?':
@@ -80,8 +80,8 @@ int main( int argc, char *argv[] )
 	
 	if (!replay)
 	{
-		controllers.push_back(new Keyboard());
-		controllers.push_back(new Joystick(0));
+		controllers.push_back(boost::shared_ptr<Controller>(new Keyboard()));
+		controllers.push_back(boost::shared_ptr<Controller>(new Joystick(0)));
 	}
 	
 	if (editor)
@@ -107,11 +107,7 @@ int main( int argc, char *argv[] )
 	SDL_RemoveTimer(frame_timer);
 	SDL_RemoveTimer(update_timer);
 	
-	for (vector<Controller *>::iterator i = controllers.begin(); i != controllers.end(); )
-	{
-		delete *i;
-		i = controllers.erase(i);
-	}
+	controllers.clear();
 	
 	deinit_audio();
 	SDL_Quit();

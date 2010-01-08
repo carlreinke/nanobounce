@@ -23,7 +23,7 @@ const SDLKey Controller::push_as_key[] =
 };
 const Uint32 Controller::repeat_delay, Controller::repeat_interval;
 
-vector<Controller *> controllers, disabled_controllers;
+vector< boost::shared_ptr<Controller> > controllers, disabled_controllers;
 
 bool Controller::drop_input_enabled = false;
 

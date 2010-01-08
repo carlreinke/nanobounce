@@ -125,7 +125,7 @@ void Editor::handle_event( SDL_Event &e )
 void Editor::update( void )
 {
 	// update controller
-	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
 }
 

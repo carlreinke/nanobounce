@@ -100,6 +100,6 @@ private:
 	SDL_Joystick *joystick;
 };
 
-extern std::vector<Controller *> controllers, disabled_controllers;
+extern std::vector< boost::shared_ptr<Controller> > controllers, disabled_controllers;
 
 #endif // CONTROLLER_HPP

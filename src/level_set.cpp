@@ -133,7 +133,7 @@ void LevelSet::CongratsLoop::handle_event( SDL_Event &e )
 
 void LevelSet::CongratsLoop::update( void )
 {
-	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
 	
 	// firework colors
@@ -233,7 +233,7 @@ void LevelSet::LevelIntroLoop::handle_event( SDL_Event &e )
 
 void LevelSet::LevelIntroLoop::update( void )
 {
-	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
 	
 	if (++ticks == 50)

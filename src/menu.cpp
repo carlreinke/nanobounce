@@ -67,7 +67,7 @@ void SimpleMenu::handle_event( SDL_Event &e )
 void SimpleMenu::update( void )
 {
 	// update controller
-	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
 }
 
@@ -138,7 +138,7 @@ void SmoothMenu::handle_event( SDL_Event &e )
 
 void SmoothMenu::update( void )
 {
-	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
 	
 	// smooth menu movement
@@ -251,7 +251,7 @@ void GameMenu::handle_event( SDL_Event &e )
 void GameMenu::update( void )
 {
 	// update controller
-	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
 	
 	for (int i = 0; i < 4; ++i)

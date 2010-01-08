@@ -46,7 +46,7 @@ void Game::handle_event( SDL_Event &e )
 void Game::update( void )
 {
 	// update controller
-	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
 	
 	if (!fader.is_fading(Fader::in))
@@ -54,7 +54,7 @@ void Game::update( void )
 		for (int i = 0; i < 4; ++i)
 		{
 			// update replay controllers
-			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+			for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 				(*c)->tick_update();
 			
 			tick();
@@ -111,7 +111,7 @@ void Game::tick( void )
 {
 	int x_direction = 0;
 	
-	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 	{
 		const bool left = (*c)->is_down[Controller::left] || (*c)->is_down[Controller::left_shoulder],
 		           right = (*c)->is_down[Controller::right] || (*c)->is_down[Controller::right_shoulder];
