@@ -8,7 +8,7 @@ void audio_callback( void *, Uint8 *stream, int len );
 
 void play_next_music( void );
 
-Audio_mode audio_mode = ALL_AUDIO;
+AudioMode audio_mode = ALL_AUDIO;
 Fixed volume = 0.5f, music_volume = 1.0f;
 
 SDL_AudioSpec spec;

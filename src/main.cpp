@@ -25,22 +25,26 @@ int main( int argc, char *argv[] )
 	bool editor = false, replay = false;
 	
 	int opt;
-	while ((opt = getopt(argc, argv, "er:s")) != -1)
+	while ((opt = getopt(argc, argv, "aemr:")) != -1)
 	{
 		switch (opt)
 		{
+		case 'a':
+			audio_disabled = true;
+			break;
+			
 		case 'e':
 			editor = true;
+			break;
+			
+		case 'm':
+			audio_mode = NO_MUSIC;
 			break;
 			
 		case 'r':
 			replay = true;
 			
 			controllers.push_back(new Replay(optarg));
-			break;
-			
-		case 's':
-			audio_disabled = true;
 			break;
 			
 		case '?':
