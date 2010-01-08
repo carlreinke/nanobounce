@@ -1,6 +1,7 @@
 features
+ * add ability to change level dimensions within editor
+ * add highscore name entry screen
+ * add level name editing screen
+    - add level set name editing
  * viewable highscore list
     - add user-visible replay
-
-misc
- * add a level pack class
