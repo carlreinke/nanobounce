@@ -15,7 +15,7 @@ Stream::Stream( const string &path )
 	if (ov_fopen(const_cast<char *>(path.c_str()), &vorbis_file) != 0)
 #endif
 	{
-		cerr << "failed to load '" << path << "'" << endl;
+		cerr << "failed to load audio stream from '" << path << "'" << endl;
 		return;
 	}
 	
@@ -26,7 +26,7 @@ Stream::Stream( const string &path )
 	if (SDL_BuildAudioCVT(&cvt, AUDIO_S16SYS, channels,      freq,
 	                            spec.format,  spec.channels, spec.freq) == -1)
 	{
-		cerr << "failed to convert audio" << endl;
+		cerr << "failed to convert audio stream from '" << path << "'" << endl;
 		return;
 	}
 	

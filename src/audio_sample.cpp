@@ -17,10 +17,7 @@ Sample::Sample( const string &path )
 	Stream stream(path);
 	
 	if (stream.empty())
-	{
-		cerr << "error: '" << path << "' failed to load" << endl;
 		return;
-	}
 	
 	length = sizeof(Sint16) * spec.channels * ov_pcm_total(&stream.vorbis_file, -1);
 	buffer = boost::shared_array<Uint8>(new Uint8[length]);

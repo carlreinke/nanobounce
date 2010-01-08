@@ -21,7 +21,7 @@ SDL_Surface *init_video( void )
 	screen_height = surface->h;
 	screen_bpp = surface->format->BitsPerPixel;
 	
-	clog << "video: " << screen_width << "x" << screen_height << "x" << screen_bpp << endl;
+	cout << "video: " << screen_width << "x" << screen_height << "x" << screen_bpp << endl;
 	
 	return surface;
 }
