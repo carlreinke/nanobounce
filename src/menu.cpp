@@ -316,14 +316,12 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 
 LevelSetMenu::LevelSetMenu( void )
 {
-	string directory = "levels";
-	
-	vector<string> dir_entries = directory_listing(directory);
+	vector<string> dir_entries = directory_listing(level_directory);
 	
 	// populate the level set list
 	for (vector<string>::const_iterator dir_entry = dir_entries.begin(); dir_entry != dir_entries.end(); ++dir_entry)
 	{
-		LevelSet entry(directory + "/" + *dir_entry);
+		LevelSet entry(level_directory + *dir_entry);
 		if (!entry.invalid())
 			entries.push_back(entry);
 	}

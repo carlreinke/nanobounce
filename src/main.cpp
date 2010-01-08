@@ -20,6 +20,12 @@ map<int, Sprite> font_sprites;
 
 bool global_quit = false;
 
+const string level_directory = "levels/",
+             music_directory = "music/",
+             sample_directory = "samples/",
+             sprite_directory = "sprites/",
+             font_directory = sprite_directory + "fonts/";
+
 int main( int argc, char *argv[] )
 {
 	bool editor = false, replay = false;
@@ -72,12 +78,13 @@ int main( int argc, char *argv[] )
 	SDL_Surface *surface = init_video();
 	init_audio();
 	
-	{
-		font_sprites[1] = Sprite(1, 1, SDL_Color_RGBA(100, 100, 100));
-		font_sprites[2] = Sprite("sprites/fonts/font_gray_2.ppm");
-		font_sprites[3] = Sprite("sprites/fonts/font_gray_3.ppm");
-		font_sprites[4] = Sprite("sprites/fonts/font_gray_4.ppm");
-	}
+	font.load(font_directory + "font_04b21.pgm",
+	          font_directory + "font_04b21.meta");
+	
+	font_sprites[1] = Sprite(1, 1, SDL_Color_RGBA(100, 100, 100));
+	font_sprites[2] = Sprite(font_directory + "font_gray_2.ppm");
+	font_sprites[3] = Sprite(font_directory + "font_gray_3.ppm");
+	font_sprites[4] = Sprite(font_directory + "font_gray_4.ppm");
 	
 	SDL_TimerID frame_timer = SDL_AddTimer(0, push_frame_event, NULL);
 	SDL_TimerID update_timer = SDL_AddTimer(0, push_update_event, NULL);

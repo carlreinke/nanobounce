@@ -1,4 +1,5 @@
 #include "block.hpp"
+#include "main.hpp"
 #include "sprite.hpp"
 
 using namespace std;
@@ -11,18 +12,18 @@ Block::Block( int x, int y, Type type )
 	if (sprites.empty())
 	{
 		sprites.resize(_max);
-		sprites[exit] = Sprite("sprites/exit.ppm");
-		sprites[normal] = Sprite("sprites/block.ppm");
-		sprites[nuke] = Sprite("sprites/nuke.ppm");
-		sprites[recycle] = Sprite("sprites/recycle.ppm");
+		sprites[exit] = Sprite(sprite_directory + "exit.ppm");
+		sprites[normal] = Sprite(sprite_directory + "block.ppm");
+		sprites[nuke] = Sprite(sprite_directory + "nuke.ppm");
+		sprites[recycle] = Sprite(sprite_directory + "recycle.ppm");
 		
-		sprites[boost_up] = Sprite("sprites/boost_up.ppm");
-		sprites[boost_left] = Sprite("sprites/boost_left.ppm");
-		sprites[boost_right] = Sprite("sprites/boost_right.ppm");
+		sprites[boost_up] = Sprite(sprite_directory + "boost_up.ppm");
+		sprites[boost_left] = Sprite(sprite_directory + "boost_left.ppm");
+		sprites[boost_right] = Sprite(sprite_directory + "boost_right.ppm");
 		
-		sprites[push_up] = Sprite("sprites/push_up.ppm");
-		sprites[push_left] = Sprite("sprites/push_left.ppm");
-		sprites[push_right] = Sprite("sprites/push_right.ppm");
+		sprites[push_up] = Sprite(sprite_directory + "push_up.ppm");
+		sprites[push_left] = Sprite(sprite_directory + "push_left.ppm");
+		sprites[push_right] = Sprite(sprite_directory + "push_right.ppm");
 	}
 }
 

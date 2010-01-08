@@ -6,8 +6,9 @@
 class Font
 {
 public:
-	Font( std::istream &pgm, std::istream & );
+	Font( void );
 	
+	void load( const std::string &pgm_path, const std::string &meta_path );
 	void load_pgm( std::istream &pgm );
 	void load_char_widths( std::istream & );
 	

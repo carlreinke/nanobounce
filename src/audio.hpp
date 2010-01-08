@@ -25,6 +25,7 @@ void init_audio( void );
 void deinit_audio( void );
 
 void play_sample( const Sample &, Fixed volume, Fixed pan );
+void play_music( const std::string &path );
 
 
 inline AudioMode & operator++( AudioMode &audio_mode )

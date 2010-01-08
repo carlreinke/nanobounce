@@ -4,14 +4,21 @@
 
 using namespace std;
 
-ifstream font_stream("sprites/fonts/font_04b21.pgm"), meta_stream("sprites/fonts/font_04b21.meta");
-Font font(font_stream, meta_stream);
+Font font;
 
-Font::Font( std::istream &pgm, std::istream &is )
+Font::Font( void )
 : char_positions(255), char_widths(255)
 {
+	// nothing to do
+}
+
+void Font::load( const string &pgm_path, const string &meta_path )
+{
+	ifstream pgm(pgm_path.c_str());
 	load_pgm(pgm);
-	load_char_widths(is);
+	
+	ifstream meta(meta_path.c_str());
+	load_char_widths(meta);
 }
 
 void Font::load_pgm( istream &pgm )

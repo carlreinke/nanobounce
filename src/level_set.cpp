@@ -105,7 +105,7 @@ void LevelSet::play( SDL_Surface *surface )
 LevelSet::CongratsLoop::CongratsLoop( const LevelSet &level_set )
 : set_name(level_set.name)
 {
-	// nothing to do
+	play_music(music_directory + "special/Vulpine Skyflight.ogg");
 }
 
 void LevelSet::CongratsLoop::handle_event( SDL_Event &e )

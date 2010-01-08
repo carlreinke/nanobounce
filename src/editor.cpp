@@ -2,6 +2,7 @@
 #include "editor.hpp"
 #include "font.hpp"
 #include "game.hpp"
+#include "main.hpp"
 #include "menu.hpp"
 #include "misc.hpp"
 #include "video.hpp"
@@ -19,8 +20,8 @@ Editor::Editor( void )
 	{
 		block_sprites = Block(0, 0, Block::none).sprites;
 		block_sprites[Block::none] = Sprite(Block::width, Block::height, SDL_Color_RGBA(0, 0, 0));
-		block_sprites[Block::ball] = Sprite("sprites/editor/ball.ppm");
-		block_sprites[Block::exit] = Sprite("sprites/editor/exit.ppm");
+		block_sprites[Block::ball] = Sprite(sprite_directory + "editor/ball.ppm");
+		block_sprites[Block::exit] = Sprite(sprite_directory + "editor/exit.ppm");
 	}
 }
 

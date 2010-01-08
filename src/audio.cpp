@@ -1,6 +1,7 @@
 #include "audio.hpp"
 #include "audio_stream.hpp"
 #include "file_system.hpp"
+#include "main.hpp"
 
 using namespace std;
 
@@ -42,15 +43,15 @@ void init_audio( void )
 	
 	SDL_PauseAudio(0);
 	
-	samples["bounce"] = Sample("samples/bounce.ogg");
-	samples["wall_jump"] = Sample("samples/wall_jump.ogg");
-	samples["recycle"] = Sample("samples/recycle.ogg");
-	samples["nuke"] = Sample("samples/nuke.ogg");
-	samples["boost"] = Sample("samples/boost.ogg");
-	samples["unboost"] = Sample("samples/unboost.ogg");
+	samples["bounce"] = Sample(sample_directory + "bounce.ogg");
+	samples["wall_jump"] = Sample(sample_directory + "wall_jump.ogg");
+	samples["recycle"] = Sample(sample_directory + "recycle.ogg");
+	samples["nuke"] = Sample(sample_directory + "nuke.ogg");
+	samples["boost"] = Sample(sample_directory + "boost.ogg");
+	samples["unboost"] = Sample(sample_directory + "unboost.ogg");
 	
-	samples["won"] = Sample("samples/won.ogg");
-	samples["lost"] = Sample("samples/lost.ogg");
+	samples["won"] = Sample(sample_directory + "won.ogg");
+	samples["lost"] = Sample(sample_directory + "lost.ogg");
 	
 	play_next_music();
 }
@@ -119,11 +120,14 @@ void play_sample( const Sample &sample, Fixed volume, Fixed pan )
 	SDL_UnlockAudio();
 }
 
+void play_music( const std::string &path )
+{
+	music = auto_ptr<Stream>(new Stream(path));
+}
+
 void play_next_music( void )
 {
-	const string directory = "music/";
-	
-	static vector<string> entries = directory_listing(directory);
+	static vector<string> entries = directory_listing(music_directory);
 	static vector<string>::iterator entry = entries.begin();
 	
 	music = auto_ptr<Stream>(NULL);
@@ -135,8 +139,7 @@ void play_next_music( void )
 	if (entry == entries.end())
 		entry = entries.begin();
 	
-	string filename = directory + *entry;
-	music = auto_ptr<Stream>(new Stream(filename));
+	play_music(music_directory + *entry);
 	
 	// if music fails to load, try next one
 	if (music->empty())
