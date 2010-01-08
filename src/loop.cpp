@@ -71,7 +71,7 @@ void Loop::loop( SDL_Surface *surface )
 				fader.fade(Fader::out);
 			
 			fader.update();
-			done = (no_fade || fader.is_done()) && fader.was_fading(Fader::out);
+			done = fader.is_done() && fader.was_fading(Fader::out);
 			
 			update_volume_notification();
 		}

@@ -45,8 +45,8 @@ private:
 	
 	static std::vector<Sprite> sprites;
 	
-	friend class Game;
 	friend class Editor;
+	friend class Game;
 	friend class Level;
 };
 

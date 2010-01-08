@@ -1,5 +1,6 @@
 #include "ball.hpp"
 #include "controller.hpp"
+#include "editor.hpp"
 #include "file_system.hpp"
 #include "font.hpp"
 #include "highscore.hpp"
@@ -11,9 +12,8 @@
 
 using namespace std;
 
-SimpleMenu::SimpleMenu( bool no_fade )
-: Loop(no_fade),
-  selection(0), no_selection(false)
+SimpleMenu::SimpleMenu( void )
+: selection(0), no_selection(false)
 {
 	background = SDL_DuplicateRGBSurface(SDL_GetVideoSurface());
 }
@@ -126,6 +126,7 @@ void SmoothMenu::handle_event( SDL_Event &e )
 			
 		case Controller::select_key:
 		case Controller::start_key:
+			no_selection = entries.empty();
 			loop_quit = true;
 			break;
 			
@@ -165,6 +166,9 @@ void SmoothMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	int y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[3]) - font.height(font_sprites[3]) / 2) / 2;
 	
+	if (entries.size() == 0)
+		font.blit(surface, surface->w / 2, surface->h / 2, "(EMPTY)", font_sprites[2], Font::center, alpha / 2);
+	
 	for (uint i = 0; i < entries.size(); ++i)
 	{
 		if (i == selection)
@@ -191,6 +195,7 @@ GameMenu::GameMenu( void )
 	const string menu_items[] =
 	{
 		"Play",
+		"Edit",
 		"Quit"
 	};
 	for (uint i = 0; i < COUNTOF(menu_items); ++i)
@@ -223,21 +228,43 @@ void GameMenu::handle_event( SDL_Event &e )
 			
 		case Controller::select_key:
 		case Controller::start_key:
-			switch (selection)
+			if (selection == 2)
 			{
-			case 0:
-				{
-					LevelSetMenu menu;
-					menu.loop(SDL_GetVideoSurface());
-					
-					if (!menu.no_selection)
-						menu.entries[menu.selection].play(SDL_GetVideoSurface());
-				}
-				break;
-				
-			case 1:
 				loop_quit = true;
-				break;
+			}
+			else
+			{
+				LevelSetMenu set_menu;
+				set_menu.loop(SDL_GetVideoSurface());
+				
+				if (!set_menu.no_selection)
+				{
+					LevelSet &level_set = set_menu.entries[set_menu.selection];
+					
+					switch (selection)
+					{
+					case 0:
+						level_set.play(SDL_GetVideoSurface());
+						break;
+						
+					case 1:
+						level_set.load_levels();
+						
+						LevelMenu level_menu(level_set);
+						level_menu.loop(SDL_GetVideoSurface());
+						
+						if (!level_menu.no_selection)
+						{
+							Level &level = level_set.levels[level_menu.selection];
+							
+							Editor editor;
+							editor.load(level.path);
+							editor.loop(SDL_GetVideoSurface());
+						}
+						
+						break;
+					}
+				}
 			}
 			break;
 			

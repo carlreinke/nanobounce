@@ -54,8 +54,9 @@ private:
 		int ticks;
 	};
 	
-	friend class LevelSetMenu;
+	friend class GameMenu;
 	friend class LevelMenu;
+	friend class LevelSetMenu;
 };
 
 #endif // LEVEL_SET_HPP

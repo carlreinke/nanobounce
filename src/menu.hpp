@@ -8,7 +8,7 @@
 class SimpleMenu : public Loop
 {
 public:
-	SimpleMenu( bool no_fade = false );
+	SimpleMenu( void );
 	~SimpleMenu( void );
 	
 	void handle_event( SDL_Event & );

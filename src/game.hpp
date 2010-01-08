@@ -50,8 +50,6 @@ private:
 	std::list<Particle> particles;
 	
 	void menu( void );
-	
-	friend class LevelSet;
 };
 
 #endif // GAME_HPP

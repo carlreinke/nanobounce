@@ -32,10 +32,11 @@ private:
 	
 	static boost::bimap<Block::Type, char> block_chars;
 	
-	friend class Game;
 	friend class Editor;
-	friend class LevelSet;
+	friend class Game;
+	friend class GameMenu;
 	friend class LevelMenu;
+	friend class LevelSet;
 };
 
 #endif // LEVEL_HPP

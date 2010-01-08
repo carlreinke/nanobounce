@@ -75,7 +75,7 @@ void LevelSet::play( SDL_Surface *surface )
 			highscore_path = level->path + ".score";
 			highscore.load(highscore_path);
 			
-			LevelIntroLoop level_intro(game.level, highscore);
+			LevelIntroLoop level_intro(*level, highscore);
 			level_intro.loop(surface);
 		}
 		
