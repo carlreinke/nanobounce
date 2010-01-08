@@ -234,6 +234,9 @@ void GameMenu::handle_event( SDL_Event &e )
 			}
 			else
 			{
+				// at this point, ticks should be a decent seed
+				srand(SDL_GetTicks());
+				
 				LevelSetMenu set_menu;
 				set_menu.loop(SDL_GetVideoSurface());
 				
@@ -284,7 +287,7 @@ void GameMenu::update( void )
 	for (int i = 0; i < 4; ++i)
 	{
 		int x = screen_width * (selection + 1) / (entries.size() + 1),
-			y = screen_height - font.height(font_sprites[3]) * 2;
+			y = screen_height / 2 + font.height(font_sprites[4]) * 3 / 2 + font.height(font_sprites[3]);
 		
 		ball.tick(ball.x > x ? -1 : 1);
 		if (ball.y > y)
@@ -298,20 +301,42 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	ball.draw(surface, 0, 0, alpha);
 	
-	font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[4]), "Nanobounce", font_sprites[4], Font::majuscule, Font::center, alpha);
+	// TODO: remove for non-beta
+	font.blit(surface, ball.x, screen_height - font.height(font_sprites[3]) * 2, "Private beta release!", font_sprites[1], Font::majuscule, Font::center, alpha);
+	
+	int x = surface->w / 2,
+	    y = surface->h / 2 - font.height(font_sprites[4]) * 3 / 2;
+	
+	font.blit(surface, x, y, "Nanobounce", font_sprites[4], Font::majuscule, Font::center, alpha);
+	y += font.height(font_sprites[4]) * 3;
 	
 	for (uint i = 0; i < entries.size(); ++i)
 	{
-		int x = surface->w * (i + 1) / (entries.size() + 1),
-			y = surface->h - font.height(font_sprites[3]) * 3;
-		
+		x = surface->w * (i + 1) / (entries.size() + 1);
 		font.blit(surface, x, y, entries[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? alpha : alpha / 2);
 	}
 	
-	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.1 BETA", font_sprites[1], Font::majuscule, Font::left, alpha);
+	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.2 BETA", font_sprites[1], Font::majuscule, Font::left, alpha);
 	
-	font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]) * 2, "programming, graphics, and sound:", font_sprites[1], Font::majuscule, Font::right, alpha);
-	font.blit(surface, surface->w - 1, surface->h - font.height(font_sprites[1]), "Carl \"Mindless\" Reinke", font_sprites[1], Font::majuscule, Font::right, alpha);
+	x = surface->w - 1;
+	y = surface->h - font.height(font_sprites[1]) * 3;
+	
+	font.blit(surface, x, y, "programming, sprites, and effects:", font_sprites[1], Font::majuscule, Font::right, alpha);
+	y += font.height(font_sprites[1]);
+	font.blit(surface, x, y, "Carl \"Mindless\" Reinke", font_sprites[1], Font::majuscule, Font::right, alpha);
+	y += font.height(font_sprites[1]);
+	font.blit(surface, x, y, "music: Jakob Svanholm, Seth Peelle", font_sprites[1], Font::majuscule, Font::right, alpha);
+	
+#ifdef TARGET_GP2X
+	x = surface->w / 2;
+	y = surface->h / 2;
+	
+	font.blit(surface, x, y, "Tip: This game is least frustrating", font_sprites[1], Font::majuscule, Font::center, alpha);
+	y += font.height(font_sprites[1]);
+	font.blit(surface, x, y, "when played using the shoulder buttons.", font_sprites[1], Font::majuscule, Font::center, alpha);
+	y += font.height(font_sprites[1]);
+	font.blit(surface, x, y, "Enjoy!", font_sprites[1], Font::majuscule, Font::center, alpha);
+#endif
 }
 
 LevelSetMenu::LevelSetMenu( void )
