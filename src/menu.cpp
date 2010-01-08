@@ -89,6 +89,102 @@ void SimpleMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	}
 }
 
+SmoothMenu::SmoothMenu( void )
+: selection(0), no_selection(false),
+  y(0), y_vel(0), y_accel(1)
+{
+	// nothing to do
+}
+
+void SmoothMenu::handle_event( SDL_Event &e )
+{
+	switch (e.type)
+	{
+	case SDL_KEYDOWN:
+		switch (e.key.keysym.sym)
+		{
+		case Controller::back_key:
+		case Controller::quit_key:
+			no_selection = true;
+			loop_quit = true;
+			break;
+			
+		case Controller::up_key:
+		case Controller::left_key:
+		case Controller::left_shoulder_key:
+			if (selection == 0)
+				selection = entries.size();
+			--selection;
+			break;
+			
+		case Controller::down_key:
+		case Controller::right_key:
+		case Controller::right_shoulder_key:
+			if (++selection >= entries.size())
+				selection = 0;
+			break;
+			
+		case Controller::select_key:
+		case Controller::start_key:
+			loop_quit = true;
+			break;
+			
+		default:
+			break;
+		}
+		break;
+	}
+}
+
+void SmoothMenu::update( void )
+{
+	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+		(*c)->update();
+	
+	// smooth menu movement
+	const int target_y = -font.height(font_sprites[3]) * selection;
+	const Fixed y_off = target_y - y;
+	
+	if ((y_off > 0 && y_accel < 0) || (y_off < 0 && y_accel > 0))
+		y_accel = -y_accel;
+	
+	const Fixed ticks_to_decelerate = y_vel / y_accel,
+	            ticks_until_target = (y_vel == 0) ? (y_off / y_accel) : (y_off / y_vel);
+	
+	if (ticks_to_decelerate < ticks_until_target || ticks_until_target < 0)
+		y_vel += y_accel;
+	else if (ticks_to_decelerate > ticks_until_target)
+		y_vel -= y_accel;
+	
+	y += y_vel;
+}
+
+void SmoothMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
+{
+	SDL_FillRect(surface, NULL, 0);
+	
+	int y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[3]) - font.height(font_sprites[3]) / 2) / 2;
+	
+	for (uint i = 0; i < entries.size(); ++i)
+	{
+		if (i == selection)
+		{
+			y += font.height(font_sprites[4]) / 3;
+			font.blit(surface, surface->w / 2, y, *entries[i], font_sprites[4], Font::center, alpha);
+			y += font.height(font_sprites[4]);
+			y += font.height(font_sprites[4]) / 3;
+		}
+		else
+		{
+			if (y > surface->h)
+				break;
+			else if (y > -static_cast<int>(font.height(font_sprites[3])))
+				font.blit(surface, surface->w / 2, y, *entries[i], font_sprites[3], Font::center, alpha / 2);
+			y += font.height(font_sprites[3]);
+		}
+	}
+}
+
 GameMenu::GameMenu( void )
 : selection(0), ball(screen_width / 2, screen_height)
 {
@@ -192,8 +288,6 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 }
 
 LevelSetMenu::LevelSetMenu( void )
-: selection(0), no_selection(false),
-  y(0), y_vel(0), y_accel(1)
 {
 	string directory = "levels";
 	
@@ -208,69 +302,8 @@ LevelSetMenu::LevelSetMenu( void )
 	}
 	
 	sort(entries.begin(), entries.end());
-}
-
-void LevelSetMenu::handle_event( SDL_Event &e )
-{
-	switch (e.type)
-	{
-	case SDL_KEYDOWN:
-		switch (e.key.keysym.sym)
-		{
-		case Controller::back_key:
-		case Controller::quit_key:
-			no_selection = true;
-			loop_quit = true;
-			break;
-			
-		case Controller::up_key:
-		case Controller::left_key:
-		case Controller::left_shoulder_key:
-			if (selection == 0)
-				selection = entries.size();
-			--selection;
-			break;
-			
-		case Controller::down_key:
-		case Controller::right_key:
-		case Controller::right_shoulder_key:
-			if (++selection >= entries.size())
-				selection = 0;
-			break;
-			
-		case Controller::select_key:
-		case Controller::start_key:
-			loop_quit = true;
-			break;
-			
-		default:
-			break;
-		}
-		break;
-	}
-}
-
-void LevelSetMenu::update( void )
-{
-	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-		(*c)->update();
 	
-	// smooth menu movement
-	const int target_y = -font.height(font_sprites[3]) * selection;
-	const Fixed y_off = target_y - y;
-	
-	if ((y_off > 0 && y_accel < 0) || (y_off < 0 && y_accel > 0))
-		y_accel = -y_accel;
-	
-	const Fixed ticks_to_decelerate = y_vel / y_accel,
-	            ticks_until_target = (y_vel == 0) ? (y_off / y_accel) : (y_off / y_vel);
-	
-	if (ticks_to_decelerate < ticks_until_target || ticks_until_target < 0)
-		y_vel += y_accel;
-	else if (ticks_to_decelerate > ticks_until_target)
-		y_vel -= y_accel;
-	
-	y += y_vel;
+	SmoothMenu::entries.resize(entries.size());
 }
 
 void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
@@ -299,4 +332,10 @@ void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 			y += font.height(font_sprites[3]);
 		}
 	}
+}
+
+LevelMenu::LevelMenu( const LevelSet &level_set )
+{
+	for (vector<Level>::const_iterator level = level_set.levels.begin(); level != level_set.levels.end(); ++level)
+		entries.push_back(&level->name);
 }

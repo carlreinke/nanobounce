@@ -35,6 +35,7 @@ private:
 	friend class Game;
 	friend class Editor;
 	friend class LevelSet;
+	friend class LevelMenu;
 };
 
 #endif // LEVEL_HPP

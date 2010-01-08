@@ -22,7 +22,6 @@ private:
 	std::string name, author;
 	std::vector<Level> levels;
 	
-	friend class LevelSetMenu;
 	
 	class CongratsLoop : public Loop
 	{
@@ -54,6 +53,9 @@ private:
 		
 		int ticks;
 	};
+	
+	friend class LevelSetMenu;
+	friend class LevelMenu;
 };
 
 #endif // LEVEL_SET_HPP
