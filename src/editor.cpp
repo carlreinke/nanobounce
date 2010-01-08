@@ -155,7 +155,7 @@ void Editor::menu( void )
 			}
 			break;
 		case 1:
-			save(path); // TODO
+			save(level.path); // TODO
 			break;
 		case 2:
 			break;
@@ -168,8 +168,6 @@ void Editor::menu( void )
 
 bool Editor::load( const string &level_data_path )
 {
-	path = level_data_path;
-	
 	bool temp = level.load(level_data_path);
 	reset();
 	

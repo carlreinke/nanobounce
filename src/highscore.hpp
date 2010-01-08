@@ -8,18 +8,20 @@ class Highscore
 public:
 	Highscore( void ) { reset(); }
 	Highscore( int ms_per_tick );
-	Highscore( std::istream & );
+	bool invalid( void ) const { return ms() == 0; }
 	
-	void load( std::istream & );
-	void save( std::ostream & ) const;
+	bool load( const std::string &path );
+	bool load( std::istream & );
+	
+	bool save( const std::string &path ) const;
+	bool save( std::ostream & ) const;
+	
 	void reset( int ms_per_tick = 0 );
 	
 	void push_back_tick( int x_direction );
 	
 	int ms( void ) const { return ticks * ms_per_tick; }
 	std::string time( void ) const;
-	
-	bool invalid( void ) const { return ms() == 0; }
 	
 	std::string name;
 	
@@ -35,15 +37,12 @@ private:
 class Replay : public Controller
 {
 public:
-	Replay( std::istream & );
 	Replay( const std::string & );
 	
 	void tick_update( void );
 	
 private:
 	void update_down( void );
-	
-	void load( std::istream & );
 	
 	Highscore highscore;
 };

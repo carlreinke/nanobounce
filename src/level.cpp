@@ -9,7 +9,7 @@ using namespace std;
 map<Block::Type, char> Level::block_chars;
 
 Level::Level( void )
-: name(m_name)
+: valid(false)
 {
 	if (block_chars.empty())
 	{
@@ -30,17 +30,25 @@ Level::Level( void )
 	}
 }
 
-void Level::copy( const Level &that )
+bool Level::load( const string &data_path )
 {
-	m_name = that.m_name;
-	width = that.width;
-	height = that.height;
-	blocks = that.blocks;
+	path = data_path;
+	
+	ifstream data(path.c_str());
+	
+	bool success = load(data);
+	
+	if (success)
+		cout << "loaded level '" << name << "' from '" << path << "'" << endl;
+	else
+		cout << "warning: failed to load level from '" << path << "'" << endl;
+	
+	return success;
 }
 
 bool Level::load( istream &data )
 {
-	getline(data, m_name);
+	getline(data, name);
 	
 	data >> width >> height;
 	
@@ -63,23 +71,34 @@ bool Level::load( istream &data )
 		blocks.push_back(Block(x, y, type));
 	}
 	
-	if (data.eof() && !blocks.empty())
-		cout << "loaded level '" << name << "'" << endl;
-	else
-		cout << "warning: level failed to load" << endl;
+	valid = data.eof() && !blocks.empty();
 	
-	return (data.eof() && !blocks.empty());
+	return valid;
 }
 
-bool Level::load( const string &data_path )
+bool Level::save( void ) const
 {
-	ifstream data(data_path.c_str());
-	return load(data);
+	return save(path);
+}
+
+bool Level::save( const string &data_path ) const
+{
+	ofstream data(data_path.c_str());
+	
+	bool success = save(data);
+	
+	cout << (success ? "saved" : "warning: failed to save") << " level"
+	     << " '" << name << "' to '" << data_path << "'" << endl;
+	
+	return success;
 }
 
 bool Level::save( ostream &data ) const
 {
-	data << m_name << endl;
+	if (invalid())
+		return false;
+	
+	data << name << endl;
 	
 	data << (width / Block::width) << " "
 	     << (height / Block::height) << endl;
@@ -94,18 +113,7 @@ bool Level::save( ostream &data ) const
 		}
 	}
 	
-	if (data.good())
-		cout << "saved level '" << name << "'" << endl;
-	else
-		cout << "warning: level '" << name << "' failed to save" << endl;
-	
 	return data.good();
-}
-
-bool Level::save( const string &data_path ) const
-{
-	ofstream data(data_path.c_str());
-	return save(data);
 }
 
 void Level::reset( void )

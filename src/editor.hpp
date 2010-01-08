@@ -30,7 +30,6 @@ private:
 	uint cursor_block;
 	
 	Level level;
-	std::string path;
 	
 	static std::vector<Sprite> block_sprites;
 	static Sprite cursor;

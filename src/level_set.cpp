@@ -22,9 +22,10 @@ LevelSet::LevelSet( const std::string &directory )
 	}
 }
 
-void LevelSet::play( SDL_Surface *surface )
+void LevelSet::load_levels( void )
 {
-	assert(valid);
+	if (invalid())
+		return;
 	
 	const string meta_path = directory + "/" + "meta";
 	ifstream meta(meta_path.c_str());
@@ -33,12 +34,34 @@ void LevelSet::play( SDL_Surface *surface )
 	getline(meta, author);
 	
 	string level_path;
+	while (getline(meta, level_path))
+	{
+		level_path = directory + "/" + level_path;
+		
+		Level level;
+		level.load(level_path);
+		
+		if (!level.invalid())
+			levels.push_back(level);
+	}
+}
+
+void LevelSet::play( SDL_Surface *surface )
+{
+	if (invalid())
+		return;
+	
+	if (levels.empty())
+		load_levels();
+	
 	Game game;
+	
+	vector<Level>::iterator level = levels.begin();
 	
 	string highscore_path;
 	Highscore highscore;
 	
-	while (game.state != Game::quit && !global_quit)
+	while (game.state != Game::quit && level != levels.end() && !global_quit)
 	{
 		if (game.state == Game::lost)
 		{
@@ -47,29 +70,13 @@ void LevelSet::play( SDL_Surface *surface )
 		}
 		else
 		{
-			getline(meta, level_path);
-			level_path = directory + "/" + level_path;
+			game = Game(*level);
 			
-			if (!meta.good())  // if end of level list
-			{
-				CongratsLoop congrats(name);
-				congrats.loop(surface);
-				return;
-			}
+			highscore_path = level->path + ".score";
+			highscore.load(highscore_path);
 			
-			cout << "loading '" << level_path << "'" << endl;
-			
-			if (!game.load(level_path))
-				continue;
-			
-			highscore_path = level_path + ".score";
-			
-			cout << "loading '" << highscore_path << "'" << endl;
-			
-			ifstream highscore_data(highscore_path.c_str());
-			highscore.load(highscore_data);
-			
-			level_screen(surface, game.level, highscore);
+			LevelIntroLoop level_intro(game.level, highscore);
+			level_intro.loop(surface);
 		}
 		
 		game.loop(surface);
@@ -80,22 +87,28 @@ void LevelSet::play( SDL_Surface *surface )
 			{
 				// do highscore screen, ask for name?
 				
-				cout << "saving new highscore '" << highscore_path << "'" << endl;
-				
-				ofstream highscore_data(highscore_path.c_str());
-				game.highscore.save(highscore_data);
+				game.highscore.save(highscore_path);
 			}
 		}
+		
+		if (game.state != Game::lost)
+			++level;
+	}
+	
+	if (level == levels.end())
+	{
+		CongratsLoop congrats(*this);
+		congrats.loop(surface);
 	}
 }
 
-CongratsLoop::CongratsLoop( const std::string &pack_name )
-: pack_name(pack_name)
+LevelSet::CongratsLoop::CongratsLoop( const LevelSet &level_set )
+: set_name(level_set.name)
 {
 	// nothing to do
 }
 
-void CongratsLoop::handle_event( SDL_Event &e )
+void LevelSet::CongratsLoop::handle_event( SDL_Event &e )
 {
 	switch (e.type)
 	{
@@ -118,7 +131,7 @@ void CongratsLoop::handle_event( SDL_Event &e )
 	}
 }
 
-void CongratsLoop::update( void )
+void LevelSet::CongratsLoop::update( void )
 {
 	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
@@ -176,7 +189,7 @@ void CongratsLoop::update( void )
 	Particle::tick_all(particles);
 }
 
-void CongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
+void LevelSet::CongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
@@ -184,94 +197,58 @@ void CongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 		i->draw(surface, 0, 0, alpha);
 	
 	font.blit(surface, surface->w / 2, surface->h / 4, "Congratulations!", font_sprites[3], Font::majuscule, Font::center, alpha);
-	font.blit(surface, surface->w / 2, surface->h / 2, pack_name, font_sprites[4], Font::center, alpha);
+	font.blit(surface, surface->w / 2, surface->h / 2, set_name, font_sprites[4], Font::center, alpha);
 	font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), "completed!", font_sprites[3], Font::majuscule, Font::center, alpha);
 }
 
-void level_screen( SDL_Surface *surface, const Level &level, const Highscore &highscore )
+LevelSet::LevelIntroLoop::LevelIntroLoop( const Level &level, const Highscore &score )
+: level_name(level.name), score(score),
+  ticks(0)
 {
-	Fader fader(20);
-	fader.fade(Fader::in);
-	
-	int ticks = 50;
-	
-	bool done = false;
-	while (!done && !global_quit)
+	// nothing to do
+}
+
+void LevelSet::LevelIntroLoop::handle_event( SDL_Event &e )
+{
+	switch (e.type)
 	{
-		SDL_WaitEvent(NULL);
-		
-		int updates = 0, frames = 0;
-		
-		SDL_Event e;
-		while (SDL_PollEvent(&e))
+	case SDL_KEYDOWN:
+		switch (e.key.keysym.sym)
 		{
-			switch (e.type)
-			{
-			case SDL_QUIT:
-				global_quit = true;
-				break;
-				
-			case SDL_KEYDOWN:
-				switch (e.key.keysym.sym)
-				{
-				case Controller::vol_up_key:
-					trigger_volume_change(0.1f);
-					break;
-				case Controller::vol_down_key:
-					trigger_volume_change(-0.1f);
-					break;
-					
-				default:
-					break;
-				}
-				break;
-				
-			case SDL_USEREVENT:
-				switch (e.user.code)
-				{
-				case USER_UPDATE:
-					++updates;
-					break;
-				case USER_FRAME:
-					++frames;
-					break;
-				}
-			}
+		case Controller::back_key:
+		case Controller::quit_key:
+		case Controller::select_key:
+		case Controller::start_key:
+			loop_quit = true;
+			break;
+			
+		default:
+			break;
 		}
 		
-		while (updates--)
-		{
-			for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
-				(*c)->update();
-			
-			if (--ticks == 0)
-				fader.fade(Fader::out);
-			
-			fader.update();
-			done = fader.is_done() && fader.was_fading(Fader::out);
-			
-			update_volume_notification();
-		}
-		
-		if (frames--)
-		{
-			SDL_FillRect(surface, NULL, 0);
-			
-			font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[3]), level.name, font_sprites[3], Font::center, fader.value());
-			
-			if (!highscore.invalid())
-			{
-				font.blit(surface, surface->w / 2, surface->h * 3 / 4 - font.height(font_sprites[2]), "Best Time", font_sprites[2], Font::majuscule, Font::center, fader.value());
-				font.blit(surface, surface->w / 2, surface->h * 3 / 4, highscore.name + ": " + highscore.time(), font_sprites[2], Font::center, fader.value());
-			}
-			
-			draw_volume_notification(surface);
-			
-			SDL_Flip(surface);
-			
-			if (frames > 0)
-				clog << "dropped " << frames << " frame(s)" << endl;
-		}
+	default:
+		break;
 	}
 }
 
+void LevelSet::LevelIntroLoop::update( void )
+{
+	for (vector<Controller *>::iterator c = controllers.begin(); c != controllers.end(); ++c)
+		(*c)->update();
+	
+	if (++ticks == 50)
+		loop_quit = true;
+}
+
+void LevelSet::LevelIntroLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
+{
+	SDL_FillRect(surface, NULL, 0);
+	
+	font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[3]), level_name, font_sprites[3], Font::center, alpha);
+	
+	if (!score.invalid())
+	{
+		font.blit(surface, surface->w / 2, surface->h * 3 / 4 - font.height(font_sprites[2]), "Best Time", font_sprites[2], Font::majuscule, Font::center, alpha);
+		font.blit(surface, surface->w / 2, surface->h * 3 / 4, /*score.name + ": " +*/ score.time(), font_sprites[2], Font::center, alpha);
+	}
+}

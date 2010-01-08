@@ -8,12 +8,21 @@ Highscore::Highscore( int ms_per_tick )
 	// good to go
 }
 
-Highscore::Highscore( istream &is )
+bool Highscore::load( const string &data_path )
 {
-	load(is);
+	ifstream data(data_path.c_str());
+	
+	bool success = load(data);
+	
+	if (success)
+		cout << "loaded score '" << name << "' " << ms() << " ms from '" << data_path << "'" << endl;
+	else
+		cout << "warning: failed to load score from '" << data_path << "'" << endl;
+	
+	return success;
 }
 
-void Highscore::load( istream &is )
+bool Highscore::load( istream &is )
 {
 	getline(is, name);
 	is >> ms_per_tick;
@@ -37,13 +46,22 @@ void Highscore::load( istream &is )
 	if (!is.good()) // highscore file corrupt?
 		reset();
 	
-	if (invalid())
-		cout << "warning: score failed to load" << endl;
-	else
-		cout << "loaded score '" << name << "' " << ms() << " ms" << endl;
+	return !invalid();
 }
 
-void Highscore::save( ostream &os ) const
+bool Highscore::save( const string &data_path ) const
+{
+	ofstream data(data_path.c_str());
+	
+	bool success = save(data);
+	
+	cout << (success ? "saved" : "warning: failed to save") << " score"
+	     << " '" << name << "' " << ms() << " ms to '" << data_path << "'" << endl;
+	
+	return success;
+}
+
+bool Highscore::save( ostream &os ) const
 {
 	os << name << endl;
 	os << ms_per_tick << " ";
@@ -52,6 +70,8 @@ void Highscore::save( ostream &os ) const
 	for (deque< pair<int, int> >::const_iterator i = x_direction.begin(); i != x_direction.end(); ++i)
 		os << i->first << " " << i->second << " ";
 	os << ticks << " " << 0 << endl;
+	
+	return os.good();
 }
 
 void Highscore::reset( int ms_per_tick )
@@ -86,20 +106,9 @@ string Highscore::time( void ) const
 	return out.str();
 }
 
-Replay::Replay( istream &data )
-{
-	load(data);
-}
-
 Replay::Replay( const string &data_path )
 {
-	ifstream data(data_path.c_str());
-	load(data);
-}
-
-void Replay::load( istream &data )
-{
-	highscore.load(data);
+	highscore.load(data_path);
 }
 
 void Replay::tick_update( void )
