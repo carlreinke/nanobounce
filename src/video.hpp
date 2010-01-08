@@ -4,6 +4,7 @@
 #include "SDL.h"
 
 extern int screen_width, screen_height, screen_bpp;
+extern const Uint32 surface_flags;
 
 SDL_Surface *init_video( void );
 

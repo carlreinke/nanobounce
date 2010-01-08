@@ -68,7 +68,7 @@ void Sprite::load_ppm( istream &ppm )
 	    h = get_no_comments<int>(ppm),
 	    component_max = get_no_comments<int>(ppm);
 	
-	surface = SDL_CreateRGBSurface(SDL_HWSURFACE || SDL_HWACCEL, w, h, screen_bpp, 0, 0, 0, 0);
+	surface = SDL_CreateRGBSurface(surface_flags, w, h, screen_bpp, 0, 0, 0, 0);
 	
 	int x = 0, y = 0;
 	
@@ -95,7 +95,7 @@ void Sprite::copy( const Sprite &that )
 {
 	if (that.surface != NULL)
 	{
-		surface = SDL_CreateRGBSurface(SDL_HWSURFACE || SDL_HWACCEL, that.surface->h, that.surface->w, that.surface->format->BitsPerPixel, 0, 0, 0, 0);
+		surface = SDL_CreateRGBSurface(surface_flags, that.surface->h, that.surface->w, that.surface->format->BitsPerPixel, 0, 0, 0, 0);
 		SDL_BlitSurface(that.surface, NULL, surface, NULL);
 	}
 	else

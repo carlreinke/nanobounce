@@ -3,10 +3,12 @@
 using namespace std;
 
 int screen_width = 320, screen_height = 240, screen_bpp = 32;
+const Uint32 surface_flags = SDL_HWSURFACE | SDL_ASYNCBLIT;
 
 SDL_Surface *init_video( void )
 {
-	SDL_Surface *surface = SDL_SetVideoMode(screen_width, screen_height, screen_bpp, SDL_HWSURFACE | SDL_ANYFORMAT | SDL_DOUBLEBUF);
+	const Uint32 video_flags = surface_flags | SDL_ANYFORMAT | SDL_DOUBLEBUF;
+	SDL_Surface *surface = SDL_SetVideoMode(screen_width, screen_height, screen_bpp, video_flags);
 	
 	if (surface == NULL)
 	{

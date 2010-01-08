@@ -1,6 +1,7 @@
 #ifndef SDL_EXT_HPP
 #define SDL_EXT_HPP
 
+#include "video.hpp"
 #include "SDL.h"
 
 class SDL_Surface_smartptr
@@ -16,7 +17,7 @@ public:
 	void resize( int w, int h, int bpp )
 	{
 		SDL_FreeSurface(surface);
-		surface = SDL_CreateRGBSurface(SDL_HWSURFACE || SDL_HWACCEL, w, h, bpp, 0, 0, 0, 0);
+		surface = SDL_CreateRGBSurface(surface_flags, w, h, bpp, 0, 0, 0, 0);
 	}
 	
 private:
@@ -25,7 +26,7 @@ private:
 
 inline SDL_Surface *SDL_DuplicateRGBSurface( SDL_Surface *src )
 {
-	SDL_Surface *dst = SDL_CreateRGBSurface(SDL_HWSURFACE, src->w, src->h, src->format->BitsPerPixel, src->format->Rmask, src->format->Gmask, src->format->Bmask, src->format->Amask);
+	SDL_Surface *dst = SDL_CreateRGBSurface(surface_flags, src->w, src->h, src->format->BitsPerPixel, src->format->Rmask, src->format->Gmask, src->format->Bmask, src->format->Amask);
 	if (dst != NULL)
 		SDL_BlitSurface(src, NULL, dst, NULL);
 	return dst;
