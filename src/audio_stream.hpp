@@ -9,7 +9,7 @@
 #include <tremor/ivorbisfile.h>
 #endif
 
-class Stream : public Channel
+class Stream : public Channel, boost::noncopyable
 {
 public:
 	Stream( const std::string & );
@@ -20,9 +20,6 @@ public:
 	void rewind( void );
 	
 private:
-	Stream( const Stream & );
-	Stream & operator=( const Stream & );
-	
 	void destroy( void );
 	
 	Uint8 *get_buffer( uint &len );
