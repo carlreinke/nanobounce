@@ -296,9 +296,14 @@ redo:
 		if (hit_left || hit_right)
 		{
 			if (ball.can_unboost)
+			{
 				ball.unboost();
-			
-			ball.x_vel = -ball.x_vel / 3;
+				ball.x_vel = -ball.x_vel;
+			}
+			else
+			{
+				ball.x_vel = -ball.x_vel / 2;
+			}
 			
 			// wall jump
 			if ((hit_left && ball.was_pushed_left()) ||
