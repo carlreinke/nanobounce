@@ -92,7 +92,7 @@ void LevelSet::play( SDL_Surface *surface )
 			}
 		}
 		
-		if (game.state != Game::lost)
+		if (game.state == Game::won || game.state == Game::cheat_won)
 			++level;
 	}
 	
