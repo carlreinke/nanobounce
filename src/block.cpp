@@ -12,6 +12,7 @@ Block::Block( int x, int y, Type type )
 	if (sprites.empty())
 	{
 		sprites.resize(_max);
+		
 		sprites[exit] = Sprite(sprite_directory + "exit.ppm");
 		sprites[normal] = Sprite(sprite_directory + "block.ppm");
 		sprites[nuke] = Sprite(sprite_directory + "nuke.ppm");

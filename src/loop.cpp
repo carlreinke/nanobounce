@@ -7,6 +7,8 @@ using namespace std;
 
 void Loop::loop( SDL_Surface *surface )
 {
+	this->surface = surface;
+	
 	loop_quit = false;
 	
 	fader.fade(Fader::in);

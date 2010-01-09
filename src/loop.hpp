@@ -18,6 +18,7 @@ protected:
 	virtual void update( void ) = 0;
 	virtual void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const = 0;
 	
+	SDL_Surface *surface;
 	Fader fader;
 	
 	bool loop_quit;

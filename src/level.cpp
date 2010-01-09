@@ -2,7 +2,6 @@
 #include "controller.hpp"
 #include "level.hpp"
 #include "misc.hpp"
-#include "SDL.h"
 
 using namespace std;
 

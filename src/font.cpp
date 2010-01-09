@@ -5,6 +5,7 @@
 using namespace std;
 
 Font font;
+map<int, Sprite> font_sprites;
 
 Font::Font( void )
 : char_positions(255), char_widths(255)

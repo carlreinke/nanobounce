@@ -12,10 +12,10 @@
 
 using namespace std;
 
-SimpleMenu::SimpleMenu( void )
+SimpleMenu::SimpleMenu( SDL_Surface *background )
 : selection(0), no_selection(false)
 {
-	background = SDL_DuplicateRGBSurface(SDL_GetVideoSurface());
+	this->background = SDL_DuplicateRGBSurface(background);
 }
 
 SimpleMenu::~SimpleMenu( void )
@@ -238,7 +238,7 @@ void GameMenu::handle_event( SDL_Event &e )
 				srand(SDL_GetTicks());
 				
 				LevelSetMenu set_menu;
-				set_menu.loop(SDL_GetVideoSurface());
+				set_menu.loop(surface);
 				
 				if (!set_menu.no_selection)
 				{
@@ -247,14 +247,14 @@ void GameMenu::handle_event( SDL_Event &e )
 					switch (selection)
 					{
 					case 0:
-						level_set.play(SDL_GetVideoSurface());
+						level_set.play(surface);
 						break;
 						
 					case 1:
 						level_set.load_levels();
 						
 						LevelMenu level_menu(level_set);
-						level_menu.loop(SDL_GetVideoSurface());
+						level_menu.loop(surface);
 						
 						if (!level_menu.no_selection)
 						{
@@ -262,9 +262,8 @@ void GameMenu::handle_event( SDL_Event &e )
 							
 							Editor editor;
 							editor.load(level.path);
-							editor.loop(SDL_GetVideoSurface());
+							editor.loop(surface);
 						}
-						
 						break;
 					}
 				}
@@ -284,7 +283,7 @@ void GameMenu::update( void )
 	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
 	
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < ups_multiplier; ++i)
 	{
 		int x = screen_width * (selection + 1) / (entries.size() + 1),
 			y = screen_height / 2 + font.height(font_sprites[4]) * 3 / 2 + font.height(font_sprites[3]);

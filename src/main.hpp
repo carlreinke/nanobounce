@@ -10,11 +10,10 @@ enum
 	USER_FRAME
 };
 
-extern int ms_per_update;
-
-extern std::map<int, Sprite> font_sprites;
-
 extern bool global_quit;
+
+static const int fps = 40, ups = 40, ups_multiplier = 4;
+extern int ms_per_update;
 
 extern const std::string level_directory, music_directory, sample_directory, sprite_directory;
 

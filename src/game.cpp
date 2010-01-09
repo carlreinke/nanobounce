@@ -51,7 +51,7 @@ void Game::update( void )
 	
 	if (!fader.is_fading(Fader::in))
 	{
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < ups_multiplier; ++i)
 		{
 			// update replay controllers
 			for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
@@ -394,7 +394,7 @@ bool Game::is_outside( const Ball &ball, const Level &level ) const
 
 void Game::menu( void )
 {
-	SimpleMenu menu;
+	SimpleMenu menu(surface);
 	const string entries[] =
 	{
 		"Continue",
@@ -404,7 +404,7 @@ void Game::menu( void )
 	for (uint i = 0; i < COUNTOF(entries); ++i)
 		menu.entries.push_back(entries[i]);
 	
-	menu.loop(SDL_GetVideoSurface());
+	menu.loop(surface);
 	
 	if (!menu.no_selection)
 	{

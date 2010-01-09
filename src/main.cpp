@@ -12,13 +12,10 @@ using namespace std;
 Uint32 push_frame_event( Uint32, void * );
 Uint32 push_update_event( Uint32, void * );
 
-int fps = 50, ups = 40;
-int ms_per_frame = 1000 / min(fps, ups),
-    ms_per_update = 1000 / ups;
-
-map<int, Sprite> font_sprites;
-
 bool global_quit = false;
+
+int ms_per_frame = 1000 / std::min(fps, ups),
+    ms_per_update = 1000 / ups;
 
 const string level_directory = "levels/",
              music_directory = "music/",
@@ -31,12 +28,14 @@ int main( int argc, char *argv[] )
 	bool editor = false, replay = false;
 	
 	int opt;
-	while ((opt = getopt(argc, argv, "aemr:s")) != -1)
+	while ((opt = getopt(argc, argv, "ae:mr:s")) != -1)
 	{
 		switch (opt)
 		{
 		case 'a':
 			audio_disabled = true;
+			
+			cout << "audio disabled" << endl;
 			break;
 			
 		case 'e':
@@ -50,11 +49,13 @@ int main( int argc, char *argv[] )
 		case 'r':
 			replay = true;
 			
-			controllers.push_back(boost::shared_ptr<Controller>(new Replay(optarg)));
+			disabled_controllers.push_back(boost::shared_ptr<Controller>(new Replay(optarg)));
 			break;
 			
 		case 's':
 			reverse_stereo = true;
+			
+			cout << "stereo reversal enabled" << endl;
 			break;
 			
 		case '?':
@@ -89,11 +90,8 @@ int main( int argc, char *argv[] )
 	SDL_TimerID frame_timer = SDL_AddTimer(0, push_frame_event, NULL);
 	SDL_TimerID update_timer = SDL_AddTimer(0, push_update_event, NULL);
 	
-	if (!replay)
-	{
-		controllers.push_back(boost::shared_ptr<Controller>(new Keyboard()));
-		controllers.push_back(boost::shared_ptr<Controller>(new Joystick(0)));
-	}
+	controllers.push_back(boost::shared_ptr<Controller>(new Keyboard()));
+	controllers.push_back(boost::shared_ptr<Controller>(new Joystick(0)));
 	
 	if (editor)
 	{
@@ -104,10 +102,14 @@ int main( int argc, char *argv[] )
 	}
 	else if (replay)
 	{
+		disabled_controllers.swap(controllers);
+		
 		Game game;
 		game.load(argv[optind]);
 		
 		game.loop(surface);
+		
+		disabled_controllers.swap(controllers);
 	}
 	else
 	{
@@ -119,6 +121,7 @@ int main( int argc, char *argv[] )
 	SDL_RemoveTimer(update_timer);
 	
 	controllers.clear();
+	disabled_controllers.clear();
 	
 	deinit_audio();
 	SDL_Quit();

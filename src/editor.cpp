@@ -132,7 +132,7 @@ void Editor::update( void )
 
 void Editor::menu( void )
 {
-	SimpleMenu menu;
+	SimpleMenu menu(surface);
 	const string entries[] =
 	{
 		"Play",
@@ -143,7 +143,7 @@ void Editor::menu( void )
 	for (uint i = 0; i < COUNTOF(entries); ++i)
 		menu.entries.push_back(entries[i]);
 	
-	menu.loop(SDL_GetVideoSurface());
+	menu.loop(surface);
 	
 	if (!menu.no_selection)
 	{
@@ -152,7 +152,7 @@ void Editor::menu( void )
 		case 0:
 			{
 				Game game(level);
-				game.loop(SDL_GetVideoSurface());
+				game.loop(surface);
 			}
 			break;
 		case 1:
