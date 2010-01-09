@@ -12,6 +12,7 @@ public:
 		none,
 		ball,
 		exit,
+		
 		normal,
 		nuke,
 		recycle,
@@ -28,6 +29,7 @@ public:
 	};
 	
 	Block( int x, int y, Type type );
+	bool operator<( const Block &that ) const { return (y == that.y ? x < that.x : y < that.y); }
 	
 	void reset( void );
 	

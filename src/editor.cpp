@@ -156,6 +156,8 @@ void Editor::menu( void )
 			}
 			break;
 		case 1:
+			stable_sort(level.blocks.begin(), level.blocks.end());
+			
 			save(level.path); // TODO
 			break;
 		case 2:
