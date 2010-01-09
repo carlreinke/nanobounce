@@ -1,6 +1,7 @@
 #include "audio.hpp"
 #include "controller.hpp"
 #include "editor.hpp"
+#include "font.hpp"
 #include "game.hpp"
 #include "highscore.hpp"
 #include "main.hpp"

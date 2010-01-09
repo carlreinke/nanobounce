@@ -121,9 +121,12 @@ void Game::tick( void )
 		// skip-level cheat
 		if ((*c)->is_down[Controller::up] &&
 		    (*c)->is_down[Controller::down] &&
-		    (*c)->is_down[Controller::left] &&
-		    (*c)->is_down[Controller::right])
-			state = cheat_won;
+		    (*c)->is_down[Controller::left_shoulder] &&
+		    (*c)->is_down[Controller::right_shoulder])
+		{
+			if (state == none)
+				state = cheat_won;
+		}
 	}
 	
 	// limit how hard player can push the ball
@@ -142,7 +145,7 @@ void Game::tick( void )
 				check_collide(*ball, *block);
 		
 		// if ball outside level, it's dead
-		if (state == none && is_outside(*ball, level))
+		if (is_outside(*ball, level) && state == none)
 		{
 			state = lost;
 			
@@ -223,7 +226,7 @@ redo:
 			switch (block.type)
 			{
 			case Block::exit:
-				if (state != quit && state != won)
+				if (state == none)
 				{
 					state = won;
 					ball.no_accel = true;
@@ -320,7 +323,9 @@ redo:
 		switch (block.type)
 		{
 		case Block::nuke:
-			state = lost;
+			if (state == none)
+				state = lost;
+			
 			ball.no_vel = true;
 			block.ignore = true;
 			

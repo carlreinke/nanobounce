@@ -1,6 +1,6 @@
 #include "audio.hpp"
 #include "controller.hpp"
-#include "main.hpp"
+#include "font.hpp"
 #include "volume.hpp"
 
 using namespace std;

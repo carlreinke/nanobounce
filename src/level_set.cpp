@@ -1,5 +1,6 @@
 #include "audio.hpp"
 #include "file_system.hpp"
+#include "font.hpp"
 #include "game.hpp"
 #include "level_set.hpp"
 #include "main.hpp"

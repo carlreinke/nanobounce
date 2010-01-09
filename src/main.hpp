@@ -1,9 +1,6 @@
 #ifndef MAIN_HPP
 #define MAIN_HPP
 
-#include "font.hpp"
-#include "SDL.h"
-
 enum
 {
 	USER_UPDATE,
