@@ -17,7 +17,23 @@ extern Fixed volume;
 
 extern SDL_AudioSpec spec;
 
-extern std::map<std::string, Sample> samples;
+enum SampleName
+{
+	BOUNCE,
+	WALL_JUMP,
+	
+	RECYCLE,
+	NUKE,
+	BOOST,
+	UNBOOST,
+	
+	WON,
+	LOST,
+	
+	sample_max
+};
+
+extern std::vector<Sample> samples;
 
 extern bool audio_disabled;
 

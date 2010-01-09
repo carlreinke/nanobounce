@@ -101,5 +101,6 @@ void Stream::rewind( void )
 
 void Stream::destroy( void )
 {
+	// TODO: this does bad things on streams that failed to open
 	ov_clear(&vorbis_file);
 }

@@ -85,6 +85,7 @@ int main( int argc, char *argv[] )
 	font.load(font_directory + "font_04b21.pgm",
 	          font_directory + "font_04b21.meta");
 	
+	font_sprites.resize(5);
 	font_sprites[1] = Sprite(1, 1, SDL_Color_RGBA(100, 100, 100));
 	font_sprites[2] = Sprite(font_directory + "font_gray_2.ppm");
 	font_sprites[3] = Sprite(font_directory + "font_gray_3.ppm");

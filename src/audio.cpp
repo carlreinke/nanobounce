@@ -17,7 +17,7 @@ SDL_AudioSpec spec;
 list<Channel *> channels;
 auto_ptr<Stream> music;
 
-std::map<std::string, Sample> samples;
+std::vector<Sample> samples;
 
 bool audio_disabled = false;
 
@@ -43,15 +43,21 @@ void init_audio( void )
 	
 	SDL_PauseAudio(0);
 	
-	samples["bounce"] = Sample(sample_directory + "bounce.ogg");
-	samples["wall_jump"] = Sample(sample_directory + "wall_jump.ogg");
-	samples["recycle"] = Sample(sample_directory + "recycle.ogg");
-	samples["nuke"] = Sample(sample_directory + "nuke.ogg");
-	samples["boost"] = Sample(sample_directory + "boost.ogg");
-	samples["unboost"] = Sample(sample_directory + "unboost.ogg");
+	const pair<SampleName, string> sample_files[] =
+	{
+		make_pair(BOUNCE,    "bounce.ogg"),
+		make_pair(WALL_JUMP, "wall_jump.ogg"),
+		make_pair(RECYCLE,   "recycle.ogg"),
+		make_pair(NUKE,      "nuke.ogg"),
+		make_pair(BOOST,     "boost.ogg"),
+		make_pair(UNBOOST,   "unboost.ogg"),
+		make_pair(WON,       "won.ogg"),
+		make_pair(LOST,      "lost.ogg"),
+	};
 	
-	samples["won"] = Sample(sample_directory + "won.ogg");
-	samples["lost"] = Sample(sample_directory + "lost.ogg");
+	samples.resize(sample_max);
+	for (uint i = 0; i < COUNTOF(sample_files); ++i)
+		samples[sample_files[i].first] = Sample(sample_directory + sample_files[i].second);
 	
 	play_next_music();
 }
@@ -130,6 +136,9 @@ void play_music( const std::string &path )
 
 void play_next_music( void )
 {
+	if (audio_disabled || audio_mode == NO_MUSIC)
+		return;
+	
 	static vector<string> entries = directory_listing(music_directory);
 	static vector<string>::iterator entry = entries.begin();
 	

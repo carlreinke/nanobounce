@@ -42,7 +42,7 @@ private:
 };
 
 extern Font font;
-extern std::map<int, Sprite> font_sprites;
+extern std::vector<Sprite> font_sprites;
 
 
 #endif // FONT_HPP

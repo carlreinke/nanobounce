@@ -184,7 +184,7 @@ void LevelSet::CongratsLoop::update( void )
 			particles.push_back(FireworkParticle(x, y, x_vel, y_vel, *colors[i % COUNTOF(*preset_colors)]));
 		}
 		
-		play_sample(samples["nuke"], Fixed(1) / 5, Fixed(x) / screen_width);
+		play_sample(samples[NUKE], Fixed(1) / 5, Fixed(x) / screen_width);
 	}
 	
 	Particle::tick_all(particles);
