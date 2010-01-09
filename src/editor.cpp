@@ -177,7 +177,13 @@ bool Editor::load( const string &level_data_path )
 
 bool Editor::save( const string &level_data_path ) const
 {
-	return level.save(level_data_path);
+	bool success = level.save(level_data_path);
+	
+	// remove highscore replay because it is probably no longer valid
+	if (success)
+		unlink((level_data_path + ".score").c_str());
+	
+	return success;
 }
 
 void Editor::reset( void )
