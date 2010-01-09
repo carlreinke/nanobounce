@@ -61,11 +61,18 @@ bool Level::load( istream &data )
 	
 	while (data >> x >> y >> type_char)
 	{
-		x *= Block::width;
-		y *= Block::height;
-		Block::Type type = block_chars.right.at(type_char);
-		
-		blocks.push_back(Block(x, y, type));
+		try
+		{
+			x *= Block::width;
+			y *= Block::height;
+			Block::Type type = block_chars.right.at(type_char);
+			
+			blocks.push_back(Block(x, y, type));
+		}
+		catch (exception e)
+		{
+			// ignore it
+		}
 	}
 	
 	valid = data.eof() && !blocks.empty();

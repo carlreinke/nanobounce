@@ -90,18 +90,18 @@ void Editor::handle_event( SDL_Event &e )
 		break;
 		
 	case SDL_MOUSEMOTION:
-		cursor_x = align(e.motion.x, Block::width);
-		cursor_y = align(e.motion.y, Block::height);
+		cursor_x = -x_offset + align(e.motion.x, Block::width);
+		cursor_y = -y_offset + align(e.motion.y, Block::height);
 		break;
 	case SDL_MOUSEBUTTONDOWN:
 		switch (e.button.button)
 		{
 		case SDL_BUTTON_LEFT:
-			set_block_at_position(e.button.x, e.button.y, static_cast<Block::Type>(cursor_block));
+			set_block_at_position(-x_offset + e.button.x, -y_offset + e.button.y, static_cast<Block::Type>(cursor_block));
 			break;
 		case SDL_BUTTON_RIGHT:
 			{
-				vector<Block>::iterator block = block_at_position(e.button.x, e.button.y);
+				vector<Block>::iterator block = block_at_position(-x_offset + e.button.x, -y_offset + e.button.y);
 				cursor_block = (block == level.blocks.end()) ? Block::none : block->type;
 			}
 			break;
@@ -138,6 +138,7 @@ void Editor::menu( void )
 		"Play",
 		"Save",
 		"Continue",
+		"Revert",
 		"Quit",
 	};
 	for (uint i = 0; i < COUNTOF(entries); ++i)
@@ -163,6 +164,9 @@ void Editor::menu( void )
 		case 2:
 			break;
 		case 3:
+			load(level.path);
+			break;
+		case 4:
 			loop_quit = true;
 			break;
 		}
