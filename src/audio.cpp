@@ -122,6 +122,9 @@ void play_sample( const Sample &sample, Fixed volume, Fixed pan )
 
 void play_music( const std::string &path )
 {
+	if (audio_disabled || audio_mode == NO_MUSIC)
+		return;
+	
 	music = auto_ptr<Stream>(new Stream(path));
 }
 
