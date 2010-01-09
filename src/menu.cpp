@@ -260,9 +260,17 @@ void GameMenu::handle_event( SDL_Event &e )
 						{
 							Level &level = level_set.levels[level_menu.selection];
 							
+#ifndef TARGET_GP2X
+							SDL_ShowCursor(SDL_ENABLE);
+#endif
+							
 							Editor editor;
 							editor.load(level.path);
 							editor.loop(surface);
+							
+#ifndef TARGET_GP2X
+							SDL_ShowCursor(SDL_DISABLE);
+#endif
 						}
 						break;
 					}

@@ -17,6 +17,7 @@ SDL_Surface *init_video( void )
 	}
 	
 	SDL_WM_SetCaption("Nanobounce", NULL);
+	
 	SDL_ShowCursor(SDL_DISABLE);
 	
 	screen_width = surface->w;

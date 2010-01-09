@@ -31,7 +31,7 @@ int main( int argc, char *argv[] )
 	bool editor = false, replay = false;
 	
 	int opt;
-	while ((opt = getopt(argc, argv, "ae:mr:s")) != -1)
+	while ((opt = getopt(argc, argv, "aemr:s")) != -1)
 	{
 		switch (opt)
 		{
@@ -99,6 +99,10 @@ int main( int argc, char *argv[] )
 	
 	if (editor)
 	{
+#ifndef TARGET_GP2X
+		SDL_ShowCursor(SDL_ENABLE);
+#endif
+		
 		Editor editor;
 		editor.load(argv[optind]);
 		
