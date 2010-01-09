@@ -32,6 +32,9 @@ protected:
 template <typename T>
 void Channel::mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream_, uint len, Fixed global_volume )
 {
+	if (empty())
+		return;
+	
 	T *stream = reinterpret_cast<T *>(stream_);
 	
 	std::vector<Fixed> channel_volume(spec.channels, global_volume * volume);

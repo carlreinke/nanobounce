@@ -21,10 +21,8 @@ public:
 	
 private:
 	Stream( const Stream & );
-	
 	Stream & operator=( const Stream & );
 	
-	void copy( const Stream & );
 	void destroy( void );
 	
 	Uint8 *get_buffer( uint &len );
@@ -37,7 +35,7 @@ private:
 	bool end_of_file;
 	int bitstream;
 	
-	OggVorbis_File vorbis_file;
+	OggVorbis_File *vorbis_file;
 	
 	SDL_AudioCVT cvt;
 	

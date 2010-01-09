@@ -12,14 +12,14 @@ Sample::Sample( void )
 
 Sample::Sample( const string &path )
 : Channel(),
-  position(0)
+  buffer(NULL), length(0), position(0)
 {
 	Stream stream(path);
 	
 	if (stream.empty())
 		return;
 	
-	length = sizeof(Sint16) * spec.channels * ov_pcm_total(&stream.vorbis_file, -1);
+	length = sizeof(Sint16) * spec.channels * ov_pcm_total(stream.vorbis_file, -1);
 	buffer = boost::shared_array<Uint8>(new Uint8[length]);
 	
 	// copy entire stream into buffer

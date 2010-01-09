@@ -5,23 +5,27 @@ using namespace std;
 
 Stream::Stream( const string &path )
 : Channel(),
-  buffer(NULL), size(0),
-  start_position(0), end_position(0), end_of_file(true)
+  buffer(NULL), size(0), start_position(0), end_position(0),
+  end_of_file(true),
+  vorbis_file(new OggVorbis_File)
 {
 #ifndef TARGET_WIN32
 	FILE *f = fopen(path.c_str(), "rb");
-	if (!f || ov_open(f, &vorbis_file, NULL, 0) != 0)
+	if (!f || ov_open(f, vorbis_file, NULL, 0) != 0)
 #else
-	if (ov_fopen(const_cast<char *>(path.c_str()), &vorbis_file) != 0)
+	if (ov_fopen(const_cast<char *>(path.c_str()), vorbis_file) != 0)
 #endif
 	{
 		cerr << "failed to load audio stream from '" << path << "'" << endl;
+		
+		delete vorbis_file;
+		vorbis_file = NULL;
 		return;
 	}
 	
 	// prepare for audio conversion
-	int channels = ov_info(&vorbis_file, -1)->channels;
-	long freq = ov_info(&vorbis_file, -1)->rate;
+	int channels = ov_info(vorbis_file, -1)->channels;
+	long freq = ov_info(vorbis_file, -1)->rate;
 	
 	if (SDL_BuildAudioCVT(&cvt, AUDIO_S16SYS, channels,      freq,
 	                            spec.format,  spec.channels, spec.freq) == -1)
@@ -59,9 +63,9 @@ Uint8 * Stream::get_buffer( uint &len )
 	{
 		// fill empty section at end of buffer with raw audio
 #ifndef TARGET_GP2X
-		int read = ov_read(&vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, 0, 2, 1, &bitstream);
+		int read = ov_read(vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, 0, 2, 1, &bitstream);
 #else
-		int read = ov_read(&vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, &bitstream);
+		int read = ov_read(vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, &bitstream);
 #endif
 		if (read > 0)
 		{
@@ -94,13 +98,17 @@ bool Stream::empty( void ) const
 
 void Stream::rewind( void )
 {
-	if (ov_raw_seek(&vorbis_file, 0) == 0)
+	if (ov_raw_seek(vorbis_file, 0) == 0)
 		end_of_file = false;
 }
 
 
 void Stream::destroy( void )
 {
-	// TODO: this does bad things on streams that failed to open
-	ov_clear(&vorbis_file);
+	if (vorbis_file != NULL)
+	{
+		ov_clear(vorbis_file);
+		delete vorbis_file;
+		vorbis_file = NULL;
+	}
 }
