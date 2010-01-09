@@ -7,7 +7,6 @@ class Highscore
 {
 public:
 	Highscore( void ) { reset(); }
-	Highscore( int ms_per_tick );
 	bool invalid( void ) const { return ms() == 0; }
 	
 	bool load( const std::string &path );
@@ -16,17 +15,17 @@ public:
 	bool save( const std::string &path ) const;
 	bool save( std::ostream & ) const;
 	
-	void reset( int ms_per_tick = 0 );
+	void reset( void );
 	
 	void push_back_tick( int x_direction );
 	
-	int ms( void ) const { return ticks * ms_per_tick; }
+	int ms( void ) const { return ticks * 1000 / ticks_per_second; }
 	std::string time( void ) const;
 	
 	std::string name;
 	
 private:
-	int ms_per_tick;
+	int ticks_per_second;
 	
 	int ticks;
 	std::deque< std::pair<int, int> > x_direction;

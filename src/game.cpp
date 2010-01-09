@@ -89,7 +89,7 @@ bool Game::load( const string &level_data_path )
 void Game::reset( void )
 {
 	level.reset();
-	highscore.reset(ms_per_update);
+	highscore.reset();
 	
 	balls.clear();
 	for (vector<Block>::const_iterator b = level.blocks.begin(); b != level.blocks.end(); ++b)

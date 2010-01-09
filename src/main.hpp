@@ -12,8 +12,7 @@ enum
 
 extern bool global_quit;
 
-static const int fps = 40, ups = 40, ups_multiplier = 4;
-extern int ms_per_update;
+extern const int ups, ups_multiplier;
 
 extern const std::string level_directory, music_directory, sample_directory, sprite_directory;
 

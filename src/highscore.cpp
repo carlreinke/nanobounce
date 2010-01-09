@@ -1,12 +1,7 @@
 #include "highscore.hpp"
+#include "main.hpp"
 
 using namespace std;
-
-Highscore::Highscore( int ms_per_tick )
-: ms_per_tick(ms_per_tick), ticks(0)
-{
-	// good to go
-}
 
 bool Highscore::load( const string &data_path )
 {
@@ -25,7 +20,7 @@ bool Highscore::load( const string &data_path )
 bool Highscore::load( istream &is )
 {
 	getline(is, name);
-	is >> ms_per_tick;
+	is >> ticks_per_second;
 	is >> ticks;
 	
 	if (name.size() == 0)
@@ -64,7 +59,7 @@ bool Highscore::save( const string &data_path ) const
 bool Highscore::save( ostream &os ) const
 {
 	os << name << endl;
-	os << ms_per_tick << " ";
+	os << ticks_per_second << " ";
 	os << ticks << " ";
 	
 	for (deque< pair<int, int> >::const_iterator i = x_direction.begin(); i != x_direction.end(); ++i)
@@ -74,15 +69,17 @@ bool Highscore::save( ostream &os ) const
 	return os.good();
 }
 
-void Highscore::reset( int ms_per_tick )
+void Highscore::reset( void )
 {
-	this->ms_per_tick = ms_per_tick;
+	ticks_per_second = ups * ups_multiplier;
+	
 	ticks = 0;
 	x_direction.clear();
 }
 
 void Highscore::push_back_tick( int x_direction )
 {
+	// if direction different than last tick, store it
 	if (this->x_direction.size() == 0 || this->x_direction.back().second != x_direction)
 		this->x_direction.push_back(make_pair(ticks, x_direction));
 	

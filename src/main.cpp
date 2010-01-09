@@ -14,8 +14,10 @@ Uint32 push_update_event( Uint32, void * );
 
 bool global_quit = false;
 
-int ms_per_frame = 1000 / std::min(fps, ups),
-    ms_per_update = 1000 / ups;
+const int fps = 40,
+          ups = 40, ups_multiplier = 4;
+const int ms_per_frame = 1000 / std::min(fps, ups),
+          ms_per_update = 1000 / ups;
 
 const string level_directory = "levels/",
              music_directory = "music/",
