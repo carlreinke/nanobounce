@@ -334,8 +334,8 @@ redo:
 			ball.no_vel = true;
 			block.ignore = true;
 			
-			for (int y = 0; y < Block::height; y += 3)
-				for (int x = 0; x < Block::width; x += 3)
+			for (int y = 0; y < block.height; y += 3)
+				for (int x = 0; x < block.width; x += 3)
 					particles.push_back(ExplosionParticle(block.x + x, block.y + y));
 			
 			for (int i = 0; i < 18; ++i)
@@ -349,8 +349,8 @@ redo:
 		case Block::recycle:
 			block.ignore = true;
 			
-			for (int y = 0; y < Block::height; y += 3)
-				for (int x = 0; x < Block::width; x += 3)
+			for (int y = 0; y < block.height; y += 3)
+				for (int x = 0; x < block.width; x += 3)
 					particles.push_back(DustParticle(block.x + x, block.y + y));
 			
 			sample = &samples[RECYCLE];
@@ -366,25 +366,40 @@ redo:
 			break;
 			
 		case Block::boost_left:
-			ball.x = block.x - Ball::width;
-			ball.y += Ball::height;
-			ball.x_boost(-ball.x_boost_block);
-			
-			for (int i = 0; i < 10; ++i)
-				particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(0, 255, 0)));
-			
-			sample = &samples[BOOST];
+			{
+				Ball temp(block.x - ball.width, ball.y + ball.height);
+				
+				if (!is_conflicted(temp, level))
+				{
+					ball.x = temp.x;
+					ball.y = temp.y;
+					ball.x_boost(-ball.x_boost_block);
+					
+					for (int i = 0; i < 10; ++i)
+						particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(0, 255, 0)));
+					
+					sample = &samples[BOOST];
+				}
+			}
 			break;
 			
 		case Block::boost_right:
-			ball.x = block.x + Block::width;
-			ball.y += Ball::height;
-			ball.x_boost(ball.x_boost_block);
-			
-			for (int i = 0; i < 10; ++i)
-				particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(0, 255, 0)));
-			
-			sample = &samples[BOOST];
+			{
+				Ball temp(block.x + block.width, ball.y + ball.height);
+				
+				if (!is_conflicted(temp, level))
+				{
+					ball.x = temp.x;
+					ball.y = temp.y;
+					
+					ball.x_boost(ball.x_boost_block);
+					
+					for (int i = 0; i < 10; ++i)
+						particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(0, 255, 0)));
+					
+					sample = &samples[BOOST];
+				}
+			}
 			break;
 			
 		default:
@@ -396,10 +411,31 @@ redo:
 		play_sample(*sample, 1, sample_pan(ball.x));
 }
 
+// check if ball is inside level boundaries
 bool Game::is_outside( const Ball &ball, const Level &level ) const
 {
 	return static_cast<int>(ball.x) + ball.width <= 0 || static_cast<int>(ball.x) >= level.width ||
 	       static_cast<int>(ball.y) + ball.height <= 0 || static_cast<int>(ball.y) >= level.height;
+}
+
+// check if ball is inside a collideable block
+bool Game::is_conflicted( const Ball &ball, const Level &level ) const
+{
+	for (vector<Block>::const_iterator block = level.blocks.begin(); block != level.blocks.end(); ++block)
+	{
+		if (block->collidable && !block->ignore)
+		{
+			bool x_in = static_cast<int>(ball.x) + ball.width > block->x &&
+			            static_cast<int>(ball.x) < block->x + block->width;
+			bool y_in = static_cast<int>(ball.y) + ball.height > block->y &&
+			            static_cast<int>(ball.y) < block->y + block->height;
+			
+			if (x_in && y_in)
+				return true;
+		}
+	}
+	
+	return false;
 }
 
 void Game::menu( void )

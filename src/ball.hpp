@@ -15,7 +15,7 @@ public:
 	
 private:
 	Fixed x, y;
-	static const int height = 2, width = 2;
+	static const int height, width;
 	
 	// velocity
 	bool no_vel;

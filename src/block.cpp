@@ -4,6 +4,8 @@
 
 using namespace std;
 
+const int Block::width = 16, Block::height = 16;
+
 std::vector<Sprite> Block::sprites;
 
 Block::Block( int x, int y, Type type )

@@ -39,6 +39,7 @@ private:
 	
 	void check_collide( Ball &, Block & );
 	bool is_outside( const Ball &, const Level & ) const;
+	bool is_conflicted( const Ball &, const Level & ) const;
 	
 	Fixed sample_pan( const Fixed &x ) const { return (x_offset + x) / screen_width; }
 	

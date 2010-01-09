@@ -35,10 +35,9 @@ public:
 	
 	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
-	static const int height = 16, width = 16;
-	
 private:
 	int x, y;
+	static const int height, width;
 	
 	Type type;
 	
@@ -47,6 +46,7 @@ private:
 	
 	static std::vector<Sprite> sprites;
 	
+	friend class Ball;
 	friend class Editor;
 	friend class Game;
 	friend class Level;

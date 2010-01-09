@@ -7,6 +7,8 @@
 
 using namespace std;
 
+const int Ball::width = 2, Ball::height = 2;
+
 // terminal velocity and acceleration
 const Fixed Ball::y_term_vel = 1.0f;
 const Fixed Ball::y_accel    = sqr(-y_term_vel) / (2 * (1.5f * Block::height));
