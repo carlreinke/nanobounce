@@ -8,7 +8,9 @@ using namespace std;
 boost::bimap<Block::Type, char> Level::block_chars;
 
 Level::Level( void )
-: valid(false)
+: valid(false),
+  path("invalid"), name("invalid"),
+  width(0), height(0)
 {
 	if (block_chars.empty())
 	{

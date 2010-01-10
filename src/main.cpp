@@ -17,7 +17,7 @@ bool global_quit = false;
 
 const int fps = 40,
           ups = 40, ups_multiplier = 4;
-const int ms_per_frame = 1000 / std::min(fps, ups),
+const int ms_per_frame = 1000 / fps,
           ms_per_update = 1000 / ups;
 
 const string level_directory = "levels/",

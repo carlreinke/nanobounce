@@ -17,6 +17,8 @@ private:
 	Fixed x, y;
 	static const int height, width;
 	
+	static const Fixed constant;  // base value for calculation of motion constants
+	
 	// velocity
 	bool no_vel;
 	Fixed x_vel, y_vel;

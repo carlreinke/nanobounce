@@ -103,8 +103,8 @@ void Game::reset( void )
 	
 	state = none;
 	
-	x_offset = 0; //-(level.width - screen_width) / 2;
-	y_offset = 0; //-(level.height - screen_height) / 2;
+	x_offset = -(level.width - screen_width) / 2;
+	y_offset = -(level.height - screen_height) / 2;
 }
 
 void Game::tick( void )
