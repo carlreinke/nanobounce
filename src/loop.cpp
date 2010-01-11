@@ -5,6 +5,11 @@
 
 using namespace std;
 
+const uint fps = 35,
+           ups = 70, ups_multiplier = 2;
+const uint ms_per_frame = 1000 / fps,
+           ms_per_update = 1000 / ups;
+
 void Loop::loop( SDL_Surface *surface )
 {
 	this->surface = surface;
@@ -13,14 +18,13 @@ void Loop::loop( SDL_Surface *surface )
 	
 	fader.fade(Fader::in);
 	
+	static Uint32 update_ticks_ms = SDL_GetTicks(),
+	              frame_ticks_ms = SDL_GetTicks();
+	
 	bool done = false;
 	
 	while (!done && !global_quit)
 	{
-		SDL_WaitEvent(NULL);
-		
-		int updates = 0, frames = 0;
-		
 		SDL_Event e;
 		while (SDL_PollEvent(&e))
 		{
@@ -47,26 +51,18 @@ void Loop::loop( SDL_Surface *surface )
 				}
 				break;
 				
-			case SDL_USEREVENT:
-				switch (e.user.code)
-				{
-				case USER_UPDATE:
-					++updates;
-					break;
-				case USER_FRAME:
-					++frames;
-					break;
-				}
-				break;
-				
 			default:
 				handle_event(e);
 				break;
 			}
 		}
 		
-		while (updates--)
+		Uint32 now_ticks_ms = SDL_GetTicks();
+		
+		while (now_ticks_ms > update_ticks_ms)
 		{
+			update_ticks_ms += ms_per_update;
+			
 			update();
 			
 			if (loop_quit)
@@ -78,17 +74,24 @@ void Loop::loop( SDL_Surface *surface )
 			update_volume_notification();
 		}
 		
-		if (frames--)
+		if (now_ticks_ms > frame_ticks_ms)
 		{
+			frame_ticks_ms += ms_per_frame;
+			
 			draw(surface, fader.value());
 			
 			draw_volume_notification(surface);
 			
 			SDL_Flip(surface);
 			
+			int frames = 0;
+			while (now_ticks_ms > frame_ticks_ms)
+				frame_ticks_ms += ms_per_frame, ++frames;
 			if (frames > 0)
 				clog << "dropped " << frames << " frame(s)" << endl;
 		}
+		
+		usleep((update_ticks_ms - now_ticks_ms) * 1000);
 	}
 }
 

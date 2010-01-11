@@ -10,15 +10,7 @@
 
 using namespace std;
 
-Uint32 push_frame_event( Uint32, void * );
-Uint32 push_update_event( Uint32, void * );
-
 bool global_quit = false;
-
-const int fps = 40,
-          ups = 40, ups_multiplier = 4;
-const int ms_per_frame = 1000 / fps,
-          ms_per_update = 1000 / ups;
 
 const string level_directory = "levels/",
              music_directory = "music/",
@@ -74,7 +66,7 @@ int main( int argc, char *argv[] )
 		replay = false;
 	}
 	
-	if (SDL_Init(SDL_INIT_TIMER) == -1)
+	if (SDL_Init(0) == -1)
 	{
 		cerr << SDL_GetError() << endl;
 		exit(EXIT_FAILURE);
@@ -90,9 +82,6 @@ int main( int argc, char *argv[] )
 	font_sprites[2] = Sprite(font_directory + "font_gray_2.ppm");
 	font_sprites[3] = Sprite(font_directory + "font_gray_3.ppm");
 	font_sprites[4] = Sprite(font_directory + "font_gray_4.ppm");
-	
-	SDL_TimerID frame_timer = SDL_AddTimer(0, push_frame_event, NULL);
-	SDL_TimerID update_timer = SDL_AddTimer(0, push_update_event, NULL);
 	
 	controllers.push_back(boost::shared_ptr<Controller>(new Keyboard()));
 	controllers.push_back(boost::shared_ptr<Controller>(new Joystick(0)));
@@ -125,9 +114,6 @@ int main( int argc, char *argv[] )
 		menu.loop(surface);
 	}
 	
-	SDL_RemoveTimer(frame_timer);
-	SDL_RemoveTimer(update_timer);
-	
 	controllers.clear();
 	disabled_controllers.clear();
 	
@@ -135,28 +121,4 @@ int main( int argc, char *argv[] )
 	SDL_Quit();
 	
 	return EXIT_SUCCESS;
-}
-
-Uint32 push_frame_event( Uint32, void * )
-{
-	SDL_Event event;
-	event.type = SDL_USEREVENT;
-	event.user.type = SDL_USEREVENT;
-	event.user.code = USER_FRAME;
-	
-	SDL_PushEvent(&event);
-	
-	return ms_per_frame;
-}
-
-Uint32 push_update_event( Uint32, void * )
-{
-	SDL_Event event;
-	event.type = SDL_USEREVENT;
-	event.user.type = SDL_USEREVENT;
-	event.user.code = USER_UPDATE;
-	
-	SDL_PushEvent(&event);
-	
-	return ms_per_update;
 }

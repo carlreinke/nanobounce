@@ -1,8 +1,13 @@
 #ifndef LOOP_HPP
 #define LOOP_HPP
 
-#include "video.hpp"
+#include "fader.hpp"
 #include "SDL.h"
+
+extern const uint fps, ups, ups_multiplier;
+extern const uint ms_per_frame, ms_per_update;
+
+static inline uint ms_to_updates( uint ms ) { return (ms / ms_per_update); }
 
 class Loop
 {

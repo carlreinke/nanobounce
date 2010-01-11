@@ -51,7 +51,7 @@ void Game::update( void )
 	
 	if (!fader.is_fading(Fader::in))
 	{
-		for (int i = 0; i < ups_multiplier; ++i)
+		for (uint i = 0; i < ups_multiplier; ++i)
 		{
 			// update replay controllers
 			for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)

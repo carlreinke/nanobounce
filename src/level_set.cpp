@@ -137,6 +137,11 @@ void LevelSet::CongratsLoop::update( void )
 	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
 		(*c)->update();
 	
+	// TODO: fix: fireworks require old tick value, so they only tick every other time
+	static int i = 0;
+	if (++i % 2 != 0)
+		return;
+	
 	// firework colors
 	static const SDL_Color red = SDL_Color_RGBA(224, 32, 32),
 	                       yellow = SDL_Color_RGBA(224, 160, 32),

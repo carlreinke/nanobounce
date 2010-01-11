@@ -1,5 +1,5 @@
 #include "highscore.hpp"
-#include "main.hpp"
+#include "loop.hpp"
 
 using namespace std;
 
