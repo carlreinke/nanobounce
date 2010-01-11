@@ -59,7 +59,7 @@ void Loop::loop( SDL_Surface *surface )
 		
 		Uint32 now_ticks_ms = SDL_GetTicks();
 		
-		while (now_ticks_ms > update_ticks_ms)
+		if (now_ticks_ms > update_ticks_ms)
 		{
 			update_ticks_ms += ms_per_update;
 			
@@ -72,8 +72,14 @@ void Loop::loop( SDL_Surface *surface )
 			done = fader.is_done() && fader.was_fading(Fader::out);
 			
 			update_volume_notification();
+			
+			int dropped = 0;
+			while (now_ticks_ms > update_ticks_ms)
+				update_ticks_ms += ms_per_update, ++dropped;
+			if (dropped > 0)
+				clog << "dropped " << dropped << " updates(s)" << endl;
 		}
-		
+			
 		if (now_ticks_ms > frame_ticks_ms)
 		{
 			frame_ticks_ms += ms_per_frame;
@@ -84,14 +90,16 @@ void Loop::loop( SDL_Surface *surface )
 			
 			SDL_Flip(surface);
 			
-			int frames = 0;
+			int dropped = 0;
 			while (now_ticks_ms > frame_ticks_ms)
-				frame_ticks_ms += ms_per_frame, ++frames;
-			if (frames > 0)
-				clog << "dropped " << frames << " frame(s)" << endl;
+				frame_ticks_ms += ms_per_frame, ++dropped;
+			if (dropped > 0)
+				clog << "dropped " << dropped << " frame(s)" << endl;
 		}
 		
-		usleep((update_ticks_ms - now_ticks_ms) * 1000);
+		Sint32 wait_ticks_ms = min(update_ticks_ms, frame_ticks_ms) - SDL_GetTicks();
+		if (wait_ticks_ms > 0)
+			SDL_Delay(wait_ticks_ms);
 	}
 }
 
