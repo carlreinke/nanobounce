@@ -18,8 +18,8 @@ void Loop::loop( SDL_Surface *surface )
 	
 	fader.fade(Fader::in);
 	
-	static Uint32 update_ticks_ms = SDL_GetTicks(),
-	              frame_ticks_ms = SDL_GetTicks();
+	static Uint32 next_update_ms = SDL_GetTicks(),
+	              next_frame_ms = SDL_GetTicks();
 	
 	bool done = false;
 	
@@ -57,15 +57,36 @@ void Loop::loop( SDL_Surface *surface )
 			}
 		}
 		
-		Uint32 now_ticks_ms = SDL_GetTicks();
+		Uint32 now_ms = SDL_GetTicks();
 		
-		if (now_ticks_ms > update_ticks_ms)
+		if (now_ms >= next_frame_ms)
 		{
-			update_ticks_ms += ms_per_update;
-			
+			if (now_ms >= next_frame_ms + ms_per_frame)
+			{
+				// aw, frame was too late
+				int dropped = (now_ms - next_frame_ms) / ms_per_frame + 1;
+				clog << "dropped " << dropped << " frame(s)" << endl;
+				
+				next_frame_ms += dropped * ms_per_frame;
+			}
+			else 
+			{
+				draw(surface, fader.value());
+				
+				draw_volume_notification(surface);
+				
+				SDL_Flip(surface);
+				
+				next_frame_ms += ms_per_frame;
+			}
+		}
+		
+		// process updates that will occur before next frame
+		while (next_update_ms <= next_frame_ms)
+		{
 			update();
 			
-			if (loop_quit)
+			if (loop_quit && !fader.was_fading(Fader::out))
 				fader.fade(Fader::out);
 			
 			fader.update();
@@ -73,33 +94,13 @@ void Loop::loop( SDL_Surface *surface )
 			
 			update_volume_notification();
 			
-			int dropped = 0;
-			while (now_ticks_ms > update_ticks_ms)
-				update_ticks_ms += ms_per_update, ++dropped;
-			if (dropped > 0)
-				clog << "dropped " << dropped << " updates(s)" << endl;
-		}
-			
-		if (now_ticks_ms > frame_ticks_ms)
-		{
-			frame_ticks_ms += ms_per_frame;
-			
-			draw(surface, fader.value());
-			
-			draw_volume_notification(surface);
-			
-			SDL_Flip(surface);
-			
-			int dropped = 0;
-			while (now_ticks_ms > frame_ticks_ms)
-				frame_ticks_ms += ms_per_frame, ++dropped;
-			if (dropped > 0)
-				clog << "dropped " << dropped << " frame(s)" << endl;
+			next_update_ms += ms_per_update;
 		}
 		
-		Sint32 wait_ticks_ms = min(update_ticks_ms, frame_ticks_ms) - SDL_GetTicks();
-		if (wait_ticks_ms > 0)
-			SDL_Delay(wait_ticks_ms);
+		// wait until next frame
+		Sint32 wait_ms = next_frame_ms - SDL_GetTicks();
+		if (wait_ms > 0)
+			SDL_Delay(wait_ms);
 	}
 }
 

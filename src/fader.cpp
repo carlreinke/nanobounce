@@ -2,9 +2,9 @@
 
 using namespace std;
 
-Fader::Fader( int step )
+Fader::Fader( uint ms )
 : done(true),
-  alpha(SDL_ALPHA_TRANSPARENT), target(alpha), step(step == 0 ? 255 / ms_to_updates(300) : step)
+  alpha(SDL_ALPHA_TRANSPARENT), target(alpha), step(255 / ms_to_updates(ms == 0 ? 300 : ms))
 {
 	// good to go
 }

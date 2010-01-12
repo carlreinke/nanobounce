@@ -6,7 +6,7 @@
 class Fader
 {
 public:
-	Fader( int step = 0 );
+	Fader( uint ms = 0 );
 	
 	enum Direction
 	{
