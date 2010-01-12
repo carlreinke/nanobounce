@@ -58,7 +58,7 @@ public:
 class FireworkParticle : public Particle
 {
 public:
-	FireworkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const SDL_Color &color );
+	FireworkParticle( Fixed x, Fixed y, const SDL_Color &color );
 };
 
 

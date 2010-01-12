@@ -5,6 +5,12 @@
 
 #define sqr(x) ((x) * (x))
 
+template <typename T>
+static inline T make_frac( const T &a, const T &b )
+{
+	return (a / b);
+}
+
 typedef unsigned int uint;
 
 void getline( std::istream &is, std::istringstream &iss );

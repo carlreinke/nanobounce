@@ -180,16 +180,9 @@ void LevelSet::CongratsLoop::update( void )
 		const SDL_Color **colors = preset_colors[(x + y) % COUNTOF(preset_colors)];
 		
 		for (uint i = 0; i < 40; ++i)
-		{
-			const Fixed radius = (Fixed(rand() % (1024 * 2) - 1024) / 1024),
-			            angle = (Fixed(rand() % 31415) / 10000),
-			            x_vel = cosf(angle) * radius,
-			            y_vel = sinf(angle) * radius;
-			
-			particles.push_back(FireworkParticle(x, y, x_vel, y_vel, *colors[i % COUNTOF(*preset_colors)]));
-		}
+			particles.push_back(FireworkParticle(x, y, *colors[i % COUNTOF(*preset_colors)]));
 		
-		play_sample(samples[NUKE], Fixed(1) / 5, Fixed(x) / screen_width);
+		play_sample(samples[NUKE], make_frac<Fixed>(1, 5), Fixed(x) / screen_width);
 	}
 	
 	Particle::tick_all(particles);

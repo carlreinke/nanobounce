@@ -65,8 +65,8 @@ void Particle::tick_all( list<Particle> &particles )
 ExplosionParticle::ExplosionParticle( Fixed x, Fixed y )
 : Particle(x, y, rand() % 50 + 20, SDL_Color_RGBA(255, 0, 0))
 {
-	x_vel = Fixed(rand() % (1024 * 2) - 1024) / 1024;
-	y_vel = Fixed(rand() % (1024 * 2) - 1024) / 1024;
+	x_vel = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024);  // [-1..1]
+	y_vel = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024);  // [-1..1]
 	
 	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 50 - 20;
 	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
@@ -75,8 +75,8 @@ ExplosionParticle::ExplosionParticle( Fixed x, Fixed y )
 DustParticle::DustParticle( Fixed x, Fixed y )
 : Particle(x, y, rand() % 60 + 20, SDL_Color_RGBA(128, 128, 128))
 {
-	x_vel = (Fixed(rand() % (1024 * 2) - 1024) / 1024) / 5;
-	y_vel = (Fixed(rand() % 1024) / 1024) / 5;
+	x_vel = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024) / 5;  // [-1/5..1/5]
+	y_vel = make_frac<Fixed>(rand() % 1024, 1024) / 5;  // [0..1/5]
 	
 	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 60 - 20;
 	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
@@ -85,18 +85,21 @@ DustParticle::DustParticle( Fixed x, Fixed y )
 SparkParticle::SparkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const SDL_Color &color )
 : Particle(x, y, rand() % 20 + 20, color)
 {
-	this->x_vel = (Fixed(rand() % (1024 * 2) - 1024) / 1024) / 5 + x_vel;
-	this->y_vel = (Fixed(rand() % (1024 * 2) - 1024) / 1024) / 5 + y_vel;
+	this->x_vel = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024) / 5 + x_vel;  // [-1/5..1/5] + ...
+	this->y_vel = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024) / 5 + y_vel;  // [-1/5..1/5] + ...
 	
 	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 20 - 20;
 	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
 }
 
-FireworkParticle::FireworkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const SDL_Color &color )
+FireworkParticle::FireworkParticle( Fixed x, Fixed y, const SDL_Color &color )
 : Particle(x, y, rand() % 20 + 30, color)
 {
-	this->x_vel = x_vel;
-	this->y_vel = y_vel;
+	const Fixed radius = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024),  // [-1..1]
+	            angle = make_frac<Fixed>(rand() % 31415, 10000);  // [0..pi]
+	
+	x_vel = cosf(angle) * radius,
+	y_vel = sinf(angle) * radius;
 	
 	y_accel /= 2;
 	
