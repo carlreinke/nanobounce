@@ -1,0 +1,9 @@
+The owner of this software reserves all rights granted by copyright. However,
+the owner grants the following rights to users:
+
+1) The right to make personal copies of the software.
+2) The right to distribute the software for free (at no cost) to other users.
+
+No further rights are granted or should be assumed. This includes, but is not
+limited to, the right to create derivative works.
+

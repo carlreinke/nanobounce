@@ -66,6 +66,11 @@ int main( int argc, char *argv[] )
 		replay = false;
 	}
 	
+	cout << "Nanobounce" << endl
+	     << "Copyright 2010 Carl Reinke" << endl
+	     << "This program comes with ABSOLUTELY NO WARRANTY." << endl
+	     << endl;
+	
 	if (SDL_Init(0) == -1)
 	{
 		cerr << SDL_GetError() << endl;
