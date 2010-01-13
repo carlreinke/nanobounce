@@ -2,6 +2,7 @@
 #define LOOP_HPP
 
 #include "fader.hpp"
+#include "misc.hpp"
 #include "SDL.h"
 
 extern const uint fps, ups, ups_multiplier;

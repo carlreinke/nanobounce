@@ -1,6 +1,7 @@
 #ifndef FADER_HPP
 #define FADER_HPP
 
+#include "misc.hpp"
 #include "SDL.h"
 
 class Fader

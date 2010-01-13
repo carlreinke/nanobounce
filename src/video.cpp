@@ -3,7 +3,7 @@
 using namespace std;
 
 int screen_width = 320, screen_height = 240, screen_bpp = 32;
-const Uint32 surface_flags = SDL_HWSURFACE | SDL_ASYNCBLIT;
+const Uint32 surface_flags = SDL_HWSURFACE;
 
 SDL_Surface *init_video( void )
 {
