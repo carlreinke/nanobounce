@@ -296,14 +296,9 @@ redo:
 		if (hit_left || hit_right)
 		{
 			if (ball.can_unboost)
-			{
 				ball.unboost();
-				ball.x_vel = -ball.x_vel;
-			}
 			else
-			{
-				ball.x_vel = -ball.x_vel / 2;
-			}
+				ball.x_vel = -ball.x_vel * make_frac<Fixed>(2, 3);
 			
 			// wall jump
 			if ((hit_left && ball.was_pushed_left()) ||
@@ -316,9 +311,14 @@ redo:
 				
 				sample = &samples[WALL_JUMP];
 			}
-			else if (fabsf(ball.x_vel) > 3 * ball.push_x_accel)  // if ball has enough force
+			else
 			{
-				sample = &samples[BOUNCE];
+				if (fabsf(ball.x_vel) > 3 * ball.push_x_accel)  // if ball has enough force
+					sample = &samples[BOUNCE];
+				
+				// prevent wall-jumping within one-block area
+				if (ball.was_pushed_left() || ball.was_pushed_right())
+					ball.x_vel /= 2;
 			}
 		}
 	}
