@@ -1,6 +1,7 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#include "audio/sample.hpp"
 #include "highscore.hpp"
 #include "level.hpp"
 #include "loop.hpp"
@@ -33,6 +34,15 @@ public:
 	State state;
 	
 	Highscore highscore;
+	
+	static void load_resources( void );
+	static struct Samples
+	{
+		Sample bounce, wall_jump,
+		       recycle, nuke, boost, unboost,
+		       won, lost;
+	}
+	samples;
 	
 private:
 	void check_unboost( Ball & );

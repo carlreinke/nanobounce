@@ -1,5 +1,21 @@
-#include "audio.hpp"
-#include "audio_stream.hpp"
+/*  audio/stream.cpp
+ *  
+ *  Copyright 2010 Carl Reinke
+ *  
+ *  This program is non-commercial, open-source software; you can redistribute
+ *  it and/or modify it under the terms of the MAME License as included along
+ *  with this program.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  MAME License for more details.
+ *  
+ *  You should have received a copy of the MAME License along with this
+ *  program; if not, see <http://www.nothinglost.net/licenses/MAME.txt>.
+ */
+#include "audio/audio.hpp"
+#include "audio/stream.hpp"
 
 using namespace std;
 
@@ -7,8 +23,13 @@ Stream::Stream( const string &path )
 : Channel(),
   buffer(NULL), size(0), start_position(0), end_position(0),
   end_of_file(true),
-  vorbis_file(new OggVorbis_File)
+  vorbis_file(NULL)
 {
+	if (audio_disabled)
+		return;
+	
+	vorbis_file = new OggVorbis_File;
+	
 #ifndef TARGET_WIN32
 	FILE *f = fopen(path.c_str(), "rb");
 	if (!f || ov_open(f, vorbis_file, NULL, 0) != 0)
@@ -47,50 +68,6 @@ Stream::~Stream( void )
 }
 
 
-Uint8 * Stream::get_buffer( uint &len )
-{
-	assert(len <= size);
-	
-	// shift data to front of buffer if necessary
-	if (start_position + len > size)
-	{
-		memmove(&buffer[0], &buffer[start_position], end_position - start_position);
-		end_position -= start_position;
-		start_position = 0;
-	}
-	
-	while (end_position - start_position < len && !end_of_file)
-	{
-		// fill empty section at end of buffer with raw audio
-#ifndef TARGET_GP2X
-		int read = ov_read(vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, 0, 2, 1, &bitstream);
-#else
-		int read = ov_read(vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, &bitstream);
-#endif
-		if (read > 0)
-		{
-			// convert the section of raw audio
-			cvt.buf = &buffer[end_position];
-			cvt.len = read;
-			
-			SDL_ConvertAudio(&cvt);
-			
-			end_position += cvt.len_cvt;
-		}
-		else
-			end_of_file = true;
-	}
-	
-	len = min(len, end_position - start_position);
-	
-	return &buffer[start_position];
-}
-
-void Stream::flush( uint len )
-{
-	start_position += len;
-}
-
 bool Stream::empty( void ) const
 {
 	return end_of_file;
@@ -111,4 +88,57 @@ void Stream::destroy( void )
 		delete vorbis_file;
 		vorbis_file = NULL;
 	}
+}
+
+Uint8 * Stream::get_buffer( uint &len )
+{
+	assert(len <= size);
+	
+	// shift data to front of buffer if necessary
+	if (start_position + len > size)
+	{
+		memmove(&buffer[0], &buffer[start_position], end_position - start_position);
+		end_position -= start_position;
+		start_position = 0;
+	}
+	
+	while (end_position - start_position < len && !end_of_file)
+	{
+		// fill empty section at end of buffer with raw audio
+#ifndef TARGET_GP2X
+		int read = ov_read(vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, 0, 2, 1, &bitstream);
+#else
+		int read = ov_read(vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, &bitstream);
+#endif
+		switch (read)
+		{
+		case OV_HOLE:
+			break;
+			
+		case OV_EBADLINK:
+		case OV_EINVAL:
+		case 0:
+			end_of_file = true;
+			break;
+			
+		default:
+			// convert the section of raw audio
+			cvt.buf = &buffer[end_position];
+			cvt.len = read;
+			
+			SDL_ConvertAudio(&cvt);
+			
+			end_position += cvt.len_cvt;
+			break;
+		}
+	}
+	
+	len = min(len, end_position - start_position);
+	
+	return &buffer[start_position];
+}
+
+void Stream::flush( uint len )
+{
+	start_position += len;
 }

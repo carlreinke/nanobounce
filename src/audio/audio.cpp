@@ -1,15 +1,30 @@
-#include "audio.hpp"
-#include "audio_stream.hpp"
-#include "file_system.hpp"
-#include "main.hpp"
+/*  audio/audio.cpp
+ *  
+ *  Copyright 2010 Carl Reinke
+ *  
+ *  This program is non-commercial, open-source software; you can redistribute
+ *  it and/or modify it under the terms of the MAME License as included along
+ *  with this program.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  MAME License for more details.
+ *  
+ *  You should have received a copy of the MAME License along with this
+ *  program; if not, see <http://www.nothinglost.net/licenses/MAME.txt>.
+ */
+#include "audio/audio.hpp"
+#include "audio/stream.hpp"
 
 using namespace std;
 
 void audio_callback( void *, Uint8 *stream, int len );
 
-void play_next_music( void );
+bool audio_disabled = false;
 
 AudioMode audio_mode = ALL_AUDIO;
+MusicMode music_mode = REPEAT_ALL;
 Fixed volume = 0.5f, music_volume = 1.0f;
 
 SDL_AudioSpec spec;
@@ -17,19 +32,25 @@ SDL_AudioSpec spec;
 list<Channel *> channels;
 auto_ptr<Stream> music;
 
-std::vector<Sample> samples;
-
-bool audio_disabled = false;
+vector<Sample> samples;
+list<string> music_paths;
 
 void init_audio( void )
 {
 	if (audio_disabled)
 		return;
 	
+#ifdef TARGET_GP2X
 	spec.freq = 11025 * 2;
 	spec.format = AUDIO_S16SYS;
 	spec.channels = 2;
 	spec.samples = 256;
+#else
+	spec.freq = 11025 * 4;
+	spec.format = AUDIO_S16SYS;
+	spec.channels = 2;
+	spec.samples = 512;
+#endif
 	spec.callback = &audio_callback;
 	
 	if (SDL_OpenAudio(&spec, NULL) == -1)
@@ -43,22 +64,6 @@ void init_audio( void )
 	
 	SDL_PauseAudio(0);
 	
-	const pair<SampleName, string> sample_files[] =
-	{
-		make_pair(BOUNCE,    "bounce.ogg"),
-		make_pair(WALL_JUMP, "wall_jump.ogg"),
-		make_pair(RECYCLE,   "recycle.ogg"),
-		make_pair(NUKE,      "nuke.ogg"),
-		make_pair(BOOST,     "boost.ogg"),
-		make_pair(UNBOOST,   "unboost.ogg"),
-		make_pair(WON,       "won.ogg"),
-		make_pair(LOST,      "lost.ogg"),
-	};
-	
-	samples.resize(sample_max);
-	for (uint i = 0; i < COUNTOF(sample_files); ++i)
-		samples[sample_files[i].first] = Sample(sample_directory + sample_files[i].second);
-	
 	play_next_music();
 }
 
@@ -66,6 +71,7 @@ void deinit_audio( void )
 {
 	SDL_CloseAudio();
 }
+
 
 void audio_callback( void *, Uint8 *stream, int len )
 {
@@ -84,7 +90,19 @@ void audio_callback( void *, Uint8 *stream, int len )
 		}
 		
 		if (music->empty())
-			play_next_music();
+		{
+			switch (music_mode)
+			{
+			case NO_REPEAT:
+				break;
+			case REPEAT_ONE:
+				music->rewind();
+				break;
+			case REPEAT_ALL:
+				play_next_music();
+				break;
+			}
+		}
 	}
 	
 	// channels
@@ -131,7 +149,11 @@ void play_music( const std::string &path )
 	if (audio_disabled || audio_mode == NO_MUSIC)
 		return;
 	
+	SDL_LockAudio();
+	
 	music = auto_ptr<Stream>(new Stream(path));
+	
+	SDL_UnlockAudio();
 }
 
 void play_next_music( void )
@@ -139,26 +161,27 @@ void play_next_music( void )
 	if (audio_disabled || audio_mode == NO_MUSIC)
 		return;
 	
-	static vector<string> entries = directory_listing(music_directory);
-	static vector<string>::iterator entry = entries.begin();
+	static list<string>::iterator current = music_paths.begin();
 	
+	// release old music stream
 	music = auto_ptr<Stream>(NULL);
 	
-	// no music files?
-	if (entries.size() == 0)
+	// if no music files
+	if (music_paths.size() == 0)
 		return;
 	
-	if (entry == entries.end())
-		entry = entries.begin();
+	// loop list of music
+	if (current == music_paths.end())
+		current = music_paths.begin();
 	
-	play_music(music_directory + *entry);
+	play_music(*current);
 	
 	// if music fails to load, try next one
 	if (music->empty())
 	{
-		entry = entries.erase(entry);
+		current = music_paths.erase(current);
 		play_next_music();
 	}
 	else
-		++entry;
+		++current;
 }

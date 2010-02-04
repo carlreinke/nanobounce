@@ -1,4 +1,4 @@
-#include "audio.hpp"
+#include "audio/audio.hpp"
 #include "file_system.hpp"
 #include "font.hpp"
 #include "game.hpp"
@@ -182,7 +182,7 @@ void LevelSet::CongratsLoop::update( void )
 		for (uint i = 0; i < 40; ++i)
 			particles.push_back(FireworkParticle(x, y, *colors[i % COUNTOF(*preset_colors)]));
 		
-		play_sample(samples[NUKE], make_frac<Fixed>(1, 5), Fixed(x) / screen_width);
+		play_sample(Game::samples.nuke, make_frac<Fixed>(1, 5), Fixed(x) / screen_width);
 	}
 	
 	Particle::tick_all(particles);

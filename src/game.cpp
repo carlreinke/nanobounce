@@ -1,10 +1,12 @@
-#include "audio.hpp"
+#include "audio/audio.hpp"
 #include "game.hpp"
 #include "main.hpp"
 #include "menu.hpp"
 #include "misc.hpp"
 
 using namespace std;
+
+Game::Samples Game::samples;
 
 Game::Game( void )
 : state(none)
@@ -149,7 +151,7 @@ void Game::tick( void )
 		{
 			state = lost;
 			
-			play_sample(samples[LOST], 1, sample_pan(ball->x));
+			play_sample(samples.lost, 1, sample_pan(ball->x));
 		}
 		else  // level view panning
 		{
@@ -174,6 +176,27 @@ void Game::tick( void )
 	Particle::tick_all(particles);
 }
 
+void Game::load_resources( void )
+{
+	boost::array<pair<Sample *, string>, 8> sample_paths =
+	{{
+		make_pair(&samples.bounce,    "bounce"),
+		make_pair(&samples.wall_jump, "wall_jump"),
+		make_pair(&samples.recycle,   "recycle"),
+		make_pair(&samples.nuke,      "nuke"),
+		make_pair(&samples.boost,     "boost"),
+		make_pair(&samples.unboost,   "unboost"),
+		make_pair(&samples.won,       "won"),
+		make_pair(&samples.lost,      "lost"),
+	}};
+	
+	typedef pair<Sample *, string> SamplePair;
+	BOOST_FOREACH (SamplePair &i, sample_paths)
+	{
+		if (i.first->empty())
+			*i.first = Sample(sample_directory + i.second + ".ogg");
+	}}
+
 void Game::check_unboost( Ball &ball )
 {
 	if (ball.can_unboost)
@@ -186,7 +209,7 @@ void Game::check_unboost( Ball &ball )
 			{
 				ball.unboost();
 				
-				play_sample(samples[UNBOOST], 1, sample_pan(ball.x));
+				play_sample(samples.unboost, 1, sample_pan(ball.x));
 			}
 		}
 		else if (--ball.ticks_until_unboost == 0)
@@ -232,7 +255,7 @@ redo:
 					ball.no_accel = true;
 					// TODO: maybe trap ball inside block?
 					
-					play_sample(samples[WON], 1, sample_pan(ball.x));
+					play_sample(samples.won, 1, sample_pan(ball.x));
 				}
 				break;
 				
@@ -284,7 +307,7 @@ redo:
 			
 			ball.y_vel = hit_top ? -ball.y_term_vel : max(-ball.y_vel, ball.y_term_vel / 2) / 3;
 			
-			sample = &samples[BOUNCE];
+			sample = &samples.bounce;
 		}
 	}
 	
@@ -314,7 +337,7 @@ redo:
 				for (int i = 0; i < 10; ++i)
 					particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(255, 255, 255)));
 				
-				sample = &samples[WALL_JUMP];
+				sample = &samples.wall_jump;
 			}
 			else
 			{
@@ -323,7 +346,7 @@ redo:
 					ball.x_vel = min(max(-ball.x_term_vel, ball.x_vel), ball.x_term_vel) / 2;
 				
 				if (fabsf(ball.x_vel) > 3 * ball.push_x_accel)  // if ball has enough force
-					sample = &samples[BOUNCE];
+					sample = &samples.bounce;
 			}
 		}
 	}
@@ -348,7 +371,7 @@ redo:
 			for (int i = 0; i < 9; ++i)
 				particles.push_back(SparkParticle(ball.x, ball.y, i / 3 - 1, ball.y_vel + i % 2, SDL_Color_RGBA(255, 128, 0)));
 			
-			sample = &samples[NUKE];
+			sample = &samples.nuke;
 			break;
 			
 		case Block::recycle:
@@ -358,7 +381,7 @@ redo:
 				for (int x = 0; x < block.width; x += 3)
 					particles.push_back(DustParticle(block.x + x, block.y + y));
 			
-			sample = &samples[RECYCLE];
+			sample = &samples.recycle;
 			break;
 			
 		case Block::boost_up:
@@ -367,7 +390,7 @@ redo:
 			for (int i = 0; i < 10; ++i)
 				particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(0, 255, 0)));
 			
-			sample = &samples[BOOST];
+			sample = &samples.boost;
 			break;
 			
 		case Block::boost_left:
@@ -383,7 +406,7 @@ redo:
 					for (int i = 0; i < 10; ++i)
 						particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(0, 255, 0)));
 					
-					sample = &samples[BOOST];
+					sample = &samples.boost;
 				}
 			}
 			break;
@@ -402,7 +425,7 @@ redo:
 					for (int i = 0; i < 10; ++i)
 						particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(0, 255, 0)));
 					
-					sample = &samples[BOOST];
+					sample = &samples.boost;
 				}
 			}
 			break;

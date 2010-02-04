@@ -1,8 +1,9 @@
-#include "audio.hpp"
+#include "audio/audio.hpp"
 #include "controller/controller.hpp"
 #include "controller/joystick.hpp"
 #include "controller/keyboard.hpp"
 #include "editor.hpp"
+#include "file_system.hpp"
 #include "font.hpp"
 #include "game.hpp"
 #include "highscore.hpp"
@@ -68,6 +69,12 @@ int main( int argc, char *argv[] )
 		replay = false;
 	}
 	
+	{
+		vector<string> music_filenames = directory_listing(music_directory);
+		BOOST_FOREACH (string &filename, music_filenames)
+			music_paths.push_back(music_directory + filename);
+	}
+	
 	cout << "Nanobounce" << endl
 	     << "Copyright 2010 Carl Reinke" << endl
 	     << "This program comes with ABSOLUTELY NO WARRANTY." << endl
@@ -80,6 +87,8 @@ int main( int argc, char *argv[] )
 	}
 	SDL_Surface *surface = init_video();
 	init_audio();
+	
+	Game::load_resources();
 	
 	font.load(font_directory + "font_04b21.pgm",
 	          font_directory + "font_04b21.meta");
