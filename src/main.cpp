@@ -1,5 +1,7 @@
 #include "audio.hpp"
-#include "controller.hpp"
+#include "controller/controller.hpp"
+#include "controller/joystick.hpp"
+#include "controller/keyboard.hpp"
 #include "editor.hpp"
 #include "font.hpp"
 #include "game.hpp"

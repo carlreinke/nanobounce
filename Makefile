@@ -13,7 +13,7 @@ ifneq ($(PLATFORM), UNIX)
     include crosscompile.mk
 endif
 
-SRCS := $(wildcard src/*.cpp)
+SRCS := $(wildcard src/*.cpp src/*/*.cpp)
 OBJS := $(SRCS:src/%.cpp=obj/%.o)
 
 # FLAGS ####################################################
@@ -44,7 +44,7 @@ release : all
 	$(STRIP) $(TARGET)
 
 clean :
-	rm -rf obj/* src/precompiled.hpp.gch
+	rm -rf obj/* src/precompiled.hpp.*
 	rm -f $(TARGET)
 
 ifneq ($(MAKECMDGOALS), clean)
@@ -52,11 +52,11 @@ ifneq ($(MAKECMDGOALS), clean)
 endif
 
 $(TARGET) : $(OBJS)
-	$(CXX) -o $@ $(ALL_LDFLAGS) $^ $(LDLIBS)
+	$(CXX) $(ALL_LDFLAGS) -o $@ $^ $(LDLIBS)
 
 src/precompiled.hpp.gch : src/precompiled.hpp
-	-$(CXX) -c -o $@ $(ALL_CXXFLAGS) $<
+	-$(CXX) $(ALL_CXXFLAGS) -c -o $@ $<
 
 obj/%.o : src/%.cpp src/precompiled.hpp.gch
 	@mkdir -p "$(dir $@)"
-	$(CXX) -c -o $@ $(ALL_CXXFLAGS) -include "precompiled.hpp" $< 
+	$(CXX) $(ALL_CXXFLAGS) -c -o $@ -include "precompiled.hpp" $< 

@@ -1,5 +1,21 @@
-#ifndef CONTROLLER_HPP
-#define CONTROLLER_HPP
+/*  controller/controller.hpp
+ *  
+ *  Copyright 2010 Carl Reinke
+ *  
+ *  This program is non-commercial, open-source software; you can redistribute
+ *  it and/or modify it under the terms of the MAME License as included along
+ *  with this program.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  MAME License for more details.
+ *  
+ *  You should have received a copy of the MAME License along with this
+ *  program; if not, see <http://www.nothinglost.net/licenses/MAME.txt>.
+ */
+#ifndef CONTROLLER_CONTROLLER_HPP
+#define CONTROLLER_CONTROLLER_HPP
 
 #include "SDL.h"
 
@@ -55,7 +71,11 @@ public:
 		vol_down_key       = SDLK_MINUS
 	};
 	
-	std::vector<bool> is_down;
+	std::bitset<functions_count> is_down, was_down, is_triggered;
+	
+	static bool push_events;
+	
+	static Uint32 repeat_delay, repeat_interval;
 	
 protected:
 	virtual void update_down( void ) = 0;
@@ -66,40 +86,11 @@ protected:
 	void push_function_event( Functions ) const;
 	
 private:
-	static const SDLKey push_as_key[functions_count];
+	static const boost::array<SDLKey, functions_count> push_as_key;
 	
-	static const Uint32 repeat_delay = SDL_DEFAULT_REPEAT_DELAY,
-	                    repeat_interval = SDL_DEFAULT_REPEAT_INTERVAL;
-	std::vector<Uint32> repeat_tick;
-};
-
-class Keyboard : public Controller
-{
-public:
-	Keyboard( void );
-	
-	bool is_keyboard( void ) { return true; }
-	
-private:
-	void update_down( void );
-	
-	Uint8 *key_state;
-};
-
-class Joystick : public Controller
-{
-public:
-	Joystick( int i = 0 );
-	~Joystick( void );
-	
-	bool is_joystick( void ) { return true; }
-	
-private:
-	void update_down( void );
-	
-	SDL_Joystick *joystick;
+	boost::array<Uint32, functions_count> repeat_tick;
 };
 
 extern std::vector< boost::shared_ptr<Controller> > controllers, disabled_controllers;
 
-#endif // CONTROLLER_HPP
+#endif // CONTROLLER_CONTROLLER_HPP

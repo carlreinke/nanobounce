@@ -1,7 +1,7 @@
 #ifndef HIGHSCORE_HPP
 #define HIGHSCORE_HPP
 
-#include "controller.hpp"
+#include "controller/controller.hpp"
 
 class Highscore
 {

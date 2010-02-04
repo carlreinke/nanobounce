@@ -1,4 +1,4 @@
-#include "controller.hpp"
+#include "controller/controller.hpp"
 #include "editor.hpp"
 #include "font.hpp"
 #include "game.hpp"

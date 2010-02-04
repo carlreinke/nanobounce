@@ -1,5 +1,5 @@
 #include "ball.hpp"
-#include "controller.hpp"
+#include "controller/controller.hpp"
 #include "editor.hpp"
 #include "file_system.hpp"
 #include "font.hpp"

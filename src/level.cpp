@@ -1,5 +1,5 @@
 #include "audio.hpp"
-#include "controller.hpp"
+#include "controller/controller.hpp"
 #include "level.hpp"
 #include "misc.hpp"
 
