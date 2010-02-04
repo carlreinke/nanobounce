@@ -1,6 +1,21 @@
-#include "fixed.hpp"
-#include "font.hpp"
+/*  video/font.cpp
+ *  
+ *  Copyright 2010 Carl Reinke
+ *  
+ *  This program is non-commercial, open-source software; you can redistribute
+ *  it and/or modify it under the terms of the MAME License as included along
+ *  with this program.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  MAME License for more details.
+ *  
+ *  You should have received a copy of the MAME License along with this
+ *  program; if not, see <http://www.nothinglost.net/licenses/MAME.txt>.
+ */
 #include "misc.hpp"
+#include "video/font.hpp"
 
 using namespace std;
 
@@ -32,17 +47,17 @@ void Font::load_pgm( istream &pgm )
 		return;
 	}
 	
-	int w = get_no_comments<int>(pgm),
-	    h = get_no_comments<int>(pgm),
-	    component_max = get_no_comments<int>(pgm);
+	uint w = get_no_comments<uint>(pgm),
+	     h = get_no_comments<uint>(pgm),
+	     component_max = get_no_comments<uint>(pgm);
 	
 	graymap.resize(h);
 	
-	int x = 0, y = 0;
+	uint x = 0, y = 0;
 	
 	while (pgm.good() && y < h)
 	{
-		int g = get_no_comments<int>(pgm) * (component_max / Fixed(255));
+		int g = get_no_comments<uint>(pgm) * component_max / 255;
 		graymap[y].push_back(g);
 		
 		if (++x == w)

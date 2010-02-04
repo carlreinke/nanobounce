@@ -4,12 +4,12 @@
 #include "controller/keyboard.hpp"
 #include "editor.hpp"
 #include "file_system.hpp"
-#include "font.hpp"
 #include "game.hpp"
 #include "highscore.hpp"
 #include "main.hpp"
 #include "menu.hpp"
-#include "video.hpp"
+#include "video/font.hpp"
+#include "video/video.hpp"
 
 using namespace std;
 
@@ -85,7 +85,7 @@ int main( int argc, char *argv[] )
 		cerr << SDL_GetError() << endl;
 		exit(EXIT_FAILURE);
 	}
-	SDL_Surface *surface = init_video();
+	SDL_Surface *surface = init_video(false);
 	init_audio();
 	
 	Game::load_resources();

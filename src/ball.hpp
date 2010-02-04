@@ -2,7 +2,7 @@
 #define BALL_HPP
 
 #include "fixed.hpp"
-#include "sprite.hpp"
+#include "video/sprite.hpp"
 #include "SDL.h"
 
 class Ball

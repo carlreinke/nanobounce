@@ -1,8 +1,23 @@
-#include "fixed.hpp"
+/*  video/sprite.cpp
+ *  
+ *  Copyright 2010 Carl Reinke
+ *  
+ *  This program is non-commercial, open-source software; you can redistribute
+ *  it and/or modify it under the terms of the MAME License as included along
+ *  with this program.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  MAME License for more details.
+ *  
+ *  You should have received a copy of the MAME License along with this
+ *  program; if not, see <http://www.nothinglost.net/licenses/MAME.txt>.
+ */
 #include "misc.hpp"
 #include "sdl_ext.hpp"
-#include "sprite.hpp"
-#include "video.hpp"
+#include "video/sprite.hpp"
+#include "video/video.hpp"
 
 using namespace std;
 
@@ -29,6 +44,13 @@ Sprite::Sprite( const string &netpbm_file )
 {
 	ifstream netpbm(netpbm_file.c_str());
 	load_ppm(netpbm);
+}
+
+Sprite::Sprite( const Sprite &that, const SDL_Rect &rect )
+{
+	surface = SDL_CreateRGBSurface(surface_flags, rect.w, rect.h, screen_bpp, 0, 0, 0, 0);
+	
+	that.blit(surface, -rect.x, -rect.y);
 }
 
 Sprite::Sprite( const Sprite &that )
@@ -64,21 +86,21 @@ void Sprite::load_ppm( istream &ppm )
 		return;
 	}
 	
-	int w = get_no_comments<int>(ppm),
-	    h = get_no_comments<int>(ppm),
-	    component_max = get_no_comments<int>(ppm);
+	w = get_no_comments<uint>(ppm);
+	h = get_no_comments<uint>(ppm);
+	int component_max = get_no_comments<int>(ppm);
 	
 	surface = SDL_CreateRGBSurface(surface_flags, w, h, screen_bpp, 0, 0, 0, 0);
 	
-	int x = 0, y = 0;
+	uint x = 0, y = 0;
 	
 	while (ppm.good() && y < h)
 	{
 		SDL_Color color =
 		{
-			static_cast<int>(get_no_comments<int>(ppm) * (component_max / Fixed(255))),
-			static_cast<int>(get_no_comments<int>(ppm) * (component_max / Fixed(255))),
-			static_cast<int>(get_no_comments<int>(ppm) * (component_max / Fixed(255)))
+			get_no_comments<uint>(ppm) * component_max / 255,
+			get_no_comments<uint>(ppm) * component_max / 255,
+			get_no_comments<uint>(ppm) * component_max / 255
 		};
 		
 		SDL_SetPixel(surface, x, y, color);
@@ -95,8 +117,7 @@ void Sprite::copy( const Sprite &that )
 {
 	if (that.surface != NULL)
 	{
-		surface = SDL_CreateRGBSurface(surface_flags, that.surface->h, that.surface->w, that.surface->format->BitsPerPixel, 0, 0, 0, 0);
-		SDL_BlitSurface(that.surface, NULL, surface, NULL);
+		surface = SDL_DuplicateRGBSurface(that.surface);
 	}
 	else
 	{

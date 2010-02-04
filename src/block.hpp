@@ -1,7 +1,7 @@
 #ifndef BLOCK_HPP
 #define BLOCK_HPP
 
-#include "sprite.hpp"
+#include "video/sprite.hpp"
 #include "SDL.h"
 
 class Block

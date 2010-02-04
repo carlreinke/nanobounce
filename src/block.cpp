@@ -1,6 +1,6 @@
 #include "block.hpp"
 #include "main.hpp"
-#include "sprite.hpp"
+#include "video/sprite.hpp"
 
 using namespace std;
 

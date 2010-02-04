@@ -2,12 +2,12 @@
 #include "controller/controller.hpp"
 #include "editor.hpp"
 #include "file_system.hpp"
-#include "font.hpp"
 #include "highscore.hpp"
 #include "main.hpp"
 #include "menu.hpp"
 #include "misc.hpp"
 #include "sdl_ext.hpp"
+#include "video/font.hpp"
 #include "volume.hpp"
 
 using namespace std;

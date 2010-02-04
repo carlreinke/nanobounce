@@ -1,7 +1,7 @@
 #ifndef SDL_EXT_HPP
 #define SDL_EXT_HPP
 
-#include "video.hpp"
+#include "video/video.hpp"
 #include "SDL.h"
 
 class SDL_Surface_smartptr

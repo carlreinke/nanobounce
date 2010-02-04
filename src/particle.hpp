@@ -2,7 +2,7 @@
 #define PARTICLE_HPP
 
 #include "fixed.hpp"
-#include "sprite.hpp"
+#include "video/sprite.hpp"
 
 class Particle
 {

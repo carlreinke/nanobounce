@@ -1,13 +1,13 @@
 #include "controller/controller.hpp"
 #include "editor.hpp"
-#include "font.hpp"
 #include "game.hpp"
 #include "main.hpp"
 #include "menu.hpp"
 #include "misc.hpp"
-#include "video.hpp"
-#include "volume.hpp"
 #include "sdl_ext.hpp"
+#include "video/font.hpp"
+#include "video/video.hpp"
+#include "volume.hpp"
 
 using namespace std;
 
