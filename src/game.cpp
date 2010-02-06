@@ -336,25 +336,27 @@ redo:
 				ball.x_vel = -ball.x_vel * make_frac<Fixed>(2, 3);
 			}
 			
-			// wall jump
-			if ((hit_left && ball.was_pushed_left()) ||
-			    (hit_right && ball.was_pushed_right()))
+			if (fabsf(ball.x_vel) > 3 * ball.push_x_accel)  // if ball has enough force
 			{
-				ball.wall_jump();
-				
-				for (int i = 0; i < 10; ++i)
-					particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(255, 255, 255)));
-				
-				sample = &samples.wall_jump;
-			}
-			else
-			{
-				// prevent wall-jumping within one-block area
-				if (ball.was_pushed_left() || ball.was_pushed_right())
-					ball.x_vel = min(max(-ball.x_term_vel, ball.x_vel), ball.x_term_vel) / 2;
-				
-				if (fabsf(ball.x_vel) > 3 * ball.push_x_accel)  // if ball has enough force
+				// wall jump
+				if ((hit_left && ball.was_pushed_left()) ||
+				    (hit_right && ball.was_pushed_right()))
+				{
+					ball.wall_jump();
+					
+					for (int i = 0; i < 10; ++i)
+						particles.push_back(SparkParticle(ball.x, ball.y, ball.x_vel, ball.y_vel, SDL_Color_RGBA(255, 255, 255)));
+					
+					sample = &samples.wall_jump;
+				}
+				else
+				{
+					// prevent wall-jumping within one-block area
+					if (ball.was_pushed_left() || ball.was_pushed_right())
+					    ball.x_vel = min(max(-ball.x_term_vel, ball.x_vel), ball.x_term_vel) / 2;
+					
 					sample = &samples.bounce;
+				}
 			}
 		}
 	}
