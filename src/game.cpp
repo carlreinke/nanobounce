@@ -245,44 +245,52 @@ redo:
 		}
 		else
 		{
-			// handle ball interaction with non-collidable blocks
-			switch (block.type)
+			bool x_half_in = ball.x + Fixed(ball.width) / 2 >= block.x &&
+			                 ball.x + Fixed(ball.width) / 2 < block.x + block.width;
+			bool y_half_in = ball.y + Fixed(ball.height) / 2 >= block.y &&
+			                 ball.y + Fixed(ball.height) / 2 < block.y + block.height;
+			
+			if (x_half_in && y_half_in)
 			{
-			case Block::exit:
-				if (state == none)
+				// handle ball interaction with non-collidable blocks
+				switch (block.type)
 				{
-					state = won;
-					ball.no_accel = true;
-					// TODO: maybe trap ball inside block?
+				case Block::exit:
+					if (state == none)
+					{
+						state = won;
+						ball.no_accel = true;
+						// TODO: maybe trap ball inside block?
+						
+						play_sample(samples.won, 1, sample_pan(ball.x));
+					}
+					break;
 					
-					play_sample(samples.won, 1, sample_pan(ball.x));
+				case Block::push_up:
+					ball.y_vel -= ball.y_accel * 3 / 2;
+					
+					if (SDL_GetTicks() % 2 == 0)
+						particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
+					
+					break;
+				case Block::push_left:
+					ball.x_vel -= ball.y_accel / 2;
+					
+					if (SDL_GetTicks() % 2 == 0)
+						particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
+					
+					break;
+				case Block::push_right:
+					ball.x_vel += ball.y_accel / 2;
+					
+					if (SDL_GetTicks() % 2 == 0)
+						particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
+					
+					break;
+					
+				default:
+					break;
 				}
-				break;
-				
-			case Block::push_up:
-				ball.y_vel -= ball.y_accel * 3 / 2;
-				
-				if (SDL_GetTicks() % 2 == 0)
-					particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
-				
-				break;
-			case Block::push_left:
-				ball.x_vel -= ball.y_accel / 2;
-				
-				if (SDL_GetTicks() % 2 == 0)
-					particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
-				
-				break;
-			case Block::push_right:
-				ball.x_vel += ball.y_accel / 2;
-				
-				if (SDL_GetTicks() % 2 == 0)
-					particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
-				
-				break;
-				
-			default:
-				break;
 			}
 		}
 	}
