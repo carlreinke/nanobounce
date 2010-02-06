@@ -17,6 +17,9 @@ public:
 		nuke,
 		recycle,
 		
+		locked,
+		locked_star,
+		
 		boost_up,
 		boost_left,
 		boost_right,

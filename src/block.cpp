@@ -15,18 +15,28 @@ Block::Block( int x, int y, Type type )
 	{
 		sprites.resize(_max);
 		
-		sprites[exit] = Sprite(sprite_directory + "exit.ppm");
-		sprites[normal] = Sprite(sprite_directory + "block.ppm");
-		sprites[nuke] = Sprite(sprite_directory + "nuke.ppm");
-		sprites[recycle] = Sprite(sprite_directory + "recycle.ppm");
+		boost::array<pair<Sprite *, string>, 4 + 2 + 3 + 3> sprite_names =
+		{{
+			make_pair(&sprites[exit],    "exit"),
+			make_pair(&sprites[normal],  "block"),
+			make_pair(&sprites[nuke],    "nuke"),
+			make_pair(&sprites[recycle], "recycle"),
+			
+			make_pair(&sprites[locked],      "locked"),
+			make_pair(&sprites[locked_star], "locked_star"),
+			
+			make_pair(&sprites[boost_up],    "boost_up"),
+			make_pair(&sprites[boost_left],  "boost_left"),
+			make_pair(&sprites[boost_right], "boost_right"),
+			
+			make_pair(&sprites[push_up],    "push_up"),
+			make_pair(&sprites[push_left],  "push_left"),
+			make_pair(&sprites[push_right], "push_right"),
+		}};
 		
-		sprites[boost_up] = Sprite(sprite_directory + "boost_up.ppm");
-		sprites[boost_left] = Sprite(sprite_directory + "boost_left.ppm");
-		sprites[boost_right] = Sprite(sprite_directory + "boost_right.ppm");
-		
-		sprites[push_up] = Sprite(sprite_directory + "push_up.ppm");
-		sprites[push_left] = Sprite(sprite_directory + "push_left.ppm");
-		sprites[push_right] = Sprite(sprite_directory + "push_right.ppm");
+		typedef pair<Sprite *, string> SpritePair;
+		BOOST_FOREACH (SpritePair &i, sprite_names)
+			*i.first = Sprite(sprite_directory + i.second + ".ppm");
 	}
 }
 

@@ -271,21 +271,21 @@ redo:
 					ball.y_vel -= ball.y_accel * 3 / 2;
 					
 					if (SDL_GetTicks() % 2 == 0)
-						particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
+						particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(192, 192, 255) : SDL_Color_RGBA(0, 0, 255)));
 					
 					break;
 				case Block::push_left:
 					ball.x_vel -= ball.y_accel / 2;
 					
 					if (SDL_GetTicks() % 2 == 0)
-						particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
+						particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(192, 192, 255) : SDL_Color_RGBA(0, 0, 255)));
 					
 					break;
 				case Block::push_right:
 					ball.x_vel += ball.y_accel / 2;
 					
 					if (SDL_GetTicks() % 2 == 0)
-						particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(128, 128, 255) : SDL_Color_RGBA(0, 0, 255)));
+						particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(192, 192, 255) : SDL_Color_RGBA(0, 0, 255)));
 					
 					break;
 					
@@ -393,6 +393,22 @@ redo:
 					particles.push_back(DustParticle(block.x + x, block.y + y));
 			
 			sample = &samples.recycle;
+			break;
+			
+		case Block::locked_star:
+			BOOST_FOREACH (Block &block, level.blocks)
+			{
+				if (block.type == Block::locked || block.type == Block::locked_star)
+				{
+					block.ignore = true;
+					
+					for (int y = 0; y < block.height; y += 5)
+						for (int x = 0; x < block.width; x += 5)
+							particles.push_back(StarDustParticle(block.x + x, block.y + y));
+				}
+			}
+			
+			sample = &samples.recycle;  // TODO: probably shouldn't recycle this sample <_<
 			break;
 			
 		case Block::boost_up:

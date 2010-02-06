@@ -21,6 +21,9 @@ Level::Level( void )
 		block_chars.insert(make_bipair(Block::nuke, '*'));
 		block_chars.insert(make_bipair(Block::recycle, '-'));
 		
+		block_chars.insert(make_bipair(Block::locked, '~'));
+		block_chars.insert(make_bipair(Block::locked_star, '!'));
+		
 		block_chars.insert(make_bipair(Block::boost_up, '^'));
 		block_chars.insert(make_bipair(Block::boost_left, '<'));
 		block_chars.insert(make_bipair(Block::boost_right, '>'));

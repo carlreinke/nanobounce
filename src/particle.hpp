@@ -49,6 +49,12 @@ public:
 	DustParticle( Fixed x, Fixed y );
 };
 
+class StarDustParticle : public Particle
+{
+public:
+	StarDustParticle( Fixed x, Fixed y );
+};
+
 class SparkParticle : public Particle
 {
 public:

@@ -82,6 +82,18 @@ DustParticle::DustParticle( Fixed x, Fixed y )
 	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
 }
 
+StarDustParticle::StarDustParticle( Fixed x, Fixed y )
+: Particle(x, y, rand() % 60 + 20, SDL_Color_RGBA(255, 255, 0))
+{
+	x_vel = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024) / 5;  // [-1/5..1/5]
+	y_vel = make_frac<Fixed>(rand() % -1024, 1024) / 5;  // [0..1/5]
+	
+	y_accel = -y_accel;
+	
+	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 60 - 20;
+	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
+}
+
 SparkParticle::SparkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const SDL_Color &color )
 : Particle(x, y, rand() % 20 + 20, color)
 {
