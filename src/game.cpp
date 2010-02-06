@@ -113,18 +113,18 @@ void Game::tick( void )
 {
 	int x_direction = 0;
 	
-	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
+	BOOST_FOREACH (boost::shared_ptr<Controller> &c, controllers)
 	{
-		const bool left = (*c)->is_down[Controller::left] || (*c)->is_down[Controller::left_shoulder],
-		           right = (*c)->is_down[Controller::right] || (*c)->is_down[Controller::right_shoulder];
+		const bool left = c->is_down[Controller::left] || c->is_down[Controller::left_shoulder],
+		           right = c->is_down[Controller::right] || c->is_down[Controller::right_shoulder];
 		
 		x_direction += (left ? -1 : 0) + (right ? 1 : 0);
 		
 		// skip-level cheat
-		if ((*c)->is_down[Controller::up] &&
-		    (*c)->is_down[Controller::down] &&
-		    (*c)->is_down[Controller::left_shoulder] &&
-		    (*c)->is_down[Controller::right_shoulder])
+		if (c->is_down[Controller::up] &&
+		    c->is_down[Controller::down] &&
+		    c->is_down[Controller::left_shoulder] &&
+		    c->is_down[Controller::right_shoulder])
 		{
 			if (state == none)
 				state = cheat_won;
@@ -136,39 +136,39 @@ void Game::tick( void )
 	
 	highscore.push_back_tick(x_direction);
 	
-	for (vector<Ball>::iterator ball = balls.begin(); ball != balls.end(); ++ball)
+	BOOST_FOREACH (Ball &ball, balls)
 	{
-		ball->tick(x_direction);
+		ball.tick(x_direction);
 		
-		check_unboost(*ball);
+		check_unboost(ball);
 		
-		for (vector<Block>::iterator block = level.blocks.begin(); block != level.blocks.end(); ++block)
-			if (!block->ignore)
-				check_collide(*ball, *block);
+		BOOST_FOREACH (Block &block, level.blocks)
+			if (!block.ignore)
+				check_collide(ball, block);
 		
 		// if ball outside level, it's dead
-		if (is_outside(*ball, level) && state == none)
+		if (is_outside(ball, level) && state == none)
 		{
 			state = lost;
 			
-			play_sample(samples.lost, 1, sample_pan(ball->x));
+			play_sample(samples.lost, 1, sample_pan(ball.x));
 		}
 		else  // level view panning
 		{
 			if (level.width > screen_width)
 			{
-				if (ball->x + x_offset < screen_width / 4)  // ball in pan-left zone
-					x_offset = min(static_cast<int>(x_offset + ceilf(ball->x_term_vel)), 0);
-				else if (ball->x + x_offset > screen_width - screen_width / 4)  // ball in pan-right zone
-					x_offset = max(screen_width - level.width, static_cast<int>(x_offset - ceilf(ball->x_term_vel)));
+				if (ball.x + x_offset < screen_width / 4)  // ball in pan-left zone
+					x_offset = min(static_cast<int>(x_offset + ceilf(ball.x_term_vel)), 0);
+				else if (ball.x + x_offset > screen_width - screen_width / 4)  // ball in pan-right zone
+					x_offset = max(screen_width - level.width, static_cast<int>(x_offset - ceilf(ball.x_term_vel)));
 			}
 			
 			if (level.height > screen_height)
 			{
-				if (ball->y + y_offset < screen_height / 4)  // ball in pan-up zone
-					y_offset = min(static_cast<int>(y_offset + ceilf(ball->y_term_vel)), 0);
-				else if (ball->y + y_offset > screen_height - screen_height / 4)  // ball in pan-down zone
-					y_offset = max(screen_height - level.height, static_cast<int>(y_offset - ceilf(ball->y_term_vel)));
+				if (ball.y + y_offset < screen_height / 4)  // ball in pan-up zone
+					y_offset = min(static_cast<int>(y_offset + ceilf(ball.y_term_vel)), 0);
+				else if (ball.y + y_offset > screen_height - screen_height / 4)  // ball in pan-down zone
+					y_offset = max(screen_height - level.height, static_cast<int>(y_offset - ceilf(ball.y_term_vel)));
 			}
 		}
 	}
@@ -178,7 +178,7 @@ void Game::tick( void )
 
 void Game::load_resources( void )
 {
-	boost::array<pair<Sample *, string>, 8> sample_paths =
+	boost::array<pair<Sample *, string>, 8> sample_names =
 	{{
 		make_pair(&samples.bounce,    "bounce"),
 		make_pair(&samples.wall_jump, "wall_jump"),
@@ -191,11 +191,12 @@ void Game::load_resources( void )
 	}};
 	
 	typedef pair<Sample *, string> SamplePair;
-	BOOST_FOREACH (SamplePair &i, sample_paths)
+	BOOST_FOREACH (SamplePair &i, sample_names)
 	{
 		if (i.first->empty())
 			*i.first = Sample(sample_directory + i.second + ".ogg");
-	}}
+	}
+}
 
 void Game::check_unboost( Ball &ball )
 {
