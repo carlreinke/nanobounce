@@ -28,7 +28,10 @@ inline SDL_Surface *SDL_DuplicateRGBSurface( SDL_Surface *src )
 {
 	SDL_Surface *dst = SDL_CreateRGBSurface(surface_flags, src->w, src->h, src->format->BitsPerPixel, src->format->Rmask, src->format->Gmask, src->format->Bmask, src->format->Amask);
 	if (dst != NULL)
+	{
+		SDL_SetAlpha(src, 0, 0);
 		SDL_BlitSurface(src, NULL, dst, NULL);
+	}
 	return dst;
 }
 
