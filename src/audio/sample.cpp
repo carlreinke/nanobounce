@@ -35,7 +35,7 @@ Sample::Sample( const string &path )
 	if (stream.empty())
 		return;
 	
-	length = sizeof(Sint16) * spec.channels * ov_pcm_total(stream.vorbis_file, -1);
+	length = sizeof(Sint16) * spec.channels * ov_pcm_total(stream.vorbis_file, -1) * stream.cvt.len_ratio;
 	buffer = boost::shared_array<Uint8>(new Uint8[length]);
 	
 	// copy entire stream into buffer
