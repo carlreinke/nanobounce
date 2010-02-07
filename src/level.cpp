@@ -112,13 +112,13 @@ bool Level::save( ostream &data ) const
 	data << (width / Block::width) << " "
 	     << (height / Block::height) << endl;
 	
-	for (vector<Block>::const_iterator i = blocks.begin(); i != blocks.end(); ++i)
+	BOOST_FOREACH (const Block &block, blocks)
 	{
-		if (i->type != Block::none)
+		if (block.type != Block::none)
 		{
-			data << (i->x / Block::width) << " "
-			     << (i->y / Block::height) << " "
-			     << block_chars.left.at(i->type) << endl;
+			data << (block.x / block.width) << " "
+			     << (block.y / block.height) << " "
+			     << block_chars.left.at(block.type) << endl;
 		}
 	}
 	
@@ -127,14 +127,14 @@ bool Level::save( ostream &data ) const
 
 void Level::reset( void )
 {
-	for (vector<Block>::iterator block = blocks.begin(); block != blocks.end(); ++block)
-		block->reset();
+	BOOST_FOREACH (Block &block, blocks)
+		block.reset();
 }
 
 void Level::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	for (vector<Block>::const_iterator block = blocks.begin(); block != blocks.end(); ++block)
-		block->draw(surface, x_offset, y_offset, alpha);
+	BOOST_FOREACH (const Block &block, blocks)
+		block.draw(surface, x_offset, y_offset, alpha);
 }

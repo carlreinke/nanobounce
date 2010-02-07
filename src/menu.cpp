@@ -67,8 +67,8 @@ void SimpleMenu::handle_event( SDL_Event &e )
 void SimpleMenu::update( void )
 {
 	// update controller
-	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
-		(*c)->update();
+	BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+		controller->update();
 }
 
 void SimpleMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
@@ -139,8 +139,9 @@ void SmoothMenu::handle_event( SDL_Event &e )
 
 void SmoothMenu::update( void )
 {
-	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
-		(*c)->update();
+	// update controller
+	BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+		controller->update();
 	
 	// smooth menu movement
 	const int target_y = -font.height(font_sprites[3]) * selection;
@@ -295,8 +296,8 @@ void GameMenu::handle_event( SDL_Event &e )
 void GameMenu::update( void )
 {
 	// update controller
-	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
-		(*c)->update();
+	BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+		controller->update();
 	
 	for (uint i = 0; i < ups_multiplier; ++i)
 	{
@@ -358,9 +359,9 @@ LevelSetMenu::LevelSetMenu( void )
 	vector<string> dir_entries = directory_listing(level_directory);
 	
 	// populate the level set list
-	for (vector<string>::const_iterator dir_entry = dir_entries.begin(); dir_entry != dir_entries.end(); ++dir_entry)
+	BOOST_FOREACH (const string &dir_entry, dir_entries)
 	{
-		LevelSet entry(level_directory + *dir_entry);
+		LevelSet entry(level_directory + dir_entry);
 		if (!entry.invalid())
 			entries.push_back(entry);
 	}
@@ -400,6 +401,6 @@ void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 
 LevelMenu::LevelMenu( const LevelSet &level_set )
 {
-	for (vector<Level>::const_iterator level = level_set.levels.begin(); level != level_set.levels.end(); ++level)
-		entries.push_back(&level->name);
+	BOOST_FOREACH (const Level &level, level_set.levels)
+		entries.push_back(&level.name);
 }

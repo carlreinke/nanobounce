@@ -35,7 +35,7 @@ Block::Block( int x, int y, Type type )
 		}};
 		
 		typedef pair<Sprite *, string> SpritePair;
-		BOOST_FOREACH (SpritePair &i, sprite_names)
+		BOOST_FOREACH (const SpritePair &i, sprite_names)
 			*i.first = Sprite(sprite_directory + i.second + ".ppm");
 	}
 }

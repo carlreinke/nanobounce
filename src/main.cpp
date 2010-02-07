@@ -71,7 +71,7 @@ int main( int argc, char *argv[] )
 	
 	{
 		vector<string> music_filenames = directory_listing(music_directory);
-		BOOST_FOREACH (string &filename, music_filenames)
+		BOOST_FOREACH (const string &filename, music_filenames)
 			music_paths.push_back(music_directory + filename);
 	}
 	

@@ -134,8 +134,8 @@ void LevelSet::CongratsLoop::handle_event( SDL_Event &e )
 
 void LevelSet::CongratsLoop::update( void )
 {
-	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
-		(*c)->update();
+	BOOST_FOREACH (boost::shared_ptr<Controller> controller, controllers)
+		controller->update();
 	
 	// TODO: fix: fireworks require old tick value, so they only tick every other time
 	static int i = 0;
@@ -192,8 +192,8 @@ void LevelSet::CongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	for (list<Particle>::const_iterator i = particles.begin(); i != particles.end(); ++i)
-		i->draw(surface, 0, 0, alpha);
+	BOOST_FOREACH (const Particle &particle, particles)
+		particle.draw(surface, 0, 0, alpha);
 	
 	font.blit(surface, surface->w / 2, surface->h / 4, "Congratulations!", font_sprites[3], Font::majuscule, Font::center, alpha);
 	font.blit(surface, surface->w / 2, surface->h / 2, set_name, font_sprites[4], Font::center, alpha);
@@ -232,8 +232,8 @@ void LevelIntroLoop::handle_event( SDL_Event &e )
 
 void LevelIntroLoop::update( void )
 {
-	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
-		(*c)->update();
+	BOOST_FOREACH (boost::shared_ptr<Controller> controller, controllers)
+		controller->update();
 	
 	if (++ticks == 50)
 		loop_quit = true;

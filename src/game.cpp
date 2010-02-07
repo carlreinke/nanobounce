@@ -48,16 +48,16 @@ void Game::handle_event( SDL_Event &e )
 void Game::update( void )
 {
 	// update controller
-	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
-		(*c)->update();
+	BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+		controller->update();
 	
 	if (!fader.is_fading(Fader::in))
 	{
 		for (uint i = 0; i < ups_multiplier; ++i)
 		{
 			// update replay controllers
-			for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
-				(*c)->tick_update();
+			BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+				controller->tick_update();
 			
 			tick();
 		}
@@ -73,11 +73,11 @@ void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	level.draw(surface, x_offset, y_offset, alpha);
 	
-	for (vector<Ball>::const_iterator ball = balls.begin(); ball != balls.end(); ++ball)
-		ball->draw(surface, x_offset, y_offset, alpha);
+	BOOST_FOREACH (const Ball &ball, balls)
+		ball.draw(surface, x_offset, y_offset, alpha);
 	
-	for (list<Particle>::const_iterator i = particles.begin(); i != particles.end(); ++i)
-		i->draw(surface, x_offset, y_offset, alpha);
+	BOOST_FOREACH (const Particle &particle, particles)
+		particle.draw(surface, x_offset, y_offset, alpha);
 }
 
 bool Game::load( const string &level_data_path )
@@ -93,20 +93,34 @@ void Game::reset( void )
 	level.reset();
 	highscore.reset();
 	
+	int ball_x = 0, ball_y = 0;
+	
 	balls.clear();
-	for (vector<Block>::const_iterator b = level.blocks.begin(); b != level.blocks.end(); ++b)
+	BOOST_FOREACH (const Block &block, level.blocks)
 	{
-		if (b->type == Block::ball)
+		if (block.type == Block::ball)
 		{
-			balls.push_back(Ball(b->x + (Block::width - Ball::width) / 2,
-			                     b->y + (Block::height - Ball::height) / 2));
+			balls.push_back(Ball(block.x + (Block::width - Ball::width) / 2,
+			                     block.y + (Block::height - Ball::height) / 2));
+			
+			ball_x += balls.back().x;
+			ball_y += balls.back().y;
 		}
 	}
 	
 	state = none;
 	
+	// initial pan
 	x_offset = -(level.width - screen_width) / 2;
 	y_offset = -(level.height - screen_height) / 2;
+	
+	// adjust pan so that ball is on screen
+	
+	ball_x /= balls.size();
+	x_offset = -min(max(-x_offset, ball_x - screen_width), ball_x);
+	
+	ball_y /= balls.size();
+	y_offset = -min(max(-y_offset, ball_y - screen_height), ball_y);
 }
 
 void Game::tick( void )
@@ -191,7 +205,7 @@ void Game::load_resources( void )
 	}};
 	
 	typedef pair<Sample *, string> SamplePair;
-	BOOST_FOREACH (SamplePair &i, sample_names)
+	BOOST_FOREACH (const SamplePair &i, sample_names)
 	{
 		if (i.first->empty())
 			*i.first = Sample(sample_directory + i.second + ".ogg");
@@ -476,14 +490,14 @@ bool Game::is_outside( const Ball &ball, const Level &level ) const
 // check if ball is inside a collideable block
 bool Game::is_conflicted( const Ball &ball, const Level &level ) const
 {
-	for (vector<Block>::const_iterator block = level.blocks.begin(); block != level.blocks.end(); ++block)
+	BOOST_FOREACH (const Block &block, level.blocks)
 	{
-		if (block->collidable && !block->ignore)
+		if (block.collidable && !block.ignore)
 		{
-			bool x_in = static_cast<int>(ball.x) + ball.width > block->x &&
-			            static_cast<int>(ball.x) < block->x + block->width;
-			bool y_in = static_cast<int>(ball.y) + ball.height > block->y &&
-			            static_cast<int>(ball.y) < block->y + block->height;
+			bool x_in = static_cast<int>(ball.x) + ball.width > block.x &&
+			            static_cast<int>(ball.x) < block.x + block.width;
+			bool y_in = static_cast<int>(ball.y) + ball.height > block.y &&
+			            static_cast<int>(ball.y) < block.y + block.height;
 			
 			if (x_in && y_in)
 				return true;

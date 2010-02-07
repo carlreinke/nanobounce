@@ -126,8 +126,8 @@ void Editor::handle_event( SDL_Event &e )
 void Editor::update( void )
 {
 	// update controller
-	for (vector< boost::shared_ptr<Controller> >::iterator c = controllers.begin(); c != controllers.end(); ++c)
-		(*c)->update();
+	BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+		controller->update();
 }
 
 void Editor::menu( void )
@@ -205,8 +205,8 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	for (vector<Block>::const_iterator block = level.blocks.begin(); block != level.blocks.end(); ++block)
-		block_sprites[block->type].blit(surface, x_offset + block->x, y_offset + block->y, alpha);
+	BOOST_FOREACH (const Block &block, level.blocks)
+		block_sprites[block.type].blit(surface, x_offset + block.x, y_offset + block.y, alpha);
 	
 	// cursor
 	Sprite sprite[2] =
