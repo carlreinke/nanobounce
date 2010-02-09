@@ -236,7 +236,7 @@ void GameMenu::handle_event( SDL_Event &e )
 			
 		case Controller::select_key:
 		case Controller::start_key:
-			if (selection == 2)
+			if (selection == 2) // Quit
 			{
 				loop_quit = true;
 			}
@@ -254,11 +254,11 @@ void GameMenu::handle_event( SDL_Event &e )
 					
 					switch (selection)
 					{
-					case 0:
+					case 0: // Play
 						level_set.play(surface);
 						break;
 						
-					case 1:
+					case 1: // Edit
 						level_set.load_levels();
 						
 						LevelMenu level_menu(level_set);

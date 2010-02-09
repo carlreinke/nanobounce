@@ -27,7 +27,7 @@ http://www.nothinglost.net/nanobounce/
 
 = Inspiration: Crazy Bound =====================================================
 
-CraftM developed a frustrating freeware game called Crazy Bound.
+CraftM developed a frustrating, freeware game called Crazy Bound.
 
 http://hp.vector.co.jp/authors/VA021277/
 

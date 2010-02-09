@@ -2,6 +2,7 @@
 #define PARTICLE_HPP
 
 #include "fixed.hpp"
+#include "sdl_ext.hpp"
 #include "video/sprite.hpp"
 
 class Particle
@@ -40,19 +41,19 @@ private:
 class ExplosionParticle : public Particle
 {
 public:
-	ExplosionParticle( Fixed x, Fixed y );
+	ExplosionParticle( Fixed x, Fixed y, const SDL_Color &color = SDL_Color_RGBA(255, 0, 0) );
 };
 
 class DustParticle : public Particle
 {
 public:
-	DustParticle( Fixed x, Fixed y );
+	DustParticle( Fixed x, Fixed y, const SDL_Color &color = SDL_Color_RGBA(128, 128, 128) );
 };
 
 class StarDustParticle : public Particle
 {
 public:
-	StarDustParticle( Fixed x, Fixed y );
+	StarDustParticle( Fixed x, Fixed y, const SDL_Color &color = SDL_Color_RGBA(255, 255, 0) );
 };
 
 class SparkParticle : public Particle

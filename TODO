@@ -6,3 +6,4 @@ features
     - add level set name editing
  * viewable highscore list
     - add user-visible replay
+ * show time when level won

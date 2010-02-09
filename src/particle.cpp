@@ -1,6 +1,5 @@
 #include "ball.hpp"
 #include "particle.hpp"
-#include "sdl_ext.hpp"
 
 using namespace std;
 
@@ -62,8 +61,8 @@ void Particle::tick_all( list<Particle> &particles )
 	}
 }
 
-ExplosionParticle::ExplosionParticle( Fixed x, Fixed y )
-: Particle(x, y, rand() % 50 + 20, SDL_Color_RGBA(255, 0, 0))
+ExplosionParticle::ExplosionParticle( Fixed x, Fixed y, const SDL_Color &color )
+: Particle(x, y, rand() % 50 + 20, color)
 {
 	x_vel = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024);  // [-1..1]
 	y_vel = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024);  // [-1..1]
@@ -72,8 +71,8 @@ ExplosionParticle::ExplosionParticle( Fixed x, Fixed y )
 	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
 }
 
-DustParticle::DustParticle( Fixed x, Fixed y )
-: Particle(x, y, rand() % 60 + 20, SDL_Color_RGBA(128, 128, 128))
+DustParticle::DustParticle( Fixed x, Fixed y, const SDL_Color &color )
+: Particle(x, y, rand() % 60 + 20, color)
 {
 	x_vel = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024) / 5;  // [-1/5..1/5]
 	y_vel = make_frac<Fixed>(rand() % 1024, 1024) / 5;  // [0..1/5]
@@ -82,11 +81,11 @@ DustParticle::DustParticle( Fixed x, Fixed y )
 	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
 }
 
-StarDustParticle::StarDustParticle( Fixed x, Fixed y )
-: Particle(x, y, rand() % 60 + 20, SDL_Color_RGBA(255, 255, 0))
+StarDustParticle::StarDustParticle( Fixed x, Fixed y, const SDL_Color &color )
+: Particle(x, y, rand() % 60 + 20, color)
 {
 	x_vel = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024) / 5;  // [-1/5..1/5]
-	y_vel = make_frac<Fixed>(rand() % -1024, 1024) / 5;  // [0..1/5]
+	y_vel = make_frac<Fixed>(rand() % 1024, 1024) / 5;  // [0..1/5]
 	
 	y_accel = -y_accel;
 	
