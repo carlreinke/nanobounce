@@ -59,7 +59,6 @@ void Block::reset( void )
 		ignore = false;
 		break;
 	case toggle_0:
-	case toggle_0_star:
 		collidable = true;
 		ignore = true;
 		break;

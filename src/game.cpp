@@ -380,6 +380,8 @@ redo:
 	{
 		switch (block.type)
 		{
+			int temp;
+			
 		case Block::nuke:
 			if (state == none)
 				state = lost;
@@ -410,24 +412,40 @@ redo:
 			break;
 			
 		case Block::toggle_0_star:
+			temp = 0;
+			
+			BOOST_FOREACH (Block &block, level.blocks)
+			{
+				const bool is_toggle_0 = block.type == Block::toggle_0 || block.type == Block::toggle_0_star;
+				
+				if (is_toggle_0 && block.ignore && !ball_inside_block(ball, block))
+				{
+					block.ignore = false;
+					
+					for (int y = 0; y < block.height; y += 5)
+						for (int x = 0; x < block.width; x += 5)
+							particles.push_back(StarDustParticle(block.x + x, block.y + y, SDL_Color_RGBA(0, 255, 255)));
+					
+					++temp;
+				}
+			}
+			
+			if (temp > 0)
+				sample = &samples.recycle;  // TODO: probably shouldn't recycle this sample <_<
+			break;
+			
 		case Block::toggle_1_star:
 			BOOST_FOREACH (Block &block, level.blocks)
 			{
-				const bool is_toggle_0 = block.type == Block::toggle_0 || block.type == Block::toggle_0_star,
-				           is_toggle_1 = block.type == Block::toggle_1 || block.type == Block::toggle_1_star;
+				const bool is_toggle_1 = block.type == Block::toggle_1 || block.type == Block::toggle_1_star;
 				
-				if (is_toggle_0 || is_toggle_1)
+				if (is_toggle_1 && !block.ignore)
 				{
-					block.ignore = !block.ignore || ball_inside_block(ball, block);
+					block.ignore = true;
 					
-					if (!block.ignore)
-					{
-						const SDL_Color color = is_toggle_0 ? SDL_Color_RGBA(0, 255, 255) : SDL_Color_RGBA(255, 255, 0);
-						
-						for (int y = 0; y < block.height; y += 5)
-							for (int x = 0; x < block.width; x += 5)
-								particles.push_back(StarDustParticle(block.x + x, block.y + y, color));
-					}
+					for (int y = 0; y < block.height; y += 5)
+						for (int x = 0; x < block.width; x += 5)
+							particles.push_back(StarDustParticle(block.x + x, block.y + y, SDL_Color_RGBA(255, 255, 0)));
 				}
 			}
 			
