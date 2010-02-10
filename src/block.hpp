@@ -17,8 +17,10 @@ public:
 		nuke,
 		recycle,
 		
-		locked,
-		locked_star,
+		toggle_0,
+		toggle_0_star,
+		toggle_1,
+		toggle_1_star,
 		
 		boost_up,
 		boost_left,

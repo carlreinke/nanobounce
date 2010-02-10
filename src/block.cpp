@@ -15,15 +15,17 @@ Block::Block( int x, int y, Type type )
 	{
 		sprites.resize(_max);
 		
-		boost::array<pair<Sprite *, string>, 4 + 2 + 3 + 3> sprite_names =
+		boost::array<pair<Sprite *, string>, 4 + 4 + 3 + 3> sprite_names =
 		{{
 			make_pair(&sprites[exit],    "exit"),
 			make_pair(&sprites[normal],  "block"),
 			make_pair(&sprites[nuke],    "nuke"),
 			make_pair(&sprites[recycle], "recycle"),
 			
-			make_pair(&sprites[locked],      "locked"),
-			make_pair(&sprites[locked_star], "locked_star"),
+			make_pair(&sprites[toggle_0],      "toggle_b"),
+			make_pair(&sprites[toggle_0_star], "toggle_b_star"),
+			make_pair(&sprites[toggle_1],      "toggle_y"),
+			make_pair(&sprites[toggle_1_star], "toggle_y_star"),
 			
 			make_pair(&sprites[boost_up],    "boost_up"),
 			make_pair(&sprites[boost_left],  "boost_left"),
@@ -55,6 +57,11 @@ void Block::reset( void )
 	case push_right:
 		collidable = false;
 		ignore = false;
+		break;
+	case toggle_0:
+	case toggle_0_star:
+		collidable = true;
+		ignore = true;
 		break;
 	default:
 		collidable = true;

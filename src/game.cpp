@@ -409,12 +409,14 @@ redo:
 			sample = &samples.recycle;
 			break;
 			
-		case Block::locked_star:
+		case Block::toggle_0_star:
+		case Block::toggle_1_star:
 			BOOST_FOREACH (Block &block, level.blocks)
 			{
-				if (block.type == Block::locked || block.type == Block::locked_star)
+				if (block.type == Block::toggle_0 || block.type == Block::toggle_0_star ||
+				    block.type == Block::toggle_1 || block.type == Block::toggle_1_star)
 				{
-					block.ignore = true;
+					block.ignore = !block.ignore;
 					
 					for (int y = 0; y < block.height; y += 5)
 						for (int x = 0; x < block.width; x += 5)

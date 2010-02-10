@@ -5,32 +5,41 @@
 
 using namespace std;
 
-boost::bimap<Block::Type, char> Level::block_chars;
+boost::bimap<Block::Type, string> Level::block_names;
 
 Level::Level( void )
 : valid(false),
   path("invalid"), name("invalid"),
   width(0), height(0)
 {
-	if (block_chars.empty())
+	if (block_names.empty())
 	{
-		block_chars.insert(make_bipair(Block::none, ' '));
-		block_chars.insert(make_bipair(Block::ball, '.'));
-		block_chars.insert(make_bipair(Block::exit, 'x'));
-		block_chars.insert(make_bipair(Block::normal, '='));
-		block_chars.insert(make_bipair(Block::nuke, '*'));
-		block_chars.insert(make_bipair(Block::recycle, '-'));
+		boost::array<pair<Block::Type, string>, Block::_max> temp_block_names =
+		{{
+			make_pair(Block::none,    ""),
+			make_pair(Block::ball,    "ball"),
+			make_pair(Block::exit,    "exit"),
+			make_pair(Block::normal,  "block"),
+			make_pair(Block::nuke,    "nuke"),
+			make_pair(Block::recycle, "recycle"),
+			
+			make_pair(Block::toggle_0,      "toggle_0"),
+			make_pair(Block::toggle_0_star, "toggle_0_star"),
+			make_pair(Block::toggle_1,      "toggle_1"),
+			make_pair(Block::toggle_1_star, "toggle_1_star"),
+			
+			make_pair(Block::boost_up,    "boost_up"),
+			make_pair(Block::boost_left,  "boost_left"),
+			make_pair(Block::boost_right, "boost_right"),
+			
+			make_pair(Block::push_up,    "push_up"),
+			make_pair(Block::push_left,  "push_left"),
+			make_pair(Block::push_right, "push_right"),
+		}};
 		
-		block_chars.insert(make_bipair(Block::locked, '~'));
-		block_chars.insert(make_bipair(Block::locked_star, '!'));
-		
-		block_chars.insert(make_bipair(Block::boost_up, '^'));
-		block_chars.insert(make_bipair(Block::boost_left, '<'));
-		block_chars.insert(make_bipair(Block::boost_right, '>'));
-		
-		block_chars.insert(make_bipair(Block::push_up, 'u'));
-		block_chars.insert(make_bipair(Block::push_left, 'l'));
-		block_chars.insert(make_bipair(Block::push_right, 'r'));
+		typedef pair<Block::Type, string> BlockPair;
+		BOOST_FOREACH (const BlockPair &i, temp_block_names)
+			block_names.insert(make_bipair(i.first, i.second));
 	}
 }
 
@@ -62,15 +71,15 @@ bool Level::load( istream &data )
 	blocks.clear();
 	
 	int x, y;
-	char type_char;
+	string block_name;
 	
-	while (data >> x >> y >> type_char)
+	while (data >> x >> y >> block_name)
 	{
 		try
 		{
 			x *= Block::width;
 			y *= Block::height;
-			Block::Type type = block_chars.right.at(type_char);
+			Block::Type type = block_names.right.at(block_name);
 			
 			blocks.push_back(Block(x, y, type));
 		}
@@ -118,7 +127,7 @@ bool Level::save( ostream &data ) const
 		{
 			data << (block.x / block.width) << " "
 			     << (block.y / block.height) << " "
-			     << block_chars.left.at(block.type) << endl;
+			     << block_names.left.at(block.type) << endl;
 		}
 	}
 	
