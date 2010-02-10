@@ -48,8 +48,11 @@ private:
 	void check_unboost( Ball & );
 	
 	void check_collide( Ball &, Block & );
-	bool is_outside( const Ball &, const Level & ) const;
-	bool is_conflicted( const Ball &, const Level & ) const;
+	
+	static bool ball_inside_rect( const Ball &, int x, int y, int w, int h );
+	static bool ball_inside_block( const Ball &, const Block & );
+	bool ball_inside_level( const Ball & ) const;
+	bool ball_inside_any_block( const Ball & ) const;
 	
 	Fixed sample_pan( const Fixed &x ) const { return (x_offset + x) / screen_width; }
 	

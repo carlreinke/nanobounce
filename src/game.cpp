@@ -161,7 +161,7 @@ void Game::tick( void )
 				check_collide(ball, block);
 		
 		// if ball outside level, it's dead
-		if (is_outside(ball, level) && state == none)
+		if (!ball_inside_level(ball) && state == none)
 		{
 			state = lost;
 			
@@ -413,14 +413,21 @@ redo:
 		case Block::toggle_1_star:
 			BOOST_FOREACH (Block &block, level.blocks)
 			{
-				if (block.type == Block::toggle_0 || block.type == Block::toggle_0_star ||
-				    block.type == Block::toggle_1 || block.type == Block::toggle_1_star)
+				const bool is_toggle_0 = block.type == Block::toggle_0 || block.type == Block::toggle_0_star,
+				           is_toggle_1 = block.type == Block::toggle_1 || block.type == Block::toggle_1_star;
+				
+				if (is_toggle_0 || is_toggle_1)
 				{
-					block.ignore = !block.ignore;
+					block.ignore = !block.ignore || ball_inside_block(ball, block);
 					
-					for (int y = 0; y < block.height; y += 5)
-						for (int x = 0; x < block.width; x += 5)
-							particles.push_back(StarDustParticle(block.x + x, block.y + y));
+					if (!block.ignore)
+					{
+						const SDL_Color color = is_toggle_0 ? SDL_Color_RGBA(0, 255, 255) : SDL_Color_RGBA(255, 255, 0);
+						
+						for (int y = 0; y < block.height; y += 5)
+							for (int x = 0; x < block.width; x += 5)
+								particles.push_back(StarDustParticle(block.x + x, block.y + y, color));
+					}
 				}
 			}
 			
@@ -440,7 +447,7 @@ redo:
 			{
 				Ball temp(block.x - ball.width, ball.y + ball.height);
 				
-				if (!is_conflicted(temp, level))
+				if (!ball_inside_any_block(temp))
 				{
 					ball.x = temp.x;
 					ball.y = temp.y;
@@ -458,7 +465,7 @@ redo:
 			{
 				Ball temp(block.x + block.width, ball.y + ball.height);
 				
-				if (!is_conflicted(temp, level))
+				if (!ball_inside_any_block(temp))
 				{
 					ball.x = temp.x;
 					ball.y = temp.y;
@@ -482,28 +489,36 @@ redo:
 		play_sample(*sample, 1, sample_pan(ball.x));
 }
 
-// check if ball is inside level boundaries
-bool Game::is_outside( const Ball &ball, const Level &level ) const
+inline bool Game::ball_inside_rect( const Ball &ball, int x, int y, int w, int h )
 {
-	return static_cast<int>(ball.x) + ball.width <= 0 || static_cast<int>(ball.x) >= level.width ||
-	       static_cast<int>(ball.y) + ball.height <= 0 || static_cast<int>(ball.y) >= level.height;
+	bool x_in = static_cast<int>(ball.x) + ball.width > x &&
+	            static_cast<int>(ball.x) < x + w;
+	bool y_in = static_cast<int>(ball.y) + ball.height > y &&
+	            static_cast<int>(ball.y) < y + h;
+	
+	return (x_in && y_in);
 }
 
-// check if ball is inside a collideable block
-bool Game::is_conflicted( const Ball &ball, const Level &level ) const
+// check if ball is inside level boundaries
+inline bool Game::ball_inside_level( const Ball &ball ) const
+{
+	return ball_inside_rect(ball, 0, 0, level.width, level.height);
+}
+
+// check if ball is inside a block
+inline bool Game::ball_inside_block( const Ball &ball, const Block &block )
+{
+	return ball_inside_rect(ball, block.x, block.y, block.width, block.height);
+}
+
+// check if ball is inside any collideable block
+bool Game::ball_inside_any_block( const Ball &ball ) const
 {
 	BOOST_FOREACH (const Block &block, level.blocks)
 	{
 		if (block.collidable && !block.ignore)
-		{
-			bool x_in = static_cast<int>(ball.x) + ball.width > block.x &&
-			            static_cast<int>(ball.x) < block.x + block.width;
-			bool y_in = static_cast<int>(ball.y) + ball.height > block.y &&
-			            static_cast<int>(ball.y) < block.y + block.height;
-			
-			if (x_in && y_in)
+			if (ball_inside_block(ball, block))
 				return true;
-		}
 	}
 	
 	return false;
