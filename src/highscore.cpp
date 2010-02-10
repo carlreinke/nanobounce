@@ -104,14 +104,13 @@ string Highscore::time( void ) const
 }
 
 Replay::Replay( const string &data_path )
+: ticks(0)
 {
 	highscore.load(data_path);
 }
 
 void Replay::tick_update( void )
 {
-	static int ticks = 0;
-	
 	if (ticks > highscore.ticks || highscore.x_direction.empty())
 		return;
 	

@@ -43,6 +43,8 @@ public:
 private:
 	void update_down( void );
 	
+	int ticks;
+	
 	Highscore highscore;
 };
 
