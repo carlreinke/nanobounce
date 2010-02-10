@@ -192,16 +192,19 @@ void Game::tick( void )
 
 void Game::load_resources( void )
 {
-	boost::array<pair<Sample *, string>, 8> sample_names =
+	boost::array<pair<Sample *, string>, 9> sample_names =
 	{{
 		make_pair(&samples.bounce,    "bounce"),
-		make_pair(&samples.wall_jump, "wall_jump"),
-		make_pair(&samples.recycle,   "recycle"),
-		make_pair(&samples.nuke,      "nuke"),
-		make_pair(&samples.boost,     "boost"),
 		make_pair(&samples.unboost,   "unboost"),
-		make_pair(&samples.won,       "won"),
+		make_pair(&samples.wall_jump, "wall_jump"),
+		
+		make_pair(&samples.boost,     "boost"),
+		make_pair(&samples.nuke,      "nuke"),
+		make_pair(&samples.recycle,   "recycle"),
+		make_pair(&samples.toggle,    "toggle"),
+		
 		make_pair(&samples.lost,      "lost"),
+		make_pair(&samples.won,       "won"),
 	}};
 	
 	typedef pair<Sample *, string> SamplePair;
@@ -431,7 +434,7 @@ redo:
 			}
 			
 			if (temp > 0)
-				sample = &samples.recycle;  // TODO: probably shouldn't recycle this sample <_<
+				sample = &samples.toggle;
 			break;
 			
 		case Block::toggle_1_star:
@@ -449,7 +452,7 @@ redo:
 				}
 			}
 			
-			sample = &samples.recycle;  // TODO: probably shouldn't recycle this sample <_<
+			sample = &samples.toggle;
 			break;
 			
 		case Block::boost_up:

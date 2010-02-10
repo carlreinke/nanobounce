@@ -38,9 +38,9 @@ public:
 	static void load_resources( void );
 	static struct Samples
 	{
-		Sample bounce, wall_jump,
-		       recycle, nuke, boost, unboost,
-		       won, lost;
+		Sample bounce, unboost, wall_jump,
+		       boost, nuke, recycle, toggle,
+		       lost, won;
 	}
 	samples;
 	
