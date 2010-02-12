@@ -47,7 +47,7 @@ private:
 	
 	typedef std::pair<int, int> coord;
 	
-	static const uint trail_max = 50;
+	static const uint trail_max = 40;
 	std::deque<coord> trail;
 	
 	static std::vector<Sprite> sprites;
@@ -67,7 +67,6 @@ private:
 	
 	friend class Game;
 	friend class GameMenu;
-	friend class Particle;
 };
 
 #endif // BALL_HPP

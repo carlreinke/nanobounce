@@ -55,6 +55,7 @@ private:
 	friend class Editor;
 	friend class Game;
 	friend class Level;
+	friend class Particle;
 };
 
 #endif // BLOCK_HPP

@@ -1,13 +1,19 @@
-#include "ball.hpp"
+#include "block.hpp"
 #include "particle.hpp"
 
 using namespace std;
 
+const Fixed Particle::constant = 1;
+
+// terminal velocity and acceleration
+const Fixed Particle::usual_term_vel = constant;
+const Fixed Particle::usual_y_accel  = sqr(-usual_term_vel) / (2 * (1.5f * Block::height));
+
 Particle::Particle( Fixed x, Fixed y, uint ticks_to_live, const SDL_Color &color )
 : x(x), y(y),
   x_vel(0), y_vel(0),
-  x_accel(0), y_accel(Ball::y_accel),
-  x_term_vel(Ball::x_term_vel), y_term_vel(Ball::y_term_vel),
+  x_accel(0), y_accel(usual_y_accel),
+  term_vel(usual_term_vel),
   ticks_to_live(ticks_to_live),
   alpha(SDL_ALPHA_OPAQUE), alpha_per_tick(0),
   color(color)
@@ -35,8 +41,8 @@ void Particle::tick( void )
 	x_vel += x_accel;
 	y_vel += y_accel;
 	
-	x_vel = min(max(-x_term_vel, x_vel), x_term_vel);
-	y_vel = min(max(-y_term_vel, y_vel), y_term_vel);
+	x_vel = min(max(-term_vel, x_vel), term_vel);
+	y_vel = min(max(-term_vel, y_vel), term_vel);
 	
 	x += x_vel;
 	y += y_vel;
@@ -114,7 +120,7 @@ FireworkParticle::FireworkParticle( Fixed x, Fixed y, const SDL_Color &color )
 	
 	y_accel /= 2;
 	
-	x_term_vel = y_term_vel = 100;  // large enough to be irrelevant
+	term_vel = 100;  // large enough to be irrelevant
 	
 	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 20 - 30;
 	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);

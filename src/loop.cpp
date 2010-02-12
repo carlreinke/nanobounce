@@ -5,8 +5,12 @@
 
 using namespace std;
 
-const uint fps = 35,
-           ups = 70, ups_multiplier = 2;
+#ifndef TARGET_GP2X
+const uint fps = 30,
+#else
+const uint fps = 60,
+#endif
+           ups = 60, ups_multiplier = 2;
 const uint ms_per_frame = 1000 / fps,
            ms_per_update = 1000 / ups;
 
@@ -64,10 +68,13 @@ void Loop::loop( SDL_Surface *surface )
 			if (now_ms >= next_frame_ms + ms_per_frame)
 			{
 				// aw, frame was too late
-				int dropped = (now_ms - next_frame_ms) / ms_per_frame + 1;
-				clog << "dropped " << dropped << " frame(s)" << endl;
-				
+				uint dropped = (now_ms - next_frame_ms) / ms_per_frame + 1;
 				next_frame_ms += dropped * ms_per_frame;
+				
+				if (dropped > 2)
+					next_update_ms = next_frame_ms;
+				
+				clog << "dropped " << dropped << " frame(s)" << (dropped > 2 ? ", dropping updates to compensate" : "") << endl;
 			}
 			else 
 			{

@@ -9,7 +9,7 @@ using namespace std;
 
 const int Ball::width = 2, Ball::height = 2;
 
-const Fixed Ball::constant = 1;
+const Fixed Ball::constant = make_frac<Fixed>(5, 4);
 
 // terminal velocity and acceleration
 const Fixed Ball::y_term_vel = constant;

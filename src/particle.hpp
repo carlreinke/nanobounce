@@ -12,7 +12,7 @@ public:
 	Fixed x_vel, y_vel;
 	Fixed x_accel, y_accel;
 	
-	Fixed x_term_vel, y_term_vel;
+	Fixed term_vel;
 	
 	uint ticks_to_live;
 	
@@ -33,6 +33,8 @@ public:
 	
 protected:
 	Particle( Fixed x, Fixed y, uint ticks_to_live, const SDL_Color & );
+	
+	static const Fixed constant, usual_y_accel, usual_term_vel;
 	
 private:
 	Particle( void );

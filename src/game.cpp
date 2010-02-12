@@ -328,12 +328,12 @@ inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &bloc
 			if (hit_x)
 			{
 				revert_x = past_x;
-				revert_y = ball.y_vel * past_x / ball.x_vel;
+				revert_y = ball.x_vel == 0 ? Fixed(0) : ball.y_vel * past_x / ball.x_vel;
 				return frac_past_x;
 			}
 			else
 			{
-				revert_x = ball.x_vel * past_y / ball.y_vel;
+				revert_x = ball.y_vel == 0 ? Fixed(0) : ball.x_vel * past_y / ball.y_vel;
 				revert_y = past_y;
 				return frac_past_y;
 			}
