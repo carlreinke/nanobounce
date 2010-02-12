@@ -32,7 +32,7 @@ private:
 	Level level;
 	
 	static std::vector<Sprite> block_sprites;
-	static Sprite cursor;
+	static std::bitset<Block::_max> block_type_unusable;
 	
 	void menu( void );
 };

@@ -17,9 +17,12 @@ public:
 		nuke,
 		recycle,
 		
-		toggle_0,
+		toggle_0_0,
+		toggle_0_1,
 		toggle_0_star,
-		toggle_1,
+		
+		toggle_1_0,
+		toggle_1_1,
 		toggle_1_star,
 		
 		boost_up,
@@ -33,6 +36,14 @@ public:
 		_max
 	};
 	
+	enum Property
+	{
+		hidden,
+		ignored,
+		collidable,
+		triggerable
+	};
+	
 	Block( int x, int y, Type type );
 	bool operator<( const Block &that ) const { return (y == that.y ? x < that.x : y < that.y); }
 	
@@ -44,10 +55,8 @@ private:
 	int x, y;
 	static const int height, width;
 	
-	Type type;
-	
-	bool collidable;
-	bool ignore;
+	Type type, initial_type;
+	Property property;
 	
 	static std::vector<Sprite> sprites;
 	

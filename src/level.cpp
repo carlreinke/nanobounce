@@ -23,9 +23,9 @@ Level::Level( void )
 			make_pair(Block::nuke,    "nuke"),
 			make_pair(Block::recycle, "recycle"),
 			
-			make_pair(Block::toggle_0,      "toggle_0"),
+			make_pair(Block::toggle_0_0,    "toggle_0"),
 			make_pair(Block::toggle_0_star, "toggle_0_star"),
-			make_pair(Block::toggle_1,      "toggle_1"),
+			make_pair(Block::toggle_1_1,    "toggle_1"),
 			make_pair(Block::toggle_1_star, "toggle_1_star"),
 			
 			make_pair(Block::boost_up,    "boost_up"),

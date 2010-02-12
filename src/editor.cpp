@@ -12,6 +12,7 @@
 using namespace std;
 
 vector<Sprite> Editor::block_sprites;
+bitset<Block::_max> Editor::block_type_unusable;
 
 Editor::Editor( void )
 : cursor_block(Block::none)
@@ -22,6 +23,11 @@ Editor::Editor( void )
 		block_sprites[Block::none] = Sprite(Block::width, Block::height, SDL_Color_RGBA(0, 0, 0));
 		block_sprites[Block::ball] = Sprite(sprite_directory + "editor/ball.ppm");
 		block_sprites[Block::exit] = Sprite(sprite_directory + "editor/exit.ppm");
+	}
+	if (block_type_unusable.none())
+	{
+		block_type_unusable.set(Block::toggle_0_1);
+		block_type_unusable.set(Block::toggle_1_0);
 	}
 }
 
@@ -75,13 +81,21 @@ void Editor::handle_event( SDL_Event &e )
 			break;
 			
 		case Controller::left_shoulder_key:
-			if (cursor_block == 0)
-				cursor_block = Block::_max;
-			--cursor_block;
+			do
+			{
+				if (cursor_block == 0)
+					cursor_block = Block::_max;
+				--cursor_block;
+			}
+			while (block_type_unusable[cursor_block]);
 			break;
 		case Controller::right_shoulder_key:
 		case Controller::back_key:
-			++cursor_block %= Block::_max;
+			do
+			{
+				++cursor_block %= Block::_max;
+			}
+			while (block_type_unusable[cursor_block]);
 			break;
 			
 		default:
@@ -107,13 +121,21 @@ void Editor::handle_event( SDL_Event &e )
 			break;
 			
 		case SDL_BUTTON_WHEELUP:
-			if (cursor_block == 0)
-				cursor_block = Block::_max;
-			--cursor_block;
+			do
+			{
+				if (cursor_block == 0)
+					cursor_block = Block::_max;
+				--cursor_block;
+			}
+			while (block_type_unusable[cursor_block]);
 			break;
 		case SDL_BUTTON_MIDDLE:
 		case SDL_BUTTON_WHEELDOWN:
-			++cursor_block %= Block::_max;
+			do
+			{
+				++cursor_block %= Block::_max;
+			}
+			while (block_type_unusable[cursor_block]);
 			break;
 		}
 		break;

@@ -222,7 +222,7 @@ void Game::check_collide( Ball &ball )
 	// check each block for collision
 	BOOST_FOREACH (Block &block, level.blocks)
 	{
-		if (block.collidable && !block.ignore)
+		if (block.property == Block::collidable)
 		{
 			Fixed revert_x_temp, revert_y_temp;
 			bool hit_x_temp, hit_y_temp;
@@ -254,7 +254,7 @@ void Game::check_collide( Ball &ball )
 /*if (temp > 0) cout << fixed << "? " << &block << " " << (hit_x_temp ? "x" : " ") << (hit_y_temp ? "y" : " ") << " " << temp << endl;*/
 			}
 		}
-		else if (ball_half_inside_block(ball, block))
+		else if (block.property == Block::triggerable && ball_half_inside_block(ball, block))
 		{
 			handle_noncollidable_block(ball, block);
 		}
@@ -412,7 +412,7 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 				state = lost;
 			
 			ball.no_vel = true;
-			block.ignore = true;
+			block.property = Block::hidden;
 			
 			for (int y = 0; y < block.height; y += 3)
 				for (int x = 0; x < block.width; x += 3)
@@ -427,7 +427,7 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			break;
 			
 		case Block::recycle:
-			block.ignore = true;
+			block.property = Block::hidden;
 			
 			for (int y = 0; y < block.height; y += 3)
 				for (int x = 0; x < block.width; x += 3)
@@ -441,11 +441,12 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			
 			BOOST_FOREACH (Block &block, level.blocks)
 			{
-				const bool is_toggle_0 = block.type == Block::toggle_0 || block.type == Block::toggle_0_star;
+				const bool is_toggle_0 = block.type == Block::toggle_0_0;
 				
-				if (is_toggle_0 && block.ignore && !ball_overlaps_block(ball, block))
+				if (is_toggle_0 && !ball_overlaps_block(ball, block))
 				{
-					block.ignore = false;
+					block.type = Block::toggle_0_1;
+					block.property = Block::collidable;
 					
 					for (int y = 0; y < block.height; y += 5)
 						for (int x = 0; x < block.width; x += 5)
@@ -462,11 +463,12 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 		case Block::toggle_1_star:
 			BOOST_FOREACH (Block &block, level.blocks)
 			{
-				const bool is_toggle_1 = block.type == Block::toggle_1 || block.type == Block::toggle_1_star;
+				const bool is_toggle_1 = block.type == Block::toggle_1_1 || block.type == Block::toggle_1_star;
 				
-				if (is_toggle_1 && !block.ignore)
+				if (is_toggle_1)
 				{
-					block.ignore = true;
+					block.type = Block::toggle_1_0;
+					block.property = Block::ignored;
 					
 					for (int y = 0; y < block.height; y += 5)
 						for (int x = 0; x < block.width; x += 5)
@@ -634,7 +636,7 @@ bool Game::ball_overlaps_any_block( const Ball &ball ) const
 {
 	BOOST_FOREACH (const Block &block, level.blocks)
 	{
-		if (block.collidable && !block.ignore)
+		if (block.property == Block::collidable)
 			if (ball_overlaps_block(ball, block))
 				return true;
 	}

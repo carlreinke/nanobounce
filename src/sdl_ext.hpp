@@ -4,25 +4,11 @@
 #include "video/video.hpp"
 #include "SDL.h"
 
-class SDL_Surface_smartptr
+inline SDL_Rect SDL_RectXYWH( Sint16 x, Sint16 y, Uint16 w, Uint16 h )
 {
-public:
-	SDL_Surface_smartptr( int w = 0, int h = 0, int bpp = 0 ) : surface(NULL) { resize(w, h, bpp); }
-	~SDL_Surface_smartptr( void ) { SDL_FreeSurface(surface); }
-	
-	SDL_Surface &operator*( void ) const { return *surface; }
-	SDL_Surface *operator->( void ) const { return surface; }
-	SDL_Surface *get( void ) const { return surface; }
-	
-	void resize( int w, int h, int bpp )
-	{
-		SDL_FreeSurface(surface);
-		surface = SDL_CreateRGBSurface(surface_flags, w, h, bpp, 0, 0, 0, 0);
-	}
-	
-private:
-	SDL_Surface *surface;
-};
+	SDL_Rect temp = { x, y, w, h };
+	return temp;
+}
 
 inline SDL_Surface *SDL_DuplicateRGBSurface( SDL_Surface *src )
 {
