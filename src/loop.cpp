@@ -63,29 +63,26 @@ void Loop::loop( SDL_Surface *surface )
 		
 		Uint32 now_ms = SDL_GetTicks();
 		
-		if (now_ms >= next_frame_ms)
+		if (now_ms >= next_frame_ms + ms_per_frame)
 		{
-			if (now_ms >= next_frame_ms + ms_per_frame)
-			{
-				// aw, frame was too late
-				uint dropped = (now_ms - next_frame_ms) / ms_per_frame + 1;
-				next_frame_ms += dropped * ms_per_frame;
-				
-				if (dropped > 2)
-					next_update_ms = next_frame_ms;
-				
-				clog << "dropped " << dropped << " frame(s)" << (dropped > 2 ? ", dropping updates to compensate" : "") << endl;
-			}
-			else 
-			{
-				draw(surface, fader.value());
-				
-				draw_volume_notification(surface);
-				
-				SDL_Flip(surface);
-				
-				next_frame_ms += ms_per_frame;
-			}
+			// aw, frame was too late
+			uint dropped = (now_ms - next_frame_ms) / ms_per_frame + 1;
+			next_frame_ms += dropped * ms_per_frame;
+			
+			if (dropped > 2)
+				next_update_ms = next_frame_ms;
+			
+			clog << "dropped " << dropped << " frame(s)" << (dropped > 2 ? ", dropping updates to compensate" : "") << endl;
+		}
+		else
+		{
+			draw(surface, fader.value());
+			
+			draw_volume_notification(surface);
+			
+			SDL_Flip(surface);
+			
+			next_frame_ms += ms_per_frame;
 		}
 		
 		// process updates that will occur before next frame

@@ -295,7 +295,7 @@ void Editor::set_block_at_position( int x, int y, Block::Type type )
 		if (type == Block::none)
 			level.blocks.erase(block);
 		else
-			block->type = type;
+			*block = Block(x, y, type);
 	}
 	else
 	{

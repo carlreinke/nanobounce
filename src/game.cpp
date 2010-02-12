@@ -162,6 +162,8 @@ void Game::tick( void )
 		{
 			state = lost;
 			
+			highscore.save("last_lost.score");
+			
 			play_sample(samples.lost, 1, sample_pan(ball.x));
 		}
 		else  // level view panning
@@ -545,6 +547,8 @@ inline void Game::handle_noncollidable_block( Ball &ball, Block &block )
 			state = won;
 			ball.no_accel = true;
 			// TODO: maybe trap ball inside block?
+			
+			highscore.save("last_won.score");
 			
 			play_sample(samples.won, 1, sample_pan(ball.x));
 		}
