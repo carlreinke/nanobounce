@@ -45,14 +45,19 @@ public:
 	samples;
 	
 private:
+	void check_collide( Ball & );
+	Fixed collision_depth_fraction( const Ball &, const Block &, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y ) const;
+	void handle_noncollidable_block( Ball &, Block & );
+	void handle_block_x_collision( Ball & );
+	void handle_block_y_collision( Ball &, Block & );
+	
 	void check_unboost( Ball & );
 	
-	void check_collide( Ball &, Block & );
-	
-	static bool ball_inside_rect( const Ball &, int x, int y, int w, int h );
-	static bool ball_inside_block( const Ball &, const Block & );
-	bool ball_inside_level( const Ball & ) const;
-	bool ball_inside_any_block( const Ball & ) const;
+	static bool ball_overlaps_rect( const Ball &, int x, int y, int w, int h );
+	static bool ball_overlaps_block( const Ball &, const Block & );
+	static bool ball_half_inside_block( const Ball &ball, const Block &block );
+	bool ball_overlaps_level( const Ball & ) const;
+	bool ball_overlaps_any_block( const Ball & ) const;
 	
 	Fixed sample_pan( const Fixed &x ) const { return (x_offset + x) / screen_width; }
 	

@@ -35,6 +35,7 @@ public:
 	friend Fixed operator/( const Fixed &, const Fixed & );
 	
 	friend Fixed ceilf( const Fixed & );
+	friend Fixed floorf( const Fixed & );
 	
 private:
 	typedef long int Value;
@@ -292,6 +293,11 @@ inline Fixed fabsf( const Fixed &that )
 inline Fixed ceilf( const Fixed &that )
 {
 	return Fixed::from_value((that.value + that.mask) & ~that.mask);
+}
+
+inline Fixed floorf( const Fixed &that )
+{
+	return Fixed::from_value(that.value & ~that.mask);
 }
 
 inline std::ostream & operator<< ( std::ostream &lhs, const Fixed &rhs )

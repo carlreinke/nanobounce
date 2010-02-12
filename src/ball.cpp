@@ -81,7 +81,7 @@ void Ball::tick( int x_push_direction )
 		y += y_vel;
 	}
 	
-	trail.push_back(coord(x, y));
+	trail.push_back(coord(x + make_frac<Fixed>(1, 2), y + make_frac<Fixed>(1, 2)));
 	if (trail.size() > trail_max)
 		trail.pop_front();
 }
