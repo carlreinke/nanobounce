@@ -2,6 +2,7 @@
 #include "loop.hpp"
 #include "main.hpp"
 #include "volume.hpp"
+#include "video/video.hpp"
 
 using namespace std;
 
@@ -80,7 +81,7 @@ void Loop::loop( SDL_Surface *surface )
 			
 			draw_volume_notification(surface);
 			
-			SDL_Flip(surface);
+			scale_and_flip(surface);
 			
 			next_frame_ms += ms_per_frame;
 		}

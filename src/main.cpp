@@ -26,7 +26,7 @@ int main( int argc, char *argv[] )
 	bool editor = false, replay = false;
 	
 	int opt;
-	while ((opt = getopt(argc, argv, "aemr:s")) != -1)
+	while ((opt = getopt(argc, argv, "aemr:sv:")) != -1)
 	{
 		switch (opt)
 		{
@@ -54,6 +54,10 @@ int main( int argc, char *argv[] )
 			reverse_stereo = true;
 			
 			cout << "stereo reversal enabled" << endl;
+			break;
+			
+		case 'v':
+			video_scale = max(1, atoi(optarg));
 			break;
 			
 		case '?':

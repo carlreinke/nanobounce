@@ -104,10 +104,16 @@ void Editor::handle_event( SDL_Event &e )
 		break;
 		
 	case SDL_MOUSEMOTION:
+		e.motion.y /= video_scale;
+		e.motion.x /= video_scale;
+		
 		cursor_x = -x_offset + align(e.motion.x, Block::width);
 		cursor_y = -y_offset + align(e.motion.y, Block::height);
 		break;
 	case SDL_MOUSEBUTTONDOWN:
+		e.button.y /= video_scale;
+		e.button.x /= video_scale;
+		
 		switch (e.button.button)
 		{
 		case SDL_BUTTON_LEFT:

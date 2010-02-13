@@ -13,7 +13,10 @@ The goal of the game is simple: bounce the ball to the exit.
 The exit is marked with green circles; exiting anywhere else will result in doom
 for the ball.
 
-The ball can jump off walls if it is pushed in the direction opposite the wall.
+The ball can jump off walls if it is pushed in the opposite direction as it hits
+the wall.
+
+The rest is simple enough. :)
 
 ================================================================================
 Credits

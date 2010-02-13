@@ -21,7 +21,14 @@
 
 extern int screen_width, screen_height, screen_bpp;
 extern const Uint32 surface_flags;
+extern int video_scale;
 
 SDL_Surface *init_video( bool fullscreen );
+
+#ifndef TARGET_GP2X
+void scale_and_flip( SDL_Surface *surface );
+#else
+#define scale_and_flip SDL_Flip
+#endif
 
 #endif // VIDEO_HPP
