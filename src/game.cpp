@@ -115,12 +115,14 @@ void Game::reset( void )
 	y_offset = -(level.height - screen_height) / 2;
 	
 	// adjust pan so that ball is on screen
-	
-	ball_x /= balls.size();
-	x_offset = -min(max(-x_offset, ball_x - screen_width), ball_x);
-	
-	ball_y /= balls.size();
-	y_offset = -min(max(-y_offset, ball_y - screen_height), ball_y);
+	if (balls.size() > 0)
+	{
+		ball_x /= balls.size();
+		x_offset = -min(max(-x_offset, ball_x - screen_width), ball_x);
+		
+		ball_y /= balls.size();
+		y_offset = -min(max(-y_offset, ball_y - screen_height), ball_y);
+	}
 }
 
 void Game::tick( void )
