@@ -221,6 +221,12 @@ void Game::check_collide( Ball &ball )
 	Fixed revert_x, revert_y;
 	bool hit_x, hit_y;
 	
+/*	cout << fixed;
+	cout << "pre"
+	     << "\tx " << setprecision(8) << ball.x
+	     << "\ty " << setprecision(8) << ball.y
+	     << endl;*/
+	
 	// check each block for collision
 	BOOST_FOREACH (Block &block, level.blocks)
 	{
@@ -232,29 +238,21 @@ void Game::check_collide( Ball &ball )
 			
 			if (temp > vel_revert_frac)  // ball and block collide, and collision is deepest seen yet
 			{
-				// prevent wall climbing via corner collisions
-				if (hit_y_temp && (fabsf(ball.x + ball.width - block.x) < make_frac<Fixed>(1, 2) ||
-			                       fabsf(ball.x - block.x - block.width) < make_frac<Fixed>(1, 2)))
-				{
-					ball.x -= revert_x_temp;
-				}
-				else
-				if (hit_x_temp && (fabsf(ball.y + ball.height - block.y) < make_frac<Fixed>(1, 2) ||
-			                       fabsf(ball.y - block.y - block.height) < make_frac<Fixed>(1, 2)))
-				{
-					ball.y -= revert_y_temp;
-				}
-				else  // store collision for processing
-				{
-					block_hit = &block;
-					vel_revert_frac = temp;
-					revert_x = revert_x_temp;
-					revert_y = revert_y_temp;
-					hit_x = hit_x_temp;
-					hit_y = hit_y_temp;
-				}
-/*if (temp > 0) cout << fixed << "? " << &block << " " << (hit_x_temp ? "x" : " ") << (hit_y_temp ? "y" : " ") << " " << temp << endl;*/
+				// store collision for processing
+				block_hit = &block;
+				vel_revert_frac = temp;
+				revert_x = revert_x_temp;
+				revert_y = revert_y_temp;
+				hit_x = hit_x_temp;
+				hit_y = hit_y_temp;
 			}
+			
+/*			if (temp > 0)
+				cout << "? " << &block << " " << (hit_x_temp ? "x" : " ") << (hit_y_temp ? "y" : " ")
+				     << "\t% " << setprecision(8) << temp
+				     << "\trx " << setprecision(8) << revert_x
+				     << "\try " << setprecision(8) << revert_y
+				     << endl;*/
 		}
 		else if (block.property == Block::triggerable && ball_half_inside_block(ball, block))
 		{
@@ -265,37 +263,51 @@ void Game::check_collide( Ball &ball )
 	// found collision, revert ball to edge
 	if (vel_revert_frac > 0)
 	{
-/*cout << block_hit << " " << (hit_x ? "x" : " ") << (hit_y ? "y" : " ") << " " << vel_revert_frac << endl;*/
-/*cout << "\tx " << setprecision(8) << ball.x
-     << "\ty " << setprecision(8) << ball.y
-     << "\txl " << setprecision(8) << revert_x
-     << "\tyl " << setprecision(8) << revert_y
-     << endl;*/
+/*		cout << block_hit << " " << (hit_x ? "x" : " ") << (hit_y ? "y" : " ")
+		     << "\t% " << setprecision(8) << vel_revert_frac
+		     << "\trx " << setprecision(8) << revert_x
+		     << "\try " << setprecision(8) << revert_y
+		     << endl;*/
 		
-		if (hit_x)
+		// prevent wall climbing via corner collisions
+		if (hit_y && (fabsf(ball.x + ball.width - block_hit->x) < make_frac<Fixed>(1, 2) ||
+		              fabsf(ball.x - block_hit->x - block_hit->width) < make_frac<Fixed>(1, 2)))
 		{
-			ball.trail.back().first = ball.x - revert_x + make_frac<Fixed>(1, 2);
-			ball.x -= 2 * revert_x;
-			
-			handle_block_x_collision(ball);
+			ball.x -= revert_x;
 		}
-		if (hit_y)
+		else
+		if (hit_x && (fabsf(ball.y + ball.height - block_hit->y) < make_frac<Fixed>(1, 2) ||
+		              fabsf(ball.y - block_hit->y - block_hit->height) < make_frac<Fixed>(1, 2)))
 		{
-			ball.trail.back().second = ball.y - revert_y + make_frac<Fixed>(1, 2);
-			ball.y -= 2 * revert_y;
-			
-			handle_block_y_collision(ball, *block_hit);
+			ball.y -= revert_y;
 		}
-		
-/*cout << "\tx " << setprecision(8) << ball.x
-     << "\ty " << setprecision(8) << ball.y
-     << endl;*/
+		else
+		{
+			if (hit_x)
+			{
+				ball.trail.back().first = ball.x - revert_x + make_frac<Fixed>(1, 2);
+				ball.x -= 2 * revert_x;
+				
+				handle_block_x_collision(ball);
+			}
+			if (hit_y)
+			{
+				ball.trail.back().second = ball.y - revert_y + make_frac<Fixed>(1, 2);
+				ball.y -= 2 * revert_y;
+				
+				handle_block_y_collision(ball, *block_hit);
+			}
+		}
 		
 		// ball was repositioned, check again
 		check_collide(ball);
-		
-/*cout << endl;*/
 	}
+	
+/*	cout << "post"
+		 << "\tx " << setprecision(8) << ball.x
+		 << "\ty " << setprecision(8) << ball.y
+		 << endl
+		 << endl;*/
 }
 
 inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &block, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y ) const
