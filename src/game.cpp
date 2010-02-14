@@ -268,7 +268,7 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 /*			if (temp > 0)
 				cout << "? " << &block << " " << (hit_x_temp ? "x" : " ") << (hit_y_temp ? "y" : " ")
 				     << "\t% " << setprecision(8) << temp
-				     << " (" << setprecision(0) << order_temp << ")"
+				     << " (" << setprecision(3) << order_temp << ")"
 				     << "\trx " << setprecision(8) << revert_x
 				     << "\try " << setprecision(8) << revert_y
 				     << endl;*/
@@ -280,32 +280,36 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 	{
 /*		cout << block_hit << " " << (hit_x ? "x" : " ") << (hit_y ? "y" : " ")
 		     << "\t% " << setprecision(8) << vel_revert_frac
-		     << " (" << setprecision(0) << order << ")"
+		     << " (" << setprecision(3) << order << ")"
 		     << "\trx " << setprecision(8) << revert_x
 		     << "\try " << setprecision(8) << revert_y
 		     << endl;*/
 		
-		// prevent wall climbing via corner collisions
-		// if ball is in one-half-unit-deep corner-collision with block, try to reposition it to reduce false collisions
-		if (hit_y && fabsf(edge_dist_x) < make_frac<Fixed>(1, 2))
+		if (hit_x)
 		{
-			ball.x -= edge_dist_x;
-		}
-		else
-		if (hit_x && fabsf(edge_dist_y) < make_frac<Fixed>(1, 2))
-		{
-			ball.y -= edge_dist_y;
-		}
-		else
-		{
-			if (hit_x)
+			if (!hit_y && fabsf(edge_dist_y) < make_frac<Fixed>(1, 2))
+			{
+				// prevent wall climbing via corner collisions
+				// if ball is in one-half-unit-deep corner-collision with block, try to reposition it to reduce false collisions
+				ball.y -= edge_dist_y;
+				ball.trail.back().second = ball.y + make_frac<Fixed>(1, 2);
+			}
+			else
 			{
 				ball.trail.back().first = ball.x - revert_x + make_frac<Fixed>(1, 2);
 				ball.x -= 2 * revert_x;
 				
 				handle_block_x_collision(ball);
 			}
-			if (hit_y)
+		}
+		if (hit_y)
+		{
+			if (!hit_x && fabsf(edge_dist_x) < make_frac<Fixed>(1, 2))
+			{
+				ball.x -= edge_dist_x;
+				ball.trail.back().first = ball.x + make_frac<Fixed>(1, 2);
+			}
+			else
 			{
 				ball.trail.back().second = ball.y - revert_y + make_frac<Fixed>(1, 2);
 				ball.y -= 2 * revert_y;
@@ -376,14 +380,14 @@ inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &bloc
 			{
 				revert_x = past_x;
 				revert_y = ball.y_vel * frac_past_x;
-				return frac_past_x;
 			}
 			else
 			{
 				revert_x = ball.x_vel * frac_past_y;
 				revert_y = past_y;
-				return frac_past_y;
 			}
+			
+			return sqr(frac_past_x) + sqr(frac_past_y);
 		}
 	}
 	
