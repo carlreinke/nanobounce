@@ -220,6 +220,7 @@ void Game::check_collide( Ball &ball )
 {
 	Block *block_hit = NULL;
 	Fixed vel_revert_frac = 0;
+	Fixed order = 0;
 	Fixed revert_x, revert_y;
 	bool hit_x, hit_y;
 	
@@ -227,6 +228,8 @@ void Game::check_collide( Ball &ball )
 	cout << "pre"
 	     << "\tx " << setprecision(8) << ball.x
 	     << "\ty " << setprecision(8) << ball.y
+		 << "\tvx " << setprecision(8) << ball.x_vel
+		 << "\tvy " << setprecision(8) << ball.y_vel
 	     << endl;*/
 	
 	// check each block for collision
@@ -234,14 +237,17 @@ void Game::check_collide( Ball &ball )
 	{
 		if (block.property == Block::collidable)
 		{
+			Fixed order_temp;
 			Fixed revert_x_temp, revert_y_temp;
 			bool hit_x_temp, hit_y_temp;
-			Fixed temp = collision_depth_fraction(ball, block, revert_x_temp, revert_y_temp, hit_x_temp, hit_y_temp);
+			Fixed temp = collision_depth_fraction(ball, block, order_temp, revert_x_temp, revert_y_temp, hit_x_temp, hit_y_temp);
 			
-			if (temp > vel_revert_frac)  // ball and block collide, and collision is deepest seen yet
+			if (temp > vel_revert_frac ||  // ball and block collide, and collision is deepest seen yet
+			    (temp == vel_revert_frac && order_temp > order))
 			{
 				// store collision for processing
 				block_hit = &block;
+				order = order_temp;
 				vel_revert_frac = temp;
 				revert_x = revert_x_temp;
 				revert_y = revert_y_temp;
@@ -252,13 +258,10 @@ void Game::check_collide( Ball &ball )
 /*			if (temp > 0)
 				cout << "? " << &block << " " << (hit_x_temp ? "x" : " ") << (hit_y_temp ? "y" : " ")
 				     << "\t% " << setprecision(8) << temp
+				     << " (" << setprecision(0) << order_temp << ")"
 				     << "\trx " << setprecision(8) << revert_x
 				     << "\try " << setprecision(8) << revert_y
 				     << endl;*/
-		}
-		else if (block.property == Block::triggerable && ball_half_inside_block(ball, block))
-		{
-			handle_noncollidable_block(ball, block);
 		}
 	}
 	
@@ -267,6 +270,7 @@ void Game::check_collide( Ball &ball )
 	{
 /*		cout << block_hit << " " << (hit_x ? "x" : " ") << (hit_y ? "y" : " ")
 		     << "\t% " << setprecision(8) << vel_revert_frac
+		     << " (" << setprecision(0) << order << ")"
 		     << "\trx " << setprecision(8) << revert_x
 		     << "\try " << setprecision(8) << revert_y
 		     << endl;*/
@@ -304,15 +308,28 @@ void Game::check_collide( Ball &ball )
 		// ball was repositioned, check again
 		check_collide(ball);
 	}
+	else  // no collisions left
+	{
+		// check triggerable blocks
+		BOOST_FOREACH (Block &block, level.blocks)
+		{
+			if (block.property == Block::triggerable && ball_half_inside_block(ball, block))
+			{
+				handle_noncollidable_block(ball, block);
+			}
+		}
+	}
 	
 /*	cout << "post"
 		 << "\tx " << setprecision(8) << ball.x
 		 << "\ty " << setprecision(8) << ball.y
+		 << "\tvx " << setprecision(8) << ball.x_vel
+		 << "\tvy " << setprecision(8) << ball.y_vel
 		 << endl
 		 << endl;*/
 }
 
-inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &block, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y ) const
+inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &block, Fixed &order, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y ) const
 {
 	const Fixed past_left   = ball.x + Fixed(ball.width)   - block.x,
 	            past_right  = ball.x - Fixed(block.width)  - block.x,
@@ -336,6 +353,8 @@ inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &bloc
 		}
 		else
 		{
+			order = sqr(past_x) + sqr(past_y);
+			
 			hit_x = (frac_past_x >= frac_past_y && frac_past_x <= 1) || frac_past_y > 1,
 			hit_y = (frac_past_y >= frac_past_x && frac_past_y <= 1) || frac_past_x > 1;
 			

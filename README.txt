@@ -2,7 +2,7 @@
 Nanobounce                                            Copyright 2010 Carl Reinke
 ================================================================================
 
-Enjoy!
+This game is a known cause of tension headaches.  Enjoy!
 
 ================================================================================
 Gameplay

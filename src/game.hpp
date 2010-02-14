@@ -46,7 +46,7 @@ public:
 	
 private:
 	void check_collide( Ball & );
-	Fixed collision_depth_fraction( const Ball &, const Block &, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y ) const;
+	Fixed collision_depth_fraction( const Ball &, const Block &, Fixed &order, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y ) const;
 	void handle_noncollidable_block( Ball &, Block & );
 	void handle_block_x_collision( Ball & );
 	void handle_block_y_collision( Ball &, Block & );
