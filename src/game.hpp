@@ -45,7 +45,7 @@ public:
 	samples;
 	
 private:
-	void check_collide( Ball &, int = 0 );
+	bool check_collide( Ball &, int = 0 );
 	Fixed collision_depth_fraction( const Ball &, const Block &, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y, Fixed &edge_dist_x, Fixed &edge_dist_y ) const;
 	void handle_noncollidable_block( Ball &, Block & );
 	void handle_block_x_collision( Ball & );
