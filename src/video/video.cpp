@@ -62,6 +62,7 @@ SDL_Surface *init_video( bool fullscreen )
 	return surface;
 }
 
+#ifndef TARGET_GP2X
 template <int Bpp, typename T>
 static void nn( SDL_Surface *src_surface, SDL_Surface *dst_surface );
 
@@ -122,3 +123,4 @@ static void nn( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 		}
 	}
 }
+#endif // !TARGET_GP2X

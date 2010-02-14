@@ -62,10 +62,10 @@ public:
 		right_shoulder_key = SDLK_RIGHTBRACKET,
 		
 		select_key         = SDLK_SPACE,
-		back_key           = SDLK_BACKQUOTE,
+		back_key           = SDLK_ESCAPE,
 		
 		start_key          = SDLK_RETURN,
-		quit_key           = SDLK_ESCAPE,
+		quit_key           = SDLK_F12,
 		
 		vol_up_key         = SDLK_PLUS,
 		vol_down_key       = SDLK_MINUS

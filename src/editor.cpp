@@ -79,6 +79,12 @@ void Editor::handle_event( SDL_Event &e )
 		case Controller::select_key:
 			set_block_at_position(cursor_x, cursor_y, static_cast<Block::Type>(cursor_block));
 			break;
+		case Controller::back_key:
+			{
+				vector<Block>::iterator block = block_at_position(cursor_x, cursor_y);
+				cursor_block = (block == level.blocks.end()) ? Block::none : block->type;
+			}
+			break;
 			
 		case Controller::left_shoulder_key:
 			do
@@ -90,7 +96,6 @@ void Editor::handle_event( SDL_Event &e )
 			while (block_type_unusable[cursor_block]);
 			break;
 		case Controller::right_shoulder_key:
-		case Controller::back_key:
 			do
 			{
 				++cursor_block %= Block::_max;
