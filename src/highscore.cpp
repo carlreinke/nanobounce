@@ -111,10 +111,9 @@ Replay::Replay( const string &data_path )
 
 void Replay::tick_update( void )
 {
-	if (ticks > highscore.ticks || highscore.x_direction.empty())
-		return;
+	is_down[quit] = ticks > (highscore.ticks + highscore.ticks_per_second);
 	
-	if (highscore.x_direction.front().first == ticks)
+	if (!highscore.x_direction.empty() && highscore.x_direction.front().first == ticks)
 	{
 		switch (highscore.x_direction.front().second)
 		{

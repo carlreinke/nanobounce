@@ -223,6 +223,7 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 	Fixed order = 0;
 	Fixed revert_x, revert_y;
 	bool hit_x, hit_y;
+	Fixed edge_dist_x, edge_dist_y;
 	
 	if (recursion_depth >= 100)
 	{
@@ -246,7 +247,8 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 			Fixed order_temp;
 			Fixed revert_x_temp, revert_y_temp;
 			bool hit_x_temp, hit_y_temp;
-			Fixed temp = collision_depth_fraction(ball, block, order_temp, revert_x_temp, revert_y_temp, hit_x_temp, hit_y_temp);
+			Fixed edge_dist_x_temp, edge_dist_y_temp;
+			Fixed temp = collision_depth_fraction(ball, block, order_temp, revert_x_temp, revert_y_temp, hit_x_temp, hit_y_temp, edge_dist_x_temp, edge_dist_y_temp);
 			
 			if (temp > vel_revert_frac ||  // ball and block collide, and collision is deepest seen yet
 			    (temp == vel_revert_frac && order_temp > order))
@@ -259,6 +261,8 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 				revert_y = revert_y_temp;
 				hit_x = hit_x_temp;
 				hit_y = hit_y_temp;
+				edge_dist_x = edge_dist_x_temp;
+				edge_dist_y = edge_dist_y_temp;
 			}
 			
 /*			if (temp > 0)
@@ -283,22 +287,14 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 		
 		// prevent wall climbing via corner collisions
 		// if ball is in one-half-unit-deep corner-collision with block, try to reposition it to reduce false collisions
-		if (hit_y && (fabsf(ball.x + ball.width - block_hit->x) < make_frac<Fixed>(1, 2) ||
-		              fabsf(ball.x - block_hit->x - block_hit->width) < make_frac<Fixed>(1, 2)))
+		if (hit_y && fabsf(edge_dist_x) < make_frac<Fixed>(1, 2))
 		{
-			if (revert_x != 0)
-				ball.x -= revert_x;
-			else
-				ball.y -= revert_y;
+			ball.x -= edge_dist_x;
 		}
 		else
-		if (hit_x && (fabsf(ball.y + ball.height - block_hit->y) < make_frac<Fixed>(1, 2) ||
-		              fabsf(ball.y - block_hit->y - block_hit->height) < make_frac<Fixed>(1, 2)))
+		if (hit_x && fabsf(edge_dist_y) < make_frac<Fixed>(1, 2))
 		{
-			if (revert_y != 0)
-				ball.y -= revert_y;
-			else
-				ball.x -= revert_x;
+			ball.y -= edge_dist_y;
 		}
 		else
 		{
@@ -342,7 +338,7 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 	     << endl;*/
 }
 
-inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &block, Fixed &order, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y ) const
+inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &block, Fixed &order, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y, Fixed &edge_dist_x, Fixed &edge_dist_y ) const
 {
 	const Fixed past_left   = ball.x + Fixed(ball.width)   - block.x,
 	            past_right  = ball.x - Fixed(block.width)  - block.x,
@@ -373,15 +369,18 @@ inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &bloc
 			
 			assert(hit_x || hit_y);
 			
+			edge_dist_x = fabsf(past_left) < fabsf(past_right) ? past_left : past_right;
+			edge_dist_y = fabsf(past_top) < fabsf(past_bottom) ? past_top : past_bottom;
+			
 			if (hit_x)
 			{
 				revert_x = past_x;
-				revert_y = ball.x_vel == 0 ? Fixed(0) : ball.y_vel * past_x / ball.x_vel;
+				revert_y = ball.y_vel * frac_past_x;
 				return frac_past_x;
 			}
 			else
 			{
-				revert_x = ball.y_vel == 0 ? Fixed(0) : ball.x_vel * past_y / ball.y_vel;
+				revert_x = ball.x_vel * frac_past_y;
 				revert_y = past_y;
 				return frac_past_y;
 			}
