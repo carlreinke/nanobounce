@@ -219,7 +219,6 @@ void Game::load_resources( void )
 void Game::check_collide( Ball &ball, int recursion_depth )
 {
 	Block *block_hit = NULL;
-	Fixed vel_revert_frac = 0;
 	Fixed order = 0;
 	Fixed revert_x, revert_y;
 	bool hit_x, hit_y;
@@ -228,6 +227,7 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 	if (recursion_depth >= 100)
 	{
 		highscore.save("bug_report.score");
+		assert(false);
 		return;
 	}
 	
@@ -244,19 +244,16 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 	{
 		if (block.property == Block::collidable)
 		{
-			Fixed order_temp;
 			Fixed revert_x_temp, revert_y_temp;
 			bool hit_x_temp, hit_y_temp;
 			Fixed edge_dist_x_temp, edge_dist_y_temp;
-			Fixed temp = collision_depth_fraction(ball, block, order_temp, revert_x_temp, revert_y_temp, hit_x_temp, hit_y_temp, edge_dist_x_temp, edge_dist_y_temp);
+			Fixed order_temp = collision_depth_fraction(ball, block, revert_x_temp, revert_y_temp, hit_x_temp, hit_y_temp, edge_dist_x_temp, edge_dist_y_temp);
 			
-			if (temp > vel_revert_frac ||  // ball and block collide, and collision is deepest seen yet
-			    (temp == vel_revert_frac && order_temp > order))
+			if (order_temp > order)  // ball and block collide, and collision is deepest seen yet
 			{
 				// store collision for processing
 				block_hit = &block;
 				order = order_temp;
-				vel_revert_frac = temp;
 				revert_x = revert_x_temp;
 				revert_y = revert_y_temp;
 				hit_x = hit_x_temp;
@@ -265,10 +262,9 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 				edge_dist_y = edge_dist_y_temp;
 			}
 			
-/*			if (temp > 0)
+/*			if (order_temp > 0)
 				cout << "? " << &block << " " << (hit_x_temp ? "x" : " ") << (hit_y_temp ? "y" : " ")
-				     << "\t% " << setprecision(8) << temp
-				     << " (" << setprecision(3) << order_temp << ")"
+				     << "\to " << setprecision(8) << order_temp
 				     << "\trx " << setprecision(8) << revert_x
 				     << "\try " << setprecision(8) << revert_y
 				     << endl;*/
@@ -276,11 +272,10 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 	}
 	
 	// found collision, revert ball to edge
-	if (vel_revert_frac > 0)
+	if (order > 0)
 	{
 /*		cout << block_hit << " " << (hit_x ? "x" : " ") << (hit_y ? "y" : " ")
-		     << "\t% " << setprecision(8) << vel_revert_frac
-		     << " (" << setprecision(3) << order << ")"
+		     << "\to " << setprecision(8) <<  order
 		     << "\trx " << setprecision(8) << revert_x
 		     << "\try " << setprecision(8) << revert_y
 		     << endl;*/
@@ -342,7 +337,7 @@ void Game::check_collide( Ball &ball, int recursion_depth )
 	     << endl;*/
 }
 
-inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &block, Fixed &order, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y, Fixed &edge_dist_x, Fixed &edge_dist_y ) const
+inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &block, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y, Fixed &edge_dist_x, Fixed &edge_dist_y ) const
 {
 	const Fixed past_left   = ball.x + Fixed(ball.width)   - block.x,
 	            past_right  = ball.x - Fixed(block.width)  - block.x,
@@ -362,12 +357,12 @@ inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &bloc
 		
 		if (frac_past_x > 1 && frac_past_y > 1)  // both invalid
 		{
+			highscore.save("bug_report.score");
+			assert(false);
 			return 0;
 		}
 		else
 		{
-			order = sqr(past_x) + sqr(past_y);
-			
 			hit_x = (frac_past_x >= frac_past_y && frac_past_x <= 1) || frac_past_y > 1,
 			hit_y = (frac_past_y >= frac_past_x && frac_past_y <= 1) || frac_past_x > 1;
 			
@@ -387,7 +382,7 @@ inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &bloc
 				revert_y = past_y;
 			}
 			
-			return sqr(frac_past_x) + sqr(frac_past_y);
+			return sqr(past_x) + sqr(past_y);
 		}
 	}
 	
