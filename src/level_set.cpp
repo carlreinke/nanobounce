@@ -37,6 +37,8 @@ void LevelSet::load_levels( void )
 	string level_path;
 	while (getline(meta, level_path))
 	{
+		boost::trim_right_if(level_path, boost::is_any_of("\r"));
+		
 		level_path = directory + "/" + level_path;
 		
 		Level level;

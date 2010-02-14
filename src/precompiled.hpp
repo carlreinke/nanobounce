@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <boost/algorithm/string/trim.hpp>
 #include <boost/array.hpp>
 #include <boost/bimap.hpp>
 #include <boost/foreach.hpp>
