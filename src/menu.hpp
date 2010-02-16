@@ -59,7 +59,7 @@ private:
 class LevelSetMenu : public SmoothMenu
 {
 public:
-	LevelSetMenu( void );
+	LevelSetMenu( bool allow_new = false );
 	
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
@@ -69,7 +69,7 @@ public:
 class LevelMenu : public SmoothMenu
 {
 public:
-	LevelMenu( const LevelSet & );
+	LevelMenu( const LevelSet &, bool allow_new = false );
 };
 
 #endif // MENU_HPP

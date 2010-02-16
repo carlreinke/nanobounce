@@ -11,16 +11,11 @@ using namespace std;
 LevelSet::LevelSet( const std::string &directory )
 : valid(false), directory(directory)
 {
-	const string meta_path = directory + "/" + "meta";
+	ifstream meta((directory + "/meta").c_str());
+	getline(meta, name);
+	getline(meta, author);
 	
-	if (path_exists(meta_path))
-	{
-		ifstream meta(meta_path.c_str());
-		getline(meta, name);
-		getline(meta, author);
-		
-		valid = meta.good();
-	}
+	valid = meta.good();
 }
 
 void LevelSet::load_levels( void )
@@ -28,8 +23,7 @@ void LevelSet::load_levels( void )
 	if (invalid())
 		return;
 	
-	const string meta_path = directory + "/" + "meta";
-	ifstream meta(meta_path.c_str());
+	ifstream meta((directory + "/meta").c_str());
 	
 	getline(meta, name);
 	getline(meta, author);
@@ -47,6 +41,44 @@ void LevelSet::load_levels( void )
 		if (!level.invalid())
 			levels.push_back(level);
 	}
+}
+
+void LevelSet::save_meta( void )
+{
+	if (!path_exists(directory))
+#ifndef TARGET_WIN32
+		mkdir(directory.c_str(), 0755);
+#else
+		mkdir(directory.c_str());
+#endif
+	
+	ofstream meta((directory + "/meta").c_str());
+	meta << name << endl;
+	meta << author << endl;
+	
+	BOOST_FOREACH (const Level &level, levels)
+		meta << level.path.substr(directory.size() + 1) << endl;
+}
+
+void LevelSet::append_level( Level &level )
+{
+	string::size_type basename_offset = level.path.find_last_of('/');
+	level.path = directory + "/" + level.path.substr(basename_offset == string::npos ? 0 : basename_offset + 1);
+	level.valid = true;
+	
+	// if path already exists, give level an unused, numeric filename
+	if (path_exists(level.path))
+	{
+		uint i = 1;
+		do
+		{
+			level.path = directory + "/" + boost::lexical_cast<string>(i);
+			++i;
+		}
+		while (path_exists(level.path));
+	}
+	
+	levels.push_back(level);
 }
 
 void LevelSet::play( SDL_Surface *surface )

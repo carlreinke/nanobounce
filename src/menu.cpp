@@ -236,53 +236,34 @@ void GameMenu::handle_event( SDL_Event &e )
 			
 		case Controller::select_key:
 		case Controller::start_key:
-			if (selection == 2) // Quit
+			// at this point, ticks should be a decent seed
+			srand(SDL_GetTicks());
+			
+			switch (selection)
 			{
-				loop_quit = true;
-			}
-			else
-			{
-				// at this point, ticks should be a decent seed
-				srand(SDL_GetTicks());
-				
-				LevelSetMenu set_menu;
-				set_menu.loop(surface);
-				
-				if (!set_menu.no_selection)
+			case 0:  // Play
 				{
-					LevelSet &level_set = set_menu.entries[set_menu.selection];
+					LevelSetMenu set_menu;
+					set_menu.loop(surface);
 					
-					switch (selection)
+					if (!set_menu.no_selection)
 					{
-					case 0: // Play
+						LevelSet &level_set = set_menu.entries[set_menu.selection];
 						level_set.play(surface);
-						break;
-						
-					case 1: // Edit
-						level_set.load_levels();
-						
-						LevelMenu level_menu(level_set);
-						level_menu.loop(surface);
-						
-						if (!level_menu.no_selection)
-						{
-							Level &level = level_set.levels[level_menu.selection];
-							
-#ifndef TARGET_GP2X
-							SDL_ShowCursor(SDL_ENABLE);
-#endif
-							
-							Editor editor;
-							editor.load(level.path);
-							editor.loop(surface);
-							
-#ifndef TARGET_GP2X
-							SDL_ShowCursor(SDL_DISABLE);
-#endif
-						}
-						break;
 					}
 				}
+				break;
+				
+			case 1:  // Edit
+				{
+					Editor editor;
+					editor.loop(surface);
+				}
+				break;
+				
+			case 2:  // Quit
+				loop_quit = true;
+				break;
 			}
 			break;
 			
@@ -354,7 +335,7 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 #endif
 }
 
-LevelSetMenu::LevelSetMenu( void )
+LevelSetMenu::LevelSetMenu( bool allow_new )
 {
 	vector<string> dir_entries = directory_listing(level_directory);
 	
@@ -367,6 +348,14 @@ LevelSetMenu::LevelSetMenu( void )
 	}
 	
 	sort(entries.begin(), entries.end());
+	
+	if (allow_new)
+	{
+		static LevelSet new_level_set;
+		new_level_set.name = "New Level Set...";
+		boost::to_upper(new_level_set.name);
+		entries.push_back(new_level_set);
+	}
 	
 	SmoothMenu::entries.resize(entries.size());
 }
@@ -399,8 +388,15 @@ void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	}
 }
 
-LevelMenu::LevelMenu( const LevelSet &level_set )
+LevelMenu::LevelMenu( const LevelSet &level_set, bool allow_new )
 {
 	BOOST_FOREACH (const Level &level, level_set.levels)
 		entries.push_back(&level.name);
+	
+	if (allow_new)
+	{
+		static string new_level = "New Level...";
+		boost::to_upper(new_level);
+		entries.push_back(&new_level);
+	}
 }

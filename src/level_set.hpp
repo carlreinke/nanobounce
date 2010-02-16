@@ -8,11 +8,15 @@
 class LevelSet
 {
 public:
+	LevelSet( void ) : valid(false) { /* nothing to do */ }
 	LevelSet( const std::string &directory );
 	bool invalid( void ) const { return !valid; }
 	bool operator<( const LevelSet &that ) const { return this->name < that.name; }
 	
 	void load_levels( void );
+	void save_meta( void );
+	void append_level( Level &level );
+	
 	void play( SDL_Surface * );
 	
 private:
@@ -37,7 +41,7 @@ private:
 		std::list<Particle> particles;
 	};
 	
-	friend class GameMenu;
+	friend class Editor;
 	friend class LevelMenu;
 	friend class LevelSetMenu;
 };

@@ -23,6 +23,8 @@ public:
 	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 private:
+	void validate( void );
+	
 	bool valid;
 	std::string path;
 	

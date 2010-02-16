@@ -8,6 +8,7 @@ class Editor : public Loop
 {
 public:
 	Editor( void );
+	~Editor( void );
 	
 	void handle_event( SDL_Event & );
 	void update( void );
@@ -18,7 +19,7 @@ public:
 	
 	void reset( void );
 	
-	int align( int value, int mod ) { return value - value % mod; }
+	static int align( int value, int mod ) { return value - value % mod; }
 	
 	std::vector<Block>::iterator block_at_position( int x, int y );
 	void set_block_at_position( int x, int y, Block::Type );

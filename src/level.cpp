@@ -68,6 +68,8 @@ bool Level::load( istream &data )
 	width *= Block::width;
 	height *= Block::height;
 	
+	valid = data.good();
+	
 	blocks.clear();
 	
 	int x, y;
@@ -88,8 +90,6 @@ bool Level::load( istream &data )
 			// ignore it
 		}
 	}
-	
-	valid = data.eof() && !blocks.empty();
 	
 	return valid;
 }
@@ -132,6 +132,20 @@ bool Level::save( ostream &data ) const
 	}
 	
 	return data.good();
+}
+
+void Level::validate( void )
+{
+	// remove blocks outside boundaries
+	for (vector<Block>::iterator block = blocks.begin(); block != blocks.end(); )
+	{
+		if (block->x >= width || block->y >= height)
+			block = blocks.erase(block);
+		else
+			++block;
+	}
+	
+	stable_sort(blocks.begin(), blocks.end());
 }
 
 void Level::reset( void )

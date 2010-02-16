@@ -29,6 +29,24 @@ Editor::Editor( void )
 		block_type_unusable.set(Block::toggle_0_1);
 		block_type_unusable.set(Block::toggle_1_0);
 	}
+	
+	level.path = "";
+	level.name = "UNNAMED";
+	level.width = align(screen_width, Block::width);
+	level.height = align(screen_height, Block::height);
+	
+	reset();
+	
+#ifndef TARGET_GP2X
+	SDL_ShowCursor(SDL_ENABLE);
+#endif
+}
+
+Editor::~Editor( void )
+{
+#ifndef TARGET_GP2X
+	SDL_ShowCursor(SDL_DISABLE);
+#endif
 }
 
 void Editor::handle_event( SDL_Event &e )
@@ -170,8 +188,8 @@ void Editor::menu( void )
 	{
 		"Play",
 		"Save",
-		"Continue",
-		"Revert",
+		"Save As",
+		"Load",
 		"Quit",
 	};
 	for (uint i = 0; i < COUNTOF(entries); ++i)
@@ -183,23 +201,77 @@ void Editor::menu( void )
 	{
 		switch (menu.selection)
 		{
-		case 0:
+		case 0:  // Play
 			{
 				Game game(level);
-				game.loop(surface);
+				
+				do
+				{
+					game.reset();
+					game.loop(surface);
+				}
+				while (game.state == Game::lost);
 			}
 			break;
-		case 1:
-			stable_sort(level.blocks.begin(), level.blocks.end());
 			
-			save(level.path); // TODO
+		case 1:  // Save
+			if (!level.invalid())
+			{
+				level.validate();
+				save(level.path);
+			}
+			else
+			{
+		case 2:  // Save As
+				LevelSetMenu level_set_menu(false); // TODO
+				level_set_menu.loop(surface);
+					
+				if (!level_set_menu.no_selection)
+				{
+					LevelSet &level_set = level_set_menu.entries[level_set_menu.selection];
+					level_set.load_levels();
+					
+					LevelMenu level_menu(level_set, true);
+					level_menu.loop(surface);
+					
+					if (!level_menu.no_selection)
+					{
+						if (level_menu.selection < level_set.levels.size())
+						{
+							level.path = level_set.levels[level_menu.selection].path;
+						}
+						else  // save as new level
+						{
+							level_set.append_level(level);
+							level_set.save_meta();
+						}
+						level.validate();
+						save(level.path);
+					}
+				}
+			}
 			break;
-		case 2:
+			
+		case 3:  // Load
+			{
+				LevelSetMenu level_set_menu(false);
+				level_set_menu.loop(surface);
+					
+				if (!level_set_menu.no_selection)
+				{
+					LevelSet &level_set = level_set_menu.entries[level_set_menu.selection];
+					level_set.load_levels();
+					
+					LevelMenu level_menu(level_set, false);
+					level_menu.loop(surface);
+					
+					if (!level_menu.no_selection)
+						load(level_set.levels[level_menu.selection].path);
+				}
+			}
 			break;
-		case 3:
-			load(level.path);
-			break;
-		case 4:
+			
+		case 4:  // Quit
 			loop_quit = true;
 			break;
 		}
