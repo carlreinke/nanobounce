@@ -8,6 +8,17 @@
 
 using namespace std;
 
+LevelSet::LevelSet( void )
+: valid(false)
+{
+	int i = 0;
+	do
+		directory = level_directory + boost::lexical_cast<string>(++i);
+	while (path_exists(directory));
+	
+	name = "UNNAMED " + boost::lexical_cast<string>(i);
+}
+
 LevelSet::LevelSet( const std::string &directory )
 : valid(false), directory(directory)
 {
@@ -58,25 +69,30 @@ void LevelSet::save_meta( void )
 	
 	BOOST_FOREACH (const Level &level, levels)
 		meta << level.path.substr(directory.size() + 1) << endl;
+	
+	valid = meta.good();
 }
 
 void LevelSet::append_level( Level &level )
 {
 	string::size_type basename_offset = level.path.find_last_of('/');
-	level.path = directory + "/" + level.path.substr(basename_offset == string::npos ? 0 : basename_offset + 1);
-	level.valid = true;
+	if (basename_offset == string::npos || basename_offset == level.path.size() - 1)
+		level.path = ".";  // force new path
+	else
+		level.path = directory + "/" + level.path.substr(basename_offset + 1);
 	
 	// if path already exists, give level an unused, numeric filename
 	if (path_exists(level.path))
 	{
-		uint i = 1;
+		uint i = 0;
 		do
-		{
-			level.path = directory + "/" + boost::lexical_cast<string>(i);
-			++i;
-		}
+			level.path = directory + "/" + boost::lexical_cast<string>(++i);
 		while (path_exists(level.path));
+		
+		level.name += " " + boost::lexical_cast<string>(i);
 	}
+	
+	level.valid = true;
 	
 	levels.push_back(level);
 }

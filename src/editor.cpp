@@ -223,12 +223,18 @@ void Editor::menu( void )
 			else
 			{
 		case 2:  // Save As
-				LevelSetMenu level_set_menu(false); // TODO
+				LevelSetMenu level_set_menu(true);
 				level_set_menu.loop(surface);
-					
+				
 				if (!level_set_menu.no_selection)
 				{
 					LevelSet &level_set = level_set_menu.entries[level_set_menu.selection];
+					if (level_set.invalid())
+					{
+						level_set.name = "UNNAMED";
+						level_set.author = "UNKNOWN AUTHOR";
+					}
+					
 					level_set.load_levels();
 					
 					LevelMenu level_menu(level_set, true);

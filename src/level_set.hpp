@@ -8,9 +8,10 @@
 class LevelSet
 {
 public:
-	LevelSet( void ) : valid(false) { /* nothing to do */ }
+	LevelSet( void );
 	LevelSet( const std::string &directory );
 	bool invalid( void ) const { return !valid; }
+	
 	bool operator<( const LevelSet &that ) const { return this->name < that.name; }
 	
 	void load_levels( void );
