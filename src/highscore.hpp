@@ -7,11 +7,13 @@ class Highscore
 {
 public:
 	Highscore( void ) { reset(); }
+	Highscore( const std::string &score_path ) { load(score_path); }
 	bool invalid( void ) const { return ms() == 0; }
 	
 	bool load( const std::string &path );
 	bool load( std::istream & );
 	
+	bool save( void ) const { return save(level_path + ".score"); };
 	bool save( const std::string &path ) const;
 	bool save( std::ostream & ) const;
 	
@@ -23,6 +25,7 @@ public:
 	std::string time( void ) const;
 	
 	std::string name;
+	std::string level_path;
 	
 private:
 	int ticks_per_second;
@@ -36,7 +39,7 @@ private:
 class Replay : public Controller
 {
 public:
-	Replay( const std::string & );
+	Replay( const Highscore & );
 	
 	void tick_update( void );
 	

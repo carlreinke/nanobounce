@@ -19,12 +19,12 @@ bool Highscore::load( const string &data_path )
 
 bool Highscore::load( istream &is )
 {
+	getline(is, level_path);
 	getline(is, name);
 	is >> ticks_per_second;
 	is >> ticks;
 	
-	if (name.size() == 0)
-		name = "UNKNOWN";
+	boost::trim_right_if(level_path, boost::is_any_of("\r"));
 	
 	x_direction.clear();
 	for (; ; )
@@ -58,6 +58,7 @@ bool Highscore::save( const string &data_path ) const
 
 bool Highscore::save( ostream &os ) const
 {
+	os << level_path << endl;
 	os << name << endl;
 	os << ticks_per_second << " ";
 	os << ticks << " ";
@@ -103,10 +104,11 @@ string Highscore::time( void ) const
 	return out.str();
 }
 
-Replay::Replay( const string &data_path )
-: ticks(0)
+Replay::Replay( const Highscore &score )
+: ticks(0),
+  highscore(score)
 {
-	highscore.load(data_path);
+	// good to go
 }
 
 void Replay::tick_update( void )

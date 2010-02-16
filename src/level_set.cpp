@@ -123,8 +123,7 @@ void LevelSet::play( SDL_Surface *surface )
 		{
 			game = Game(*level);
 			
-			highscore_path = level->path + ".score";
-			highscore.load(highscore_path);
+			highscore.load(level->path + ".score");
 			
 			LevelIntroLoop level_intro(*level, highscore);
 			level_intro.loop(surface);
@@ -136,9 +135,9 @@ void LevelSet::play( SDL_Surface *surface )
 		{
 			if (game.highscore.ms() < highscore.ms() || highscore.invalid())
 			{
-				// do highscore screen, ask for name?
+				// TODO: highscore screen, ask for name?
 				
-				game.highscore.save(highscore_path);
+				game.highscore.save();
 			}
 		}
 		

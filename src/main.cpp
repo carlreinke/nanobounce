@@ -24,9 +24,10 @@ const string level_directory = "levels/",
 int main( int argc, char *argv[] )
 {
 	bool editor = false, replay = false;
+	string level_path;
 	
 	int opt;
-	while ((opt = getopt(argc, argv, "aemr:sv:")) != -1)
+	while ((opt = getopt(argc, argv, "ae:mr:sv:")) != -1)
 	{
 		switch (opt)
 		{
@@ -38,6 +39,8 @@ int main( int argc, char *argv[] )
 			
 		case 'e':
 			editor = true;
+			
+			level_path = optarg;
 			break;
 			
 		case 'm':
@@ -47,7 +50,11 @@ int main( int argc, char *argv[] )
 		case 'r':
 			replay = true;
 			
-			disabled_controllers.push_back(boost::shared_ptr<Controller>(new Replay(optarg)));
+			{
+				const Highscore score(optarg);
+				level_path = score.level_path;
+				disabled_controllers.push_back(boost::shared_ptr<Controller>(new Replay(score)));
+			}
 			break;
 			
 		case 's':
@@ -66,12 +73,6 @@ int main( int argc, char *argv[] )
 			break;
 		}
 	} 
-	
-	if (optind >= argc)
-	{
-		editor = false;
-		replay = false;
-	}
 	
 	{
 		vector<string> music_filenames = directory_listing(music_directory);
@@ -113,7 +114,7 @@ int main( int argc, char *argv[] )
 #endif
 		
 		Editor editor;
-		editor.load(argv[optind]);
+		editor.load(level_path);
 		
 		editor.loop(surface);
 	}
@@ -122,7 +123,7 @@ int main( int argc, char *argv[] )
 		disabled_controllers.swap(controllers);
 		
 		Game game;
-		game.load(argv[optind]);
+		game.load(level_path);
 		
 		game.loop(surface);
 		

@@ -91,7 +91,9 @@ bool Game::load( const string &level_data_path )
 void Game::reset( void )
 {
 	level.reset();
+	
 	highscore.reset();
+	highscore.level_path = level.path;
 	
 	int ball_x = 0, ball_y = 0;
 	
@@ -470,7 +472,11 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			
 		case Block::nuke:
 			if (state == none)
+			{
 				state = lost;
+				
+				highscore.save("last_lost.score");
+			}
 			
 			ball.no_vel = true;
 			block.property = Block::hidden;
