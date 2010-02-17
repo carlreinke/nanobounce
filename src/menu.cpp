@@ -351,7 +351,7 @@ LevelSetMenu::LevelSetMenu( bool allow_new )
 	
 	if (allow_new)
 	{
-		static LevelSet new_level_set;
+		LevelSet new_level_set;
 		new_level_set.name = "New Level Set...";
 		boost::to_upper(new_level_set.name);
 		entries.push_back(new_level_set);

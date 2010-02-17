@@ -15,8 +15,6 @@ LevelSet::LevelSet( void )
 	do
 		directory = level_directory + boost::lexical_cast<string>(++i);
 	while (path_exists(directory));
-	
-	name = "UNNAMED " + boost::lexical_cast<string>(i);
 }
 
 LevelSet::LevelSet( const std::string &directory )
