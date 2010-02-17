@@ -104,6 +104,23 @@ void LevelSetCongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), "completed!", font_sprites[3], Font::majuscule, Font::center, alpha);
 }
 
+FireworkParticle::FireworkParticle( Fixed x, Fixed y, const SDL_Color &color )
+: Particle(x, y, rand() % 20 + 30, color)
+{
+	const Fixed radius = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024),  // [-1..1]
+	            angle = make_frac<Fixed>(rand() % 31415, 10000);  // [0..pi]
+	
+	x_vel = cosf(angle) * radius,
+	y_vel = sinf(angle) * radius;
+	
+	y_accel /= 2;
+	
+	term_vel = 100;  // large enough to be irrelevant
+	
+	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 20 - 30;
+	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
+}
+
 LevelIntroLoop::LevelIntroLoop( const Level &level, const Highscore &score )
 : level_name(level.name), score(score),
   ticks(0)
@@ -139,7 +156,7 @@ void LevelIntroLoop::update( void )
 	BOOST_FOREACH (boost::shared_ptr<Controller> controller, controllers)
 		controller->update();
 	
-	if (++ticks == 50)
+	if (++ticks == ms_to_updates(800))
 		loop_quit = true;
 }
 
@@ -147,11 +164,79 @@ void LevelIntroLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[3]), level_name, font_sprites[3], Font::center, alpha);
+	font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[4]), level_name, font_sprites[4], Font::center, alpha);
 	
 	if (!score.invalid())
 	{
-		font.blit(surface, surface->w / 2, surface->h * 3 / 4 - font.height(font_sprites[2]), "Best Time", font_sprites[2], Font::majuscule, Font::center, alpha);
-		font.blit(surface, surface->w / 2, surface->h * 3 / 4, /*score.name + ": " +*/ score.time(), font_sprites[2], Font::center, alpha);
+		font.blit(surface, surface->w / 2, surface->h * 3 / 4 - font.height(font_sprites[3]), "Best Time", font_sprites[3], Font::majuscule, Font::center, alpha);
+		font.blit(surface, surface->w / 2, surface->h * 3 / 4, /*score.name + ": " +*/ score.time(), font_sprites[3], Font::center, alpha);
 	}
 }
+
+LevelCongratsLoop::LevelCongratsLoop( const Level &level, const Highscore &score )
+: level_name(level.name), score(score),
+  ticks(0)
+{
+	// nothing to do
+}
+
+void LevelCongratsLoop::handle_event( SDL_Event &e )
+{
+	switch (e.type)
+	{
+	case SDL_KEYDOWN:
+		switch (e.key.keysym.sym)
+		{
+		case Controller::back_key:
+		case Controller::quit_key:
+		case Controller::select_key:
+		case Controller::start_key:
+			loop_quit = true;
+			break;
+			
+		default:
+			break;
+		}
+		
+	default:
+		break;
+	}
+}
+
+void LevelCongratsLoop::update( void )
+{
+	BOOST_FOREACH (boost::shared_ptr<Controller> controller, controllers)
+		controller->update();
+	
+	if (++ticks == ms_to_updates(5000))
+		loop_quit = true;
+	
+	particles.push_back(WooshParticle((rand() % 2 == 1 ? 0 : screen_width), rand() % screen_height, SDL_Color_RGBA(64, 255, 64)));
+	
+	Particle::tick_all(particles);
+}
+
+void LevelCongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
+{
+	SDL_FillRect(surface, NULL, 0);
+	
+	BOOST_FOREACH (const Particle &particle, particles)
+		particle.draw(surface, 0, 0, alpha);
+	
+	font.blit(surface, surface->w / 2, surface->h / 4, "New Best Time!", font_sprites[3], Font::majuscule, Font::center, alpha);
+	font.blit(surface, surface->w / 2, surface->h / 2, level_name, font_sprites[4], Font::center, alpha);
+	font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), score.time(), font_sprites[3], Font::center, alpha);
+}
+
+WooshParticle::WooshParticle( Fixed x, Fixed y, const SDL_Color &color )
+: Particle(x, y, rand() % 100 + 50, color)
+{
+	x_vel = make_frac<Fixed>(rand() % 1024 + 1024, 1024 * 2) * (x > screen_width / 2 ? -1 : 1);  // [-1..1]
+	y_vel = 0;
+	
+	x_accel = y_accel = 0;
+	
+	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 50 - 50;
+	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
+}
+

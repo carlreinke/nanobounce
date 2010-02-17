@@ -36,10 +36,10 @@ private:
 	
 	friend class Editor;
 	friend class Game;
-	friend class GameMenu;
 	friend class LevelMenu;
 	friend class LevelSet;
 	friend class LevelIntroLoop;
+	friend class LevelCongratsLoop;
 };
 
 #endif // LEVEL_HPP

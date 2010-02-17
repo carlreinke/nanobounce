@@ -22,6 +22,12 @@ private:
 	std::list<Particle> particles;
 };
 
+class FireworkParticle : public Particle
+{
+public:
+	FireworkParticle( Fixed x, Fixed y, const SDL_Color &color );
+};
+
 class LevelIntroLoop : public Loop
 {
 public:
@@ -35,7 +41,31 @@ private:
 	const std::string level_name;
 	const Highscore score;
 	
-	int ticks;
+	uint ticks;
+};
+
+class LevelCongratsLoop : public Loop
+{
+public:
+	LevelCongratsLoop( const Level &, const Highscore & );
+	
+	void handle_event( SDL_Event & );
+	void update( void );
+	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	
+private:
+	const std::string level_name;
+	const Highscore score;
+	
+	std::list<Particle> particles;
+	
+	uint ticks;
+};
+
+class WooshParticle : public Particle
+{
+public:
+	WooshParticle( Fixed x, Fixed y, const SDL_Color &color );
 };
 
 #endif // GAME_LOOPS_HPP

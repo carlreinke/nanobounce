@@ -134,6 +134,9 @@ void LevelSet::play( SDL_Surface *surface )
 		{
 			if (game.highscore.ms() < highscore.ms() || highscore.invalid())
 			{
+				LevelCongratsLoop congrats(*level, game.highscore);
+				congrats.loop(surface);
+				
 				// TODO: highscore screen, ask for name?
 				
 				game.highscore.save();

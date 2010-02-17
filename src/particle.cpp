@@ -108,20 +108,3 @@ SparkParticle::SparkParticle( Fixed x, Fixed y, Fixed x_vel, Fixed y_vel, const 
 	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 20 - 20;
 	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
 }
-
-FireworkParticle::FireworkParticle( Fixed x, Fixed y, const SDL_Color &color )
-: Particle(x, y, rand() % 20 + 30, color)
-{
-	const Fixed radius = make_frac<Fixed>(rand() % (1024 * 2) - 1024, 1024),  // [-1..1]
-	            angle = make_frac<Fixed>(rand() % 31415, 10000);  // [0..pi]
-	
-	x_vel = cosf(angle) * radius,
-	y_vel = sinf(angle) * radius;
-	
-	y_accel /= 2;
-	
-	term_vel = 100;  // large enough to be irrelevant
-	
-	alpha = SDL_ALPHA_OPAQUE + static_cast<int>(ticks_to_live) - 20 - 30;
-	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
-}
