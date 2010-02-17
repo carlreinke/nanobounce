@@ -5,9 +5,9 @@
 #include "editor.hpp"
 #include "file_system.hpp"
 #include "game.hpp"
+#include "game_menus.hpp"
 #include "highscore.hpp"
 #include "main.hpp"
-#include "menu.hpp"
 #include "video/font.hpp"
 #include "video/video.hpp"
 

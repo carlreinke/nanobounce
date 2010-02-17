@@ -2,7 +2,7 @@
 #include "editor.hpp"
 #include "game.hpp"
 #include "main.hpp"
-#include "menu.hpp"
+#include "game_menus.hpp"
 #include "misc.hpp"
 #include "sdl_ext.hpp"
 #include "video/font.hpp"
