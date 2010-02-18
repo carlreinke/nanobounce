@@ -15,7 +15,8 @@ vector<Sprite> Editor::block_sprites;
 bitset<Block::_max> Editor::block_type_unusable;
 
 Editor::Editor( void )
-: cursor_block(Block::none)
+: cursor_block(Block::none),
+  level("UNNAMED", align(screen_width, Block::width), align(screen_height, Block::height))
 {
 	if (block_sprites.empty())
 	{
@@ -29,11 +30,6 @@ Editor::Editor( void )
 		block_type_unusable.set(Block::toggle_0_1);
 		block_type_unusable.set(Block::toggle_1_0);
 	}
-	
-	level.path = "";
-	level.name = "UNNAMED";
-	level.width = align(screen_width, Block::width);
-	level.height = align(screen_height, Block::height);
 	
 	reset();
 	

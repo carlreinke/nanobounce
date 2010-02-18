@@ -203,7 +203,7 @@ void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 LevelMenu::LevelMenu( const LevelSet &level_set, bool allow_new )
 {
 	BOOST_FOREACH (const Level &level, level_set.levels)
-		entries.push_back(level.name);
+		entries.push_back(level.get_name());
 	
 	if (allow_new)
 	{

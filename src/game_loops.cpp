@@ -122,7 +122,7 @@ FireworkParticle::FireworkParticle( Fixed x, Fixed y, const SDL_Color &color )
 }
 
 LevelIntroLoop::LevelIntroLoop( const Level &level, const Highscore &score )
-: level_name(level.name), score(score),
+: level_name(level.get_name()), score(score),
   ticks(0)
 {
 	// nothing to do
@@ -174,7 +174,7 @@ void LevelIntroLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 }
 
 LevelCongratsLoop::LevelCongratsLoop( const Level &level, const Highscore &score )
-: level_name(level.name), score(score),
+: level_name(level.get_name()), score(score),
   ticks(0)
 {
 	// nothing to do

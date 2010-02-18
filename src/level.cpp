@@ -9,38 +9,17 @@ boost::bimap<Block::Type, string> Level::block_names;
 
 Level::Level( void )
 : valid(false),
-  path("invalid"), name("invalid"),
   width(0), height(0)
 {
-	if (block_names.empty())
-	{
-		boost::array<pair<Block::Type, string>, Block::_max> temp_block_names =
-		{{
-			make_pair(Block::none,    ""),
-			make_pair(Block::ball,    "ball"),
-			make_pair(Block::exit,    "exit"),
-			make_pair(Block::normal,  "block"),
-			make_pair(Block::nuke,    "nuke"),
-			make_pair(Block::recycle, "recycle"),
-			
-			make_pair(Block::toggle_0_0,    "toggle_0"),
-			make_pair(Block::toggle_0_star, "toggle_0_star"),
-			make_pair(Block::toggle_1_1,    "toggle_1"),
-			make_pair(Block::toggle_1_star, "toggle_1_star"),
-			
-			make_pair(Block::boost_up,    "boost_up"),
-			make_pair(Block::boost_left,  "boost_left"),
-			make_pair(Block::boost_right, "boost_right"),
-			
-			make_pair(Block::push_up,    "push_up"),
-			make_pair(Block::push_left,  "push_left"),
-			make_pair(Block::push_right, "push_right"),
-		}};
-		
-		typedef pair<Block::Type, string> BlockPair;
-		BOOST_FOREACH (const BlockPair &i, temp_block_names)
-			block_names.insert(make_bipair(i.first, i.second));
-	}
+	load_resources();
+}
+
+Level::Level( std::string name, int width, int height )
+: valid(true),
+  name(name),
+  width(width), height(height)
+{
+	load_resources();
 }
 
 bool Level::load( const string &data_path )
@@ -48,7 +27,6 @@ bool Level::load( const string &data_path )
 	path = data_path;
 	
 	ifstream data(path.c_str());
-	
 	bool success = load(data);
 	
 	if (success)
@@ -85,24 +63,17 @@ bool Level::load( istream &data )
 			
 			blocks.push_back(Block(x, y, type));
 		}
-		catch (exception e)
-		{
-			// ignore it
-		}
+		catch (out_of_range &e) { assert(false); }
 	}
 	
 	return valid;
 }
 
-bool Level::save( void ) const
-{
-	return save(path);
-}
-
 bool Level::save( const string &data_path ) const
 {
-	ofstream data(data_path.c_str());
+	path = data_path;
 	
+	ofstream data(path.c_str());
 	bool success = save(data);
 	
 	cout << (success ? "saved" : "warning: failed to save") << " level"
@@ -123,12 +94,13 @@ bool Level::save( ostream &data ) const
 	
 	BOOST_FOREACH (const Block &block, blocks)
 	{
-		if (block.type != Block::none)
+		try
 		{
 			data << (block.x / block.width) << " "
 			     << (block.y / block.height) << " "
 			     << block_names.left.at(block.type) << endl;
 		}
+		catch (out_of_range &e) { assert(false); }
 	}
 	
 	return data.good();
@@ -160,4 +132,36 @@ void Level::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha 
 	
 	BOOST_FOREACH (const Block &block, blocks)
 		block.draw(surface, x_offset, y_offset, alpha);
+}
+
+void Level::load_resources( void )
+{
+	if (block_names.empty())
+	{
+		boost::array<pair<Block::Type, string>, Block::_max> temp_block_names =
+		{{
+			make_pair(Block::ball,    "ball"),
+			make_pair(Block::exit,    "exit"),
+			make_pair(Block::normal,  "block"),
+			make_pair(Block::nuke,    "nuke"),
+			make_pair(Block::recycle, "recycle"),
+			
+			make_pair(Block::toggle_0_0,    "toggle_0"),
+			make_pair(Block::toggle_0_star, "toggle_0_star"),
+			make_pair(Block::toggle_1_1,    "toggle_1"),
+			make_pair(Block::toggle_1_star, "toggle_1_star"),
+			
+			make_pair(Block::boost_up,    "boost_up"),
+			make_pair(Block::boost_left,  "boost_left"),
+			make_pair(Block::boost_right, "boost_right"),
+			
+			make_pair(Block::push_up,    "push_up"),
+			make_pair(Block::push_left,  "push_left"),
+			make_pair(Block::push_right, "push_right"),
+		}};
+		
+		typedef pair<Block::Type, string> BlockPair;
+		BOOST_FOREACH (const BlockPair &i, temp_block_names)
+			block_names.insert(make_bipair(i.first, i.second));
+	}
 }

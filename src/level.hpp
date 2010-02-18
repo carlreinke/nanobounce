@@ -9,12 +9,14 @@ class Level
 {
 public:
 	Level( void );
+	Level( std::string name, int width, int height );
 	bool invalid( void ) const { return !valid; }
 	
+	bool load( void ) { return load(path); }
 	bool load( const std::string &path );
 	bool load( std::istream & );
 	
-	bool save( void ) const;
+	bool save( void ) const { return save(path); }
 	bool save( const std::string &path ) const;
 	bool save( std::ostream & ) const;
 	
@@ -22,24 +24,25 @@ public:
 	
 	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
-private:
-	void validate( void );
+	std::string get_path( void ) const { return path; }
+	std::string get_name( void ) const { return name; }
 	
+private:
 	bool valid;
-	std::string path;
+	mutable std::string path;
+	
+	void validate( void );
 	
 	std::string name;
 	int width, height;
 	std::vector<Block> blocks;
 	
+	static void load_resources( void );
 	static boost::bimap<Block::Type, std::string> block_names;
 	
 	friend class Editor;
 	friend class Game;
-	friend class LevelMenu;
 	friend class LevelSet;
-	friend class LevelIntroLoop;
-	friend class LevelCongratsLoop;
 };
 
 #endif // LEVEL_HPP

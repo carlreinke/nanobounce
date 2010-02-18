@@ -91,8 +91,6 @@ void LevelSet::append_level( Level &level )
 		level.name += " " + boost::lexical_cast<string>(i);
 	}
 	
-	level.valid = true;
-	
 	levels.push_back(level);
 }
 
