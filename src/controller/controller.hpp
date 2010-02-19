@@ -65,7 +65,7 @@ public:
 		back_key           = SDLK_ESCAPE,
 		
 		start_key          = SDLK_RETURN,
-		quit_key           = SDLK_F12,
+		quit_key           = SDLK_q,
 		
 		vol_up_key         = SDLK_PLUS,
 		vol_down_key       = SDLK_MINUS
