@@ -18,9 +18,7 @@ void Fader::fade( Fader::Direction direction )
 
 void Fader::update( void )
 {
+	done = (alpha == target);
 	if (!done)
-	{
 		alpha = min(max(SDL_ALPHA_TRANSPARENT, alpha + step), SDL_ALPHA_OPAQUE);
-		done = (alpha == target);
-	}
 }
