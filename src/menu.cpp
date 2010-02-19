@@ -176,7 +176,7 @@ void SmoothMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	SDL_FillRect(surface, NULL, 0);
 	
 	if (entry_count() == 0)
-		font.blit(surface, surface->w / 2, surface->h / 2, "(EMPTY)", font_sprites[2], Font::center, alpha / 2);
+		font.blit(surface, surface->w / 2, surface->h / 2, "(EMPTY)", font_sprites[3], Font::center, alpha / 2);
 	
 	int y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[3]) - font.height(font_sprites[3]) / 2) / 2;
 	
