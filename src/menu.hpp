@@ -7,7 +7,7 @@
 class SimpleMenu : public Loop
 {
 public:
-	SimpleMenu( SDL_Surface *background );
+	SimpleMenu( SDL_Surface *background = NULL );
 	~SimpleMenu( void );
 	
 	void handle_event( SDL_Event & );
@@ -15,6 +15,8 @@ public:
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 	std::vector<std::string> entries;
+	virtual uint entry_count( void ) const;
+	
 	uint selection;
 	bool no_selection;
 	
@@ -32,6 +34,8 @@ public:
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 	std::vector<std::string> entries;
+	virtual uint entry_count( void ) const;
+	
 	uint selection;
 	bool no_selection;
 	

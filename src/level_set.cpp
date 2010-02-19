@@ -1,11 +1,6 @@
-#include "audio/audio.hpp"
 #include "file_system.hpp"
-#include "game.hpp"
-#include "game_loops.hpp"
 #include "level_set.hpp"
 #include "main.hpp"
-#include "video/font.hpp"
-#include "volume.hpp"
 
 using namespace std;
 
@@ -92,62 +87,4 @@ void LevelSet::append_level( Level &level )
 	}
 	
 	levels.push_back(level);
-}
-
-void LevelSet::play( SDL_Surface *surface )
-{
-	if (invalid())
-		return;
-	
-	if (levels.empty())
-		load_levels();
-	
-	Game game;
-	
-	vector<Level>::iterator level = levels.begin();
-	
-	string highscore_path;
-	Highscore highscore;
-	
-	while (game.state != Game::quit && level != levels.end() && !global_quit)
-	{
-		if (game.state == Game::lost)
-		{
-			// retry level
-			game.reset();
-		}
-		else
-		{
-			game = Game(*level);
-			
-			highscore.load(level->path + ".score");
-			
-			LevelIntroLoop level_intro(*level, highscore);
-			level_intro.loop(surface);
-		}
-		
-		game.loop(surface);
-		
-		if (game.state == Game::won)
-		{
-			if (game.highscore.ms() < highscore.ms() || highscore.invalid())
-			{
-				LevelCongratsLoop congrats(*level, game.highscore);
-				congrats.loop(surface);
-				
-				// TODO: highscore screen, ask for name?
-				
-				game.highscore.save();
-			}
-		}
-		
-		if (game.state == Game::won || game.state == Game::cheat_won)
-			++level;
-	}
-	
-	if (level == levels.end())
-	{
-		LevelSetCongratsLoop congrats(*this);
-		congrats.loop(surface);
-	}
 }

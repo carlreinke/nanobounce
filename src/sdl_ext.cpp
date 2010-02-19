@@ -245,4 +245,3 @@ void SDL_SetPixelA( SDL_Surface *dst, int x, int y, Uint32 pixel, Uint8 alpha )
 	if (SDL_MUSTLOCK(dst))
 		SDL_UnlockSurface(dst);
 }
-

@@ -3,6 +3,7 @@
 #include "editor.hpp"
 #include "file_system.hpp"
 #include "game_menus.hpp"
+#include "highscore.hpp"
 #include "main.hpp"
 #include "video/video.hpp"
 #include "video/font.hpp"
@@ -10,7 +11,7 @@
 using namespace std;
 
 GameMenu::GameMenu( void )
-: selection(0), ball(screen_width / 2, screen_height)
+: ball(screen_width / 2, screen_height)
 {
 	const string menu_items[] =
 	{
@@ -20,70 +21,6 @@ GameMenu::GameMenu( void )
 	};
 	for (uint i = 0; i < COUNTOF(menu_items); ++i)
 		entries.push_back(menu_items[i]);
-}
-
-void GameMenu::handle_event( SDL_Event &e )
-{
-	switch (e.type)
-	{
-	case SDL_KEYDOWN:
-		switch (e.key.keysym.sym)
-		{
-		case Controller::back_key:
-		case Controller::quit_key:
-			loop_quit = true;
-			break;
-			
-		case Controller::left_key:
-		case Controller::left_shoulder_key:
-			if (selection > 0)
-				--selection;
-			break;
-			
-		case Controller::right_key:
-		case Controller::right_shoulder_key:
-			if (selection < entries.size() - 1)
-				++selection;
-			break;
-			
-		case Controller::select_key:
-		case Controller::start_key:
-			// at this point, ticks should be a decent seed
-			srand(SDL_GetTicks());
-			
-			switch (selection)
-			{
-			case 0:  // Play
-				{
-					LevelSetMenu set_menu;
-					set_menu.loop(surface);
-					
-					if (!set_menu.no_selection)
-					{
-						LevelSet &level_set = set_menu.entries[set_menu.selection];
-						level_set.play(surface);
-					}
-				}
-				break;
-				
-			case 1:  // Edit
-				{
-					Editor editor;
-					editor.loop(surface);
-				}
-				break;
-				
-			case 2:  // Quit
-				loop_quit = true;
-				break;
-			}
-			break;
-			
-		default:
-			break;
-		}
-		break;
-	}
 }
 
 void GameMenu::update( void )
@@ -124,7 +61,7 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 		font.blit(surface, x, y, entries[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? alpha : alpha / 2);
 	}
 	
-	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.2i BETA", font_sprites[1], Font::majuscule, Font::left, alpha);
+	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.3 BETA", font_sprites[1], Font::majuscule, Font::left, alpha);
 	
 	x = surface->w - 1;
 	y = surface->h - font.height(font_sprites[1]) * 3;
@@ -168,8 +105,6 @@ LevelSetMenu::LevelSetMenu( bool allow_new )
 		boost::to_upper(new_level_set.name);
 		entries.push_back(new_level_set);
 	}
-	
-	SmoothMenu::entries.resize(entries.size());
 }
 
 void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
@@ -200,6 +135,11 @@ void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	}
 }
 
+uint LevelSetMenu::entry_count( void ) const
+{
+	return entries.size();
+}
+
 LevelMenu::LevelMenu( const LevelSet &level_set, bool allow_new )
 {
 	BOOST_FOREACH (const Level &level, level_set.levels)
@@ -211,4 +151,69 @@ LevelMenu::LevelMenu( const LevelSet &level_set, bool allow_new )
 		boost::to_upper(new_level);
 		entries.push_back(new_level);
 	}
+}
+
+ScoredLevelMenu::ScoredLevelMenu( const LevelSet &level_set, bool show_one_incomplete, bool auto_select_single_entry )
+: auto_select_single_entry(auto_select_single_entry)
+{
+	BOOST_FOREACH (const Level &level, level_set.levels)
+	{
+		if (path_exists(level.get_score_path()))
+		{
+			Entry entry = { level.get_name(), level.get_path(), Highscore(level.get_score_path()).time() };
+			entries.push_back(entry);
+		}
+		else if (show_one_incomplete)
+		{
+			Entry entry = { level.get_name(), level.get_path(), "UNCOMPLETED" };
+			entries.push_back(entry);
+			break;
+		}
+		else
+			break;
+	}
+}
+
+void ScoredLevelMenu::loop( SDL_Surface *surface )
+{
+	if (!(auto_select_single_entry && entry_count() == 1))
+		SmoothMenu::loop(surface);
+}
+
+void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
+{
+	SDL_FillRect(surface, NULL, 0);
+	
+	if (entry_count() == 0)
+		font.blit(surface, surface->w / 2, surface->h / 2, "(EMPTY)", font_sprites[2], Font::center, alpha / 2);
+	
+	int y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[3]) - font.height(font_sprites[3]) / 2) / 2;
+	
+	for (uint i = 0; i < entries.size(); ++i)
+	{
+		if (i == selection)
+		{
+			y += font.height(font_sprites[4]) / 3;
+			font.blit(surface, surface->w / 2, y, entries[i].name, font_sprites[4], Font::center, alpha);
+			y += font.height(font_sprites[4]);
+			font.blit(surface, surface->w - 1, y, entries[i].time, font_sprites[1], Font::right, alpha);
+			y += font.height(font_sprites[4]) / 3;
+		}
+		else
+		{
+			if (y > surface->h)
+				break;
+			else if (y > -static_cast<int>(font.height(font_sprites[3])))
+			{
+				font.blit(surface, surface->w - 1, y + font.height(font_sprites[3]) - font.height(font_sprites[1]), entries[i].time, font_sprites[1], Font::right, alpha);
+				font.blit(surface, surface->w / 2, y, entries[i].name, font_sprites[3], Font::center, alpha / 2);
+			}
+			y += font.height(font_sprites[3]);
+		}
+	}
+}
+
+uint ScoredLevelMenu::entry_count( void ) const
+{
+	return entries.size();
 }

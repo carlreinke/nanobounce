@@ -294,7 +294,7 @@ bool Editor::save( const string &level_data_path ) const
 	
 	// remove highscore replay because it is probably no longer valid
 	if (success)
-		unlink((level_data_path + ".score").c_str());
+		unlink(level.get_score_path().c_str());
 	
 	return success;
 }

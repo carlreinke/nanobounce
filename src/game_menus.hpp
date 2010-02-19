@@ -4,19 +4,15 @@
 #include "level_set.hpp"
 #include "menu.hpp"
 
-class GameMenu : public Loop
+class GameMenu : public SimpleMenu
 {
 public:
 	GameMenu( void );
 	
-	void handle_event( SDL_Event & );
 	void update( void );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 private:
-	std::vector<std::string> entries;
-	uint selection;
-	
 	Ball ball;
 };
 
@@ -28,12 +24,29 @@ public:
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 	std::vector<LevelSet> entries;
+	uint entry_count( void ) const;
 };
 
 class LevelMenu : public SmoothMenu
 {
 public:
 	LevelMenu( const LevelSet &, bool allow_new = false );
+};
+
+class ScoredLevelMenu : public SmoothMenu
+{
+public:
+	ScoredLevelMenu( const LevelSet &, bool show_one_incomplete = true, bool auto_select_single_entry = true );
+	
+	void loop( SDL_Surface * );
+	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	
+	struct Entry { std::string name, path, time; };
+	std::vector<Entry> entries;
+	uint entry_count( void ) const;
+	
+private:
+	bool auto_select_single_entry;
 };
 
 #endif // GAME_MENUS_HPP

@@ -16,8 +16,6 @@ public:
 	void save_meta( void );
 	void append_level( Level &level );
 	
-	void play( SDL_Surface * );
-	
 private:
 	bool valid;
 	std::string directory;
@@ -25,8 +23,10 @@ private:
 	std::string name, author;
 	std::vector<Level> levels;
 	
+	friend int main(int, char **);
 	friend class Editor;
 	friend class LevelMenu;
+	friend class ScoredLevelMenu;
 	friend class LevelSetCongratsLoop;
 	friend class LevelSetMenu;
 };

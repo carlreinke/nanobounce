@@ -69,6 +69,9 @@ private:
 	std::list<Particle> particles;
 	
 	void menu( void );
+	
+public:
+	static bool play( SDL_Surface *surface, std::pair< std::vector<Level>::iterator, std::vector<Level>::iterator > levels );
 };
 
 #endif // GAME_HPP

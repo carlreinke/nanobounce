@@ -27,6 +27,8 @@ public:
 	std::string get_path( void ) const { return path; }
 	std::string get_name( void ) const { return name; }
 	
+	std::string get_score_path( void ) const { return (path.size() ? path + ".score" : ""); }
+	
 private:
 	bool valid;
 	mutable std::string path;

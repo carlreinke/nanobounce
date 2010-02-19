@@ -8,14 +8,17 @@
 using namespace std;
 
 SimpleMenu::SimpleMenu( SDL_Surface *background )
-: selection(0), no_selection(false)
+: selection(0), no_selection(false),
+  background(NULL)
 {
-	this->background = SDL_DuplicateRGBSurface(background);
+	if (background != NULL)
+		this->background = SDL_DuplicateRGBSurface(background);
 }
 
 SimpleMenu::~SimpleMenu( void )
 {
-	SDL_FreeSurface(background);
+	if (background != NULL)
+		SDL_FreeSurface(background);
 }
 
 void SimpleMenu::handle_event( SDL_Event &e )
@@ -37,7 +40,7 @@ void SimpleMenu::handle_event( SDL_Event &e )
 		case Controller::left_key:
 		case Controller::up_key:
 			if (selection == 0)
-				selection = entries.size();
+				selection = entry_count();
 			--selection;
 			break;
 			
@@ -45,7 +48,7 @@ void SimpleMenu::handle_event( SDL_Event &e )
 		case Controller::right_key:
 		case Controller::down_key:
 			++selection;
-			if (selection == entries.size())
+			if (selection == entry_count())
 				selection = 0;
 			break;
 			
@@ -75,13 +78,18 @@ void SimpleMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	const uint x = surface->w / 2;
 	const uint delta_y = font.height(font_sprites[3]) + font.height(font_sprites[3]) / 4;
-	uint y = (surface->h - delta_y * entries.size()) / 2;
+	uint y = (surface->h - delta_y * entry_count()) / 2;
 	
-	for (uint i = 0; i < entries.size(); ++i)
+	for (uint i = 0; i < entry_count(); ++i)
 	{
 		font.blit(surface, x, y, entries[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? alpha : alpha / 2);
 		y += delta_y;
 	}
+}
+
+uint SimpleMenu::entry_count( void ) const
+{
+	return entries.size();
 }
 
 SmoothMenu::SmoothMenu( void )
@@ -108,20 +116,20 @@ void SmoothMenu::handle_event( SDL_Event &e )
 		case Controller::left_key:
 		case Controller::left_shoulder_key:
 			if (selection == 0)
-				selection = entries.size();
+				selection = entry_count();
 			--selection;
 			break;
 			
 		case Controller::down_key:
 		case Controller::right_key:
 		case Controller::right_shoulder_key:
-			if (++selection >= entries.size())
+			if (++selection >= entry_count())
 				selection = 0;
 			break;
 			
 		case Controller::select_key:
 		case Controller::start_key:
-			no_selection = entries.empty();
+			no_selection = (entry_count() == 0);
 			loop_quit = true;
 			break;
 			
@@ -167,12 +175,12 @@ void SmoothMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	int y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[3]) - font.height(font_sprites[3]) / 2) / 2;
-	
-	if (entries.size() == 0)
+	if (entry_count() == 0)
 		font.blit(surface, surface->w / 2, surface->h / 2, "(EMPTY)", font_sprites[2], Font::center, alpha / 2);
 	
-	for (uint i = 0; i < entries.size(); ++i)
+	int y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[3]) - font.height(font_sprites[3]) / 2) / 2;
+	
+	for (uint i = 0; i < entry_count(); ++i)
 	{
 		if (i == selection)
 		{
@@ -191,3 +199,9 @@ void SmoothMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 		}
 	}
 }
+
+uint SmoothMenu::entry_count( void ) const
+{
+	return entries.size();
+}
+

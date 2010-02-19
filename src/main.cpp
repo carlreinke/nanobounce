@@ -5,6 +5,7 @@
 #include "editor.hpp"
 #include "file_system.hpp"
 #include "game.hpp"
+#include "game_loops.hpp"
 #include "game_menus.hpp"
 #include "highscore.hpp"
 #include "main.hpp"
@@ -131,8 +132,56 @@ int main( int argc, char *argv[] )
 	}
 	else
 	{
-		GameMenu menu;
-		menu.loop(surface);
+		while (!global_quit)
+		{
+			GameMenu menu;
+			menu.loop(surface);
+			
+			// at this point, ticks should be a decent seed
+			srand(SDL_GetTicks());
+			
+			if (menu.no_selection)
+				menu.selection = 2; // choose quit
+			
+			switch (menu.selection)
+			{
+			case 0:  // Play
+				{
+					LevelSetMenu set_menu;
+					set_menu.loop(surface);
+					
+					if (!set_menu.no_selection)
+					{
+						LevelSet &level_set = set_menu.entries[set_menu.selection];
+						level_set.load_levels();
+						
+						ScoredLevelMenu level_menu(level_set);
+						level_menu.loop(surface);
+						
+						if (!level_menu.no_selection)
+						{
+							if (Game::play(surface, make_pair(level_set.levels.begin() + level_menu.selection, level_set.levels.end())))
+							{
+								LevelSetCongratsLoop congrats(level_set);
+								congrats.loop(surface);
+							}
+						}
+					}
+				}
+				break;
+				
+			case 1:  // Edit
+				{
+					Editor editor;
+					editor.loop(surface);
+				}
+				break;
+				
+			case 2:  // Quit
+				global_quit = true;
+				break;
+			}
+		}
 	}
 	
 	controllers.clear();

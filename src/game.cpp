@@ -1,5 +1,6 @@
 #include "audio/audio.hpp"
 #include "game.hpp"
+#include "game_loops.hpp"
 #include "main.hpp"
 #include "menu.hpp"
 #include "misc.hpp"
@@ -741,4 +742,52 @@ void Game::menu( void )
 			break;
 		}
 	}
+}
+
+bool Game::play( SDL_Surface *surface, pair< vector<Level>::iterator, vector<Level>::iterator > levels )
+{
+	Game game;
+	
+	vector<Level>::iterator level = levels.first;
+	
+	string highscore_path;
+	Highscore highscore;
+	
+	while (game.state != Game::quit && level != levels.second && !global_quit)
+	{
+		if (game.state == Game::lost)
+		{
+			// retry level
+			game.reset();
+		}
+		else
+		{
+			game = Game(*level);
+			
+			highscore.load(level->get_score_path());
+			
+			LevelIntroLoop level_intro(*level, highscore);
+			level_intro.loop(surface);
+		}
+		
+		game.loop(surface);
+		
+		if (game.state == Game::won)
+		{
+			if (game.highscore.ms() < highscore.ms() || highscore.invalid())
+			{
+				LevelCongratsLoop congrats(*level, game.highscore);
+				congrats.loop(surface);
+				
+				// TODO: highscore screen, ask for name?
+				
+				game.highscore.save();
+			}
+		}
+		
+		if (game.state == Game::won || game.state == Game::cheat_won)
+			++level;
+	}
+	
+	return (level == levels.second);
 }
