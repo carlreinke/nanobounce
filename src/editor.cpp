@@ -211,12 +211,8 @@ void Editor::menu( void )
 			break;
 			
 		case 1:  // Save
-			if (!level.invalid())
-			{
-				level.validate();
-				save(level.path);
-			}
-			else
+			level.validate();
+			if (!save(level.path))
 			{
 		case 2:  // Save As
 				LevelSetMenu level_set_menu(true);
