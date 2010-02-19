@@ -371,15 +371,16 @@ void Editor::set_block_at_position( int x, int y, Block::Type type )
 	
 	vector<Block>::iterator block = block_at_position(x, y);
 	
-	if (block != level.blocks.end())
+	if (type == Block::none)
 	{
-		if (type == Block::none)
+		if (block != level.blocks.end())
 			level.blocks.erase(block);
-		else
-			*block = Block(x, y, type);
 	}
 	else
 	{
-		level.blocks.push_back(Block(x, y, type));
+		if (block != level.blocks.end())
+			*block = Block(x, y, type);
+		else
+			level.blocks.push_back(Block(x, y, type));
 	}
 }

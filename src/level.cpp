@@ -94,13 +94,9 @@ bool Level::save( ostream &data ) const
 	
 	BOOST_FOREACH (const Block &block, blocks)
 	{
-		try
-		{
-			data << (block.x / block.width) << " "
-			     << (block.y / block.height) << " "
-			     << block_names.left.at(block.type) << endl;
-		}
-		catch (out_of_range &e) { assert(false); }
+		data << (block.x / block.width) << " "
+		     << (block.y / block.height) << " "
+		     << block_names.left.at(block.type) << endl;
 	}
 	
 	return data.good();
