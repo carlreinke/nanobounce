@@ -107,11 +107,11 @@ void Font::blit( SDL_Surface *surface, int x, int y, const std::string &text, co
 	{
 		int x_temp = x;
 		
-		for (string::const_iterator c = text.begin(); c != text.end(); ++c)
+		BOOST_FOREACH (const unsigned char c, text)
 		{
-			uint g_x = char_positions[*c];
+			uint g_x = char_positions[c];
 			
-			for (uint x = 0; x < char_widths[*c]; ++x)
+			for (uint x = 0; x < char_widths[c]; ++x)
 			{
 				if ((*y_line)[g_x + x] > 0)
 					sprite.blit(surface, x_temp, y, alpha);
@@ -129,12 +129,12 @@ void Font::blit( SDL_Surface *surface, int x, int y, std::string text, const Spr
 	switch (style)
 	{
 	case majuscule:
-		for (string::iterator c = text.begin(); c != text.end(); ++c)
-			*c = toupper(*c);
+		BOOST_FOREACH (char &c, text)
+			c = toupper(static_cast<unsigned char>(c));
 		break;
 	case minuscule:
-		for (string::iterator c = text.begin(); c != text.end(); ++c)
-			*c = tolower(*c);
+		BOOST_FOREACH (char &c, text)
+			c = tolower(static_cast<unsigned char>(c));
 		break;
 	case normal:
 	default:
@@ -148,8 +148,8 @@ uint Font::width( const std::string &text, const Sprite &sprite ) const
 {
 	uint width = 0;
 	
-	for (uint i = 0; i < text.length(); ++i)
-		width += char_widths[text[i]] * sprite.width();
+	BOOST_FOREACH (const unsigned char c, text)
+		width += char_widths[c] * sprite.width();
 	
 	return width;
 }
