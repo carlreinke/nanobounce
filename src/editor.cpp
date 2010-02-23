@@ -217,36 +217,50 @@ void Editor::menu( void )
 		case 2:  // Save As
 				LevelSetMenu level_set_menu(true);
 				level_set_menu.loop(surface);
+				if (level_set_menu.no_selection)
+					break;  // cancel save
 				
-				if (!level_set_menu.no_selection)
+				LevelSet &level_set = level_set_menu.entries[level_set_menu.selection];
+				if (level_set.invalid())
 				{
-					LevelSet &level_set = level_set_menu.entries[level_set_menu.selection];
-					if (level_set.invalid())
-					{
-						level_set.name = "UNNAMED";
-						level_set.author = "UNKNOWN AUTHOR";
-					}
+					level_set.name = "UNNAMED";
+					level_set.author = "UNKNOWN AUTHOR";
 					
-					level_set.load_levels();
+					TextEntryMenu text_entry_menu("New Set:", level_set.name);
+					text_entry_menu.loop(surface);
+					if (text_entry_menu.no_selection)
+						break;  // cancel save
 					
-					LevelMenu level_menu(level_set, true);
-					level_menu.loop(surface);
-					
-					if (!level_menu.no_selection)
-					{
-						if (level_menu.selection < level_set.levels.size())
-						{
-							level.path = level_set.levels[level_menu.selection].path;
-						}
-						else  // save as new level
-						{
-							level_set.append_level(level);
-							level_set.save_meta();
-						}
-						level.validate();
-						save(level.path);
-					}
+					level_set.name = text_entry_menu.text;
 				}
+				else
+					level_set.load_levels();
+				
+				LevelMenu level_menu(level_set, true);
+				level_menu.loop(surface);
+				if (level_menu.no_selection)
+					break;  // cancel save
+				
+				if (level_menu.selection < level_set.levels.size())
+				{
+					level.path = level_set.levels[level_menu.selection].path;
+				}
+				else  // save as new level
+				{
+					level.name = "UNNAMED";
+					
+					TextEntryMenu text_entry_menu("New Level:", level.name);
+					text_entry_menu.loop(surface);
+					if (text_entry_menu.no_selection)
+						break;  // cancel save
+					
+					level.name = text_entry_menu.text;
+					
+					level_set.append_level(level);
+					level_set.save_meta();
+				}
+				level.validate();
+				save(level.path);
 			}
 			break;
 			

@@ -69,21 +69,23 @@ void LevelSet::save_meta( void )
 
 void LevelSet::append_level( Level &level )
 {
-	string::size_type basename_offset = level.path.find_last_of('/');
-	if (basename_offset == string::npos || basename_offset == level.path.size() - 1)
-		level.path = ".";  // force new path
-	else
+	if (!level.path.empty())
+	{
+		string::size_type basename_offset = level.path.find_last_of('/');
+		
+		assert(basename_offset != string::npos);
+		assert(basename_offset != level.path.size() - 1);
+		
 		level.path = directory + "/" + level.path.substr(basename_offset + 1);
+	}
 	
-	// if path already exists, give level an unused, numeric filename
-	if (path_exists(level.path))
+	// if path is empty or exists, give level an unused, numeric filename
+	if (level.path.empty() || path_exists(level.path))
 	{
 		uint i = 0;
 		do
 			level.path = directory + "/" + boost::lexical_cast<string>(++i);
 		while (path_exists(level.path));
-		
-		level.name += " " + boost::lexical_cast<string>(i);
 	}
 	
 	levels.push_back(level);

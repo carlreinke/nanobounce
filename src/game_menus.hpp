@@ -49,4 +49,18 @@ private:
 	bool auto_select_single_entry;
 };
 
+class TextEntryMenu : public SmoothMenu
+{
+public:
+	TextEntryMenu( const std::string &title, const std::string &text );
+	
+	void handle_event( SDL_Event & );
+	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	
+	std::string text;
+	
+private:
+	std::string title;
+};
+
 #endif // GAME_MENUS_HPP

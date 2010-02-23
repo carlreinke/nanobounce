@@ -219,3 +219,122 @@ uint ScoredLevelMenu::entry_count( void ) const
 {
 	return entries.size();
 }
+
+TextEntryMenu::TextEntryMenu( const string &title, const string &text )
+: text(text), title(title)
+{
+	typedef std::pair<char, char> Range;
+	std::pair<char, char> ranges[] =
+	{
+		make_pair('A', 'Z'),
+		make_pair('a', 'z'),
+		make_pair('0', '9'),
+		
+		make_pair(      0, '0' - 1),
+		make_pair('9' + 1, 'A' - 1),
+		make_pair('Z' + 1, 'a' - 1),
+		make_pair('z' + 1, 255),
+	};
+	BOOST_FOREACH (const Range &range, ranges)
+	{
+		for (int c = range.first; c <= range.second; ++c)
+		{
+			const string character = boost::lexical_cast<string>(static_cast<char>(c));
+			if (font.width(character, font_sprites[1]) > 0)
+				entries.push_back(character);
+		}
+	}
+	entries.push_back("END");
+}
+
+void TextEntryMenu::handle_event( SDL_Event &e )
+{
+	switch (e.type)
+	{
+	case SDL_KEYDOWN:
+		switch (e.key.keysym.sym)
+		{
+		case Controller::back_key:
+			if (text.size() == 0)
+				goto made_no_selection;
+			text.resize(text.size() - 1);
+			break;
+			
+		case Controller::select_key:
+			if (selection == entries.size() - 1)
+				goto made_selection;
+			text += entries[selection];
+			break;
+			
+		case Controller::quit_key:
+made_no_selection:
+			no_selection = true;
+		case Controller::start_key:
+made_selection:
+			loop_quit = true;
+			break;
+			
+		case Controller::left_shoulder_key:
+		case Controller::left_key:
+		case Controller::up_key:
+			if (selection == 0)
+				selection = entry_count();
+			--selection;
+			break;
+			
+		case Controller::right_shoulder_key:
+		case Controller::right_key:
+		case Controller::down_key:
+			++selection;
+			if (selection == entry_count())
+				selection = 0;
+			break;
+			
+		default:
+			break;
+		}
+		break;
+		
+	default:
+		break;
+	}
+}
+
+void TextEntryMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
+{
+	SDL_FillRect(surface, NULL, 0);
+	
+	int x = surface->w / 2,
+	    y = (surface->h - font.height(font_sprites[4])) / 2;
+	
+	font.blit(surface, x, y, text, font_sprites[4], Font::center, alpha);
+	
+	x += font.width(text, font_sprites[4]) / 2;
+	y += static_cast<int>(this->y);
+	
+	for (uint i = 0; i < entries.size(); ++i)
+	{
+		if (i == selection)
+		{
+			Sprite &font_sprite = (entries[i].length() > 1) ? font_sprites[1] : font_sprites[4];
+			font.blit(surface, x, y, entries[i], font_sprite, Font::left, alpha);
+			y += font.height(font_sprite);
+		}
+		else
+		{
+			if (y > surface->h)
+				break;
+			else if (y > -static_cast<int>(font.height(font_sprites[3])))
+			{
+				Sprite &font_sprite = (entries[i].length() > 1) ? font_sprites[1] : font_sprites[3];
+				font.blit(surface, x, y, entries[i], font_sprite, Font::left, alpha / 2);
+			}
+			y += font.height(font_sprites[3]);
+		}
+	}
+	
+	x = surface->w / 2;
+	y = (surface->h - font.height(font_sprites[3])) / 4;
+	
+	font.blit(surface, x, y, title, font_sprites[4], Font::majuscule, Font::center, alpha);
+}
