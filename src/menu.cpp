@@ -175,17 +175,18 @@ void SmoothMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	if (entry_count() == 0)
-		font.blit(surface, surface->w / 2, surface->h / 2, "(EMPTY)", font_sprites[3], Font::center, alpha / 2);
+	int x = surface->w / 2,
+	    y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[4]) - font.height(font_sprites[4]) / 3) / 2;
 	
-	int y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[3]) - font.height(font_sprites[3]) / 2) / 2;
+	if (entry_count() == 0)
+		font.blit(surface, x, surface->h / 2, "(EMPTY)", font_sprites[3], Font::center, alpha / 2);
 	
 	for (uint i = 0; i < entry_count(); ++i)
 	{
 		if (i == selection)
 		{
 			y += font.height(font_sprites[4]) / 3;
-			font.blit(surface, surface->w / 2, y, entries[i], font_sprites[4], Font::center, alpha);
+			font.blit(surface, x, y, entries[i], font_sprites[4], Font::center, alpha);
 			y += font.height(font_sprites[4]);
 			y += font.height(font_sprites[4]) / 3;
 		}
@@ -194,7 +195,7 @@ void SmoothMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 			if (y > surface->h)
 				break;
 			else if (y > -static_cast<int>(font.height(font_sprites[3])))
-				font.blit(surface, surface->w / 2, y, entries[i], font_sprites[3], Font::center, alpha / 2);
+				font.blit(surface, x, y, entries[i], font_sprites[3], Font::center, alpha / 2);
 			y += font.height(font_sprites[3]);
 		}
 	}

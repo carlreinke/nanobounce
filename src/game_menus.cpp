@@ -111,16 +111,17 @@ void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	int y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[3]) - font.height(font_sprites[3]) / 2) / 2;
+	int x = surface->w / 2,
+	    y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[4]) - font.height(font_sprites[4]) / 3) / 2;
 	
 	for (uint i = 0; i < entries.size(); ++i)
 	{
 		if (i == selection)
 		{
 			y += font.height(font_sprites[4]) / 3;
-			font.blit(surface, surface->w / 2, y, entries[i].name, font_sprites[4], Font::center, alpha);
+			font.blit(surface, x, y, entries[i].name, font_sprites[4], Font::center, alpha);
 			y += font.height(font_sprites[4]);
-			font.blit(surface, surface->w / 2, y, entries[i].author, font_sprites[1], Font::center, alpha);
+			font.blit(surface, x, y, entries[i].author, font_sprites[1], Font::center, alpha);
 			y += font.height(font_sprites[1]);
 			y += font.height(font_sprites[4]) / 3;
 		}
@@ -129,7 +130,7 @@ void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 			if (y > surface->h)
 				break;
 			else if (y > -static_cast<int>(font.height(font_sprites[3])))
-				font.blit(surface, surface->w / 2, y, entries[i].name, font_sprites[3], Font::center, alpha / 2);
+				font.blit(surface, x, y, entries[i].name, font_sprites[3], Font::center, alpha / 2);
 			y += font.height(font_sprites[3]);
 		}
 	}
@@ -184,19 +185,20 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	if (entry_count() == 0)
-		font.blit(surface, surface->w / 2, surface->h / 2, "(EMPTY)", font_sprites[3], Font::center, alpha / 2);
+	int x = surface->w / 2, x_right = surface->w - 1,
+	    y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[4]) - font.height(font_sprites[4]) / 3) / 2;
 	
-	int y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[3]) - font.height(font_sprites[3]) / 2) / 2;
+	if (entry_count() == 0)
+		font.blit(surface, x, surface->h / 2, "(EMPTY)", font_sprites[3], Font::center, alpha / 2);
 	
 	for (uint i = 0; i < entries.size(); ++i)
 	{
 		if (i == selection)
 		{
 			y += font.height(font_sprites[4]) / 3;
-			font.blit(surface, surface->w / 2, y, entries[i].name, font_sprites[4], Font::center, alpha);
+			font.blit(surface, x, y, entries[i].name, font_sprites[4], Font::center, alpha);
 			y += font.height(font_sprites[4]);
-			font.blit(surface, surface->w - 1, y, entries[i].time, font_sprites[1], Font::right, alpha);
+			font.blit(surface, x_right, y, entries[i].time, font_sprites[1], Font::right, alpha);
 			y += font.height(font_sprites[4]) / 3;
 		}
 		else
@@ -205,8 +207,8 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 				break;
 			else if (y > -static_cast<int>(font.height(font_sprites[3])))
 			{
-				font.blit(surface, surface->w - 1, y + font.height(font_sprites[3]) - font.height(font_sprites[1]), entries[i].time, font_sprites[1], Font::right, alpha);
-				font.blit(surface, surface->w / 2, y, entries[i].name, font_sprites[3], Font::center, alpha / 2);
+				font.blit(surface, x_right, y + font.height(font_sprites[3]) - font.height(font_sprites[1]), entries[i].time, font_sprites[1], Font::right, alpha);
+				font.blit(surface, x, y, entries[i].name, font_sprites[3], Font::center, alpha / 2);
 			}
 			y += font.height(font_sprites[3]);
 		}
