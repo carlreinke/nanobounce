@@ -146,11 +146,12 @@ int main( int argc, char *argv[] )
 			switch (menu.selection)
 			{
 			case 0:  // Play
+				for (; ; )  // choose a level set
 				{
 					LevelSetMenu set_menu;
 					set_menu.loop(surface);
 					if (set_menu.no_selection)
-						break;  // cancel play
+						break;  // back to title menu
 					
 					LevelSet &level_set = set_menu.entries[set_menu.selection];
 					level_set.load_levels();
@@ -158,13 +159,15 @@ int main( int argc, char *argv[] )
 					ScoredLevelMenu level_menu(level_set);
 					level_menu.loop(surface);
 					if (level_menu.no_selection)
-						break;  // cancel play
+						continue;  // back to level set menu
 					
 					if (Game::play(surface, make_pair(level_set.levels.begin() + level_menu.selection, level_set.levels.end())))
 					{
 						LevelSetCongratsLoop congrats(level_set);
 						congrats.loop(surface);
 					}
+					
+					break;  // back to title menu
 				}
 				break;
 				
@@ -182,7 +185,7 @@ int main( int argc, char *argv[] )
 					
 					more_menu.loop(surface);
 					if (more_menu.no_selection)
-						break;  // back to main menu
+						break;  // back to title menu
 					
 					switch (more_menu.selection)
 					{
@@ -198,7 +201,7 @@ int main( int argc, char *argv[] )
 							LevelSetMenu set_menu;
 							set_menu.loop(surface);
 							if (set_menu.no_selection)
-								break;  // back to main menu
+								break;  // back to title menu
 							
 							LevelSet &level_set = set_menu.entries[set_menu.selection];
 							level_set.load_levels();
@@ -208,7 +211,7 @@ int main( int argc, char *argv[] )
 								ScoredLevelMenu level_menu(level_set, false, false);
 								level_menu.loop(surface);
 								if (level_menu.no_selection)
-									break;  // back to main menu
+									break;  // back to level set menu
 								
 								Level &level = level_set.levels[level_menu.selection];
 								
