@@ -16,7 +16,7 @@ GameMenu::GameMenu( void )
 	const string menu_items[] =
 	{
 		"Play",
-		"Edit",
+		"More",
 		"Quit"
 	};
 	for (uint i = 0; i < COUNTOF(menu_items); ++i)

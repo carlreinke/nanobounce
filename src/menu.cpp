@@ -73,8 +73,11 @@ void SimpleMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	SDL_SetAlpha(background, SDL_SRCALPHA, SDL_ALPHA_OPAQUE - alpha / 2);
-	SDL_BlitSurface(background, NULL, surface, NULL);
+	if (background != NULL)
+	{
+		SDL_SetAlpha(background, SDL_SRCALPHA, SDL_ALPHA_OPAQUE - alpha / 2);
+		SDL_BlitSurface(background, NULL, surface, NULL);
+	}
 	
 	const uint x = surface->w / 2;
 	const uint delta_y = font.height(font_sprites[3]) + font.height(font_sprites[3]) / 4;

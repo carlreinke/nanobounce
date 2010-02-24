@@ -149,31 +149,81 @@ int main( int argc, char *argv[] )
 				{
 					LevelSetMenu set_menu;
 					set_menu.loop(surface);
+					if (set_menu.no_selection)
+						break;  // cancel play
 					
-					if (!set_menu.no_selection)
+					LevelSet &level_set = set_menu.entries[set_menu.selection];
+					level_set.load_levels();
+					
+					ScoredLevelMenu level_menu(level_set);
+					level_menu.loop(surface);
+					if (level_menu.no_selection)
+						break;  // cancel play
+					
+					if (Game::play(surface, make_pair(level_set.levels.begin() + level_menu.selection, level_set.levels.end())))
 					{
-						LevelSet &level_set = set_menu.entries[set_menu.selection];
-						level_set.load_levels();
-						
-						ScoredLevelMenu level_menu(level_set);
-						level_menu.loop(surface);
-						
-						if (!level_menu.no_selection)
-						{
-							if (Game::play(surface, make_pair(level_set.levels.begin() + level_menu.selection, level_set.levels.end())))
-							{
-								LevelSetCongratsLoop congrats(level_set);
-								congrats.loop(surface);
-							}
-						}
+						LevelSetCongratsLoop congrats(level_set);
+						congrats.loop(surface);
 					}
 				}
 				break;
 				
-			case 1:  // Edit
+			case 1:  // More
 				{
-					Editor editor;
-					editor.loop(surface);
+					SimpleMenu more_menu;
+					const string menu_items[] =
+					{
+						"Edit Levels",
+						"View Replays",
+						"Back"
+					};
+					for (uint i = 0; i < COUNTOF(menu_items); ++i)
+						more_menu.entries.push_back(menu_items[i]);
+					
+					more_menu.loop(surface);
+					if (more_menu.no_selection)
+						break;  // back to main menu
+					
+					switch (more_menu.selection)
+					{
+					case 0:
+						{
+							Editor editor;
+							editor.loop(surface);
+						}
+						break;
+					case 1:
+						for (; ; )  // choose a level set
+						{
+							LevelSetMenu set_menu;
+							set_menu.loop(surface);
+							if (set_menu.no_selection)
+								break;  // back to main menu
+							
+							LevelSet &level_set = set_menu.entries[set_menu.selection];
+							level_set.load_levels();
+							
+							for (; ; )  // choose a level
+							{
+								ScoredLevelMenu level_menu(level_set, false, false);
+								level_menu.loop(surface);
+								if (level_menu.no_selection)
+									break;  // back to main menu
+								
+								Level &level = level_set.levels[level_menu.selection];
+								
+								disabled_controllers.push_back(boost::shared_ptr<Controller>(new Replay(level.get_score_path())));
+								disabled_controllers.swap(controllers);
+								
+								Game game(level);
+								game.loop(surface);
+								
+								disabled_controllers.swap(controllers);
+								disabled_controllers.clear();
+							}
+						}
+						break;
+					}
 				}
 				break;
 				
