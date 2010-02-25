@@ -26,10 +26,12 @@ public:
 	enum State
 	{
 		none,
-		quit,
 		won,
 		cheat_won,
-		lost
+		lost,
+		
+		restart,
+		quit
 	};
 	State state;
 	

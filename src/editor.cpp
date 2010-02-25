@@ -206,7 +206,7 @@ void Editor::menu( void )
 					game.reset();
 					game.loop(surface);
 				}
-				while (game.state == Game::lost);
+				while (game.state == Game::lost || game.state == Game::restart);
 			}
 			break;
 			

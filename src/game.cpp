@@ -732,12 +732,12 @@ void Game::menu( void )
 	{
 		switch (menu.selection)
 		{
-		case 0:
+		case 0:  // Continue
 			break;
-		case 1:
-			reset();
+		case 1:  // Restart
+			state = restart;
 			break;
-		case 2:
+		case 2:  // Quit
 			state = quit;
 			break;
 		}
@@ -755,7 +755,7 @@ bool Game::play( SDL_Surface *surface, pair< vector<Level>::iterator, vector<Lev
 	
 	while (game.state != Game::quit && level != levels.second && !global_quit)
 	{
-		if (game.state == Game::lost)
+		if (game.state == Game::lost || game.state == Game::restart)
 		{
 			// retry level
 			game.reset();
