@@ -245,6 +245,9 @@ TextEntryMenu::TextEntryMenu( const string &title, const string &text )
 		}
 	}
 	entries.push_back("END");
+	
+	entry_height = font.height(font_sprites[1]);
+	y_accel = static_cast<int>(entry_height) / 2;
 }
 
 void TextEntryMenu::handle_event( SDL_Event &e )
@@ -316,25 +319,24 @@ void TextEntryMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	{
 		if (i == selection)
 		{
-			Sprite &font_sprite = (entries[i].length() > 1) ? font_sprites[1] : font_sprites[4];
-			font.blit(surface, x, y, entries[i], font_sprite, Font::left, alpha);
-			y += font.height(font_sprite);
+			if (entries[i].length() > 1) // "end"
+				font.blit(surface, x, y + font.height(font_sprites[4]) / 2, entries[i], font_sprites[1], Font::left, alpha);
+			else
+				font.blit(surface, x, y, entries[i], font_sprites[4], Font::left, alpha);
+			y += font.height(font_sprites[4]);
 		}
 		else
 		{
 			if (y > surface->h)
 				break;
 			else if (y > -static_cast<int>(font.height(font_sprites[3])))
-			{
-				Sprite &font_sprite = (entries[i].length() > 1) ? font_sprites[1] : font_sprites[3];
-				font.blit(surface, x, y, entries[i], font_sprite, Font::left, alpha / 2);
-			}
-			y += font.height(font_sprites[3]);
+				font.blit(surface, x, y, entries[i], font_sprites[1], Font::left, alpha / 2);
+			y += entry_height;
 		}
 	}
 	
 	x = surface->w / 2;
 	y = (surface->h - font.height(font_sprites[3])) / 4;
 	
-	font.blit(surface, x, y, title, font_sprites[4], Font::majuscule, Font::center, alpha);
+	font.blit(surface, x, y, title, font_sprites[3], Font::majuscule, Font::center, alpha);
 }

@@ -97,7 +97,8 @@ uint SimpleMenu::entry_count( void ) const
 
 SmoothMenu::SmoothMenu( void )
 : selection(0), no_selection(false),
-  y(0), y_vel(0), y_accel(Fixed(8) / static_cast<int>(ms_to_updates(250)))
+  y(0), y_vel(0), y_accel(Fixed(8) / static_cast<int>(ms_to_updates(250))),
+  entry_height(font.height(font_sprites[3]))
 {
 	// nothing to do
 }
@@ -150,10 +151,10 @@ void SmoothMenu::update( void )
 		controller->update();
 	
 	// smooth menu movement
-	const int target_y = -font.height(font_sprites[3]) * selection;
+	const int target_y = -entry_height * selection;
 	const Fixed y_off = target_y - y;
 	
-	if (fabsf(y_off) < 1)
+	if (fabsf(y_off) < y_accel)
 	{
 		y == target_y;
 	}

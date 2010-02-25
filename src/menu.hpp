@@ -41,6 +41,8 @@ public:
 	
 protected:
 	Fixed y, y_vel, y_accel;
+	
+	uint entry_height;
 };
 
 #endif // MENU_HPP

@@ -2,6 +2,3 @@ features
  * add demo mode
  * add ability to change level dimensions within editor
  * add highscore name entry screen
- * add level name editing screen
-    - add level set name editing
- * add user-visible replay
