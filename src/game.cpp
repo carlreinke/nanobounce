@@ -9,13 +9,15 @@ using namespace std;
 
 Game::Samples Game::samples;
 
-Game::Game( void )
-: state(none)
+Game::Game( Controller::Set controllers )
+: state(none),
+  play_controllers(controllers)
 {
 	// good to go
 }
 
-Game::Game( const Level &level )
+Game::Game( const Level &level, Controller::Set controllers )
+: play_controllers(controllers)
 {
 	this->level = level;
 	reset();
@@ -57,7 +59,7 @@ void Game::update( void )
 		for (uint i = 0; i < ups_multiplier; ++i)
 		{
 			// update replay controllers
-			BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+			BOOST_FOREACH (boost::shared_ptr<Controller> &controller, play_controllers)
 				controller->tick_update();
 			
 			tick();
@@ -132,7 +134,7 @@ void Game::tick( void )
 {
 	int x_direction = 0;
 	
-	BOOST_FOREACH (boost::shared_ptr<Controller> &c, controllers)
+	BOOST_FOREACH (boost::shared_ptr<Controller> &c, play_controllers)
 	{
 		const bool left = c->is_down[Controller::left] || c->is_down[Controller::left_shoulder],
 		           right = c->is_down[Controller::right] || c->is_down[Controller::right_shoulder];

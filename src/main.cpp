@@ -215,14 +215,14 @@ int main( int argc, char *argv[] )
 								
 								Level &level = level_set.levels[level_menu.selection];
 								
-								disabled_controllers.push_back(boost::shared_ptr<Controller>(new Replay(level.get_score_path())));
-								disabled_controllers.swap(controllers);
-								
-								Game game(level);
-								game.loop(surface);
-								
-								disabled_controllers.swap(controllers);
-								disabled_controllers.clear();
+								bool restart = true;
+								while (restart)
+								{
+									Game game(level, Controller::Set(1, boost::shared_ptr<Controller>(new Replay(level.get_score_path()))));
+									game.loop(surface);
+									
+									restart = (game.state == Game::restart);
+								}
 							}
 						}
 						break;

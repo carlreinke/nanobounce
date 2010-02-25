@@ -2,6 +2,7 @@
 #define GAME_HPP
 
 #include "audio/sample.hpp"
+#include "controller/controller.hpp"
 #include "highscore.hpp"
 #include "level.hpp"
 #include "loop.hpp"
@@ -11,8 +12,8 @@
 class Game : public Loop
 {
 public:
-	Game( void );
-	Game( const Level & );
+	Game( Controller::Set = controllers );
+	Game( const Level &, Controller::Set = controllers );
 	
 	void handle_event( SDL_Event & );
 	void update( void );
@@ -71,6 +72,8 @@ private:
 	std::list<Particle> particles;
 	
 	void menu( void );
+	
+	Controller::Set play_controllers;
 	
 public:
 	static bool play( SDL_Surface *surface, std::pair< std::vector<Level>::iterator, std::vector<Level>::iterator > levels );

@@ -30,6 +30,8 @@ public:
 	
 	virtual bool is_keyboard( void ) { return false; }
 	
+	typedef std::vector< boost::shared_ptr<Controller> > Set;
+	
 	enum Functions
 	{
 		up = 0,
@@ -91,6 +93,6 @@ private:
 	boost::array<Uint32, functions_count> repeat_tick;
 };
 
-extern std::vector< boost::shared_ptr<Controller> > controllers, disabled_controllers;
+extern Controller::Set controllers, disabled_controllers;
 
 #endif // CONTROLLER_CONTROLLER_HPP

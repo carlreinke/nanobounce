@@ -42,7 +42,7 @@ const boost::array<SDLKey, Controller::functions_count> Controller::push_as_key 
 
 Uint32 Controller::repeat_delay = SDL_DEFAULT_REPEAT_DELAY, Controller::repeat_interval = SDL_DEFAULT_REPEAT_INTERVAL;
 
-vector< boost::shared_ptr<Controller> > controllers, disabled_controllers;
+Controller::Set controllers, disabled_controllers;
 
 bool Controller::drop_input_enabled = false;
 
