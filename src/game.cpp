@@ -128,6 +128,8 @@ void Game::reset( void )
 		ball_y /= balls.size();
 		y_offset = -min(max(-y_offset, ball_y - screen_height), ball_y);
 	}
+	
+	particles.clear();
 }
 
 void Game::tick( void )
