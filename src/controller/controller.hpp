@@ -17,6 +17,7 @@
 #ifndef CONTROLLER_CONTROLLER_HPP
 #define CONTROLLER_CONTROLLER_HPP
 
+#include "misc.hpp"
 #include "json/json.h"
 #include "SDL.h"
 

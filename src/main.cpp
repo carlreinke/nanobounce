@@ -105,7 +105,9 @@ int main( int argc, char *argv[] )
 	font_sprites[3] = Sprite(font_directory + "font_gray_3.ppm");
 	font_sprites[4] = Sprite(font_directory + "font_gray_4.ppm");
 	
+#ifndef TARGET_GP2X
 	controllers.push_back(boost::shared_ptr<Controller>(new Keyboard()));
+#endif
 	controllers.push_back(boost::shared_ptr<Controller>(new Joystick(0)));
 	
 	if (editor)
