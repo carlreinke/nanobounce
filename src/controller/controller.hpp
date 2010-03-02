@@ -17,6 +17,7 @@
 #ifndef CONTROLLER_CONTROLLER_HPP
 #define CONTROLLER_CONTROLLER_HPP
 
+#include "json/json.h"
 #include "SDL.h"
 
 class Controller
@@ -48,8 +49,8 @@ public:
 		start,
 		quit,
 		
-		vol_up,
 		vol_down,
+		vol_up,
 		
 		functions_count
 	};
@@ -67,10 +68,10 @@ public:
 		back_key           = SDLK_BACKSPACE,
 		
 		start_key          = SDLK_RETURN,
-		quit_key           = SDLK_q,
+		quit_key           = SDLK_ESCAPE,
 		
-		vol_up_key         = SDLK_PLUS,
-		vol_down_key       = SDLK_MINUS
+		vol_down_key       = SDLK_MINUS,
+		vol_up_key         = SDLK_PLUS
 	};
 	
 	std::bitset<functions_count> is_down, was_down, is_triggered;
@@ -91,6 +92,44 @@ private:
 	static const boost::array<SDLKey, functions_count> push_as_key;
 	
 	boost::array<Uint32, functions_count> repeat_tick;
+};
+
+class ConfigurableController : public Controller
+{
+protected:
+	void update_down( void );
+	
+	class Assignment
+	{
+	public:
+		virtual int analog( const Controller & ) const;
+		virtual bool digital( const Controller & ) const;
+		
+		virtual Json::Value serialize( void ) const = 0;
+		virtual bool unserialize( const Json::Value & ) = 0;
+		
+		struct Cmp
+		{
+			bool operator()( const Assignment &lhs, const Assignment &rhs )
+			{
+				return (lhs.serialize() < rhs.serialize());
+			}
+			bool operator()( const boost::shared_ptr<Assignment> lhs, const boost::shared_ptr<Assignment> rhs )
+			{
+				return operator()(*lhs, *rhs);
+			}
+		};
+		
+		typedef std::set<boost::shared_ptr<Assignment>, Cmp> Set;
+	};
+	
+	typedef std::vector<Assignment::Set> Assignments;
+	boost::array<Assignments, functions_count> assignments;
+	
+	virtual const Json::Value &assignment_root( const Json::Value & ) const = 0;
+	virtual boost::shared_ptr<Assignment> parse_assignment( const Json::Value & ) const = 0;
+	
+	void load_assignments( const std::string & = "controller.conf" );
 };
 
 extern Controller::Set controllers, disabled_controllers;

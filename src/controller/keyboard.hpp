@@ -19,7 +19,7 @@
 
 #include "controller/controller.hpp"
 
-class Keyboard : public Controller
+class Keyboard : public ConfigurableController
 {
 public:
 	Keyboard( void );
@@ -27,9 +27,21 @@ public:
 	bool is_keyboard( void ) { return true; }
 	
 private:
-	void update_down( void );
-	
 	Uint8 *key_state;
+	
+	const Json::Value &assignment_root( const Json::Value & ) const;
+	boost::shared_ptr<Assignment> parse_assignment( const Json::Value & ) const;
+	
+	class Key : public Assignment
+	{
+	public:
+		bool digital( const Controller & ) const;
+		
+		Json::Value serialize( void ) const;
+		bool unserialize( const Json::Value & );
+		
+		uint num;
+	};
 };
 
 #endif // CONTROLLER_KEYBOARD_HPP

@@ -36,8 +36,8 @@ const boost::array<SDLKey, Controller::functions_count> Controller::push_as_key 
 	static_cast<SDLKey>(start_key),
 	static_cast<SDLKey>(quit_key),
 	
-	static_cast<SDLKey>(vol_up_key),
 	static_cast<SDLKey>(vol_down_key),
+	static_cast<SDLKey>(vol_up_key),
 }};
 
 Uint32 Controller::repeat_delay = SDL_DEFAULT_REPEAT_DELAY, Controller::repeat_interval = SDL_DEFAULT_REPEAT_INTERVAL;
@@ -132,4 +132,80 @@ void Controller::push_function_event( Functions function ) const
 	event.key.keysym.unicode = 0;
 	
 	SDL_PushEvent(&event);
+}
+
+void ConfigurableController::update_down( void )
+{
+	for (uint i = 0; i < assignments.size(); ++i)
+	{
+		is_down[i] = false;
+		
+		Assignments &function = assignments[i];
+		
+		for (uint j = 0; j < function.size(); ++j)
+		{
+			Assignment::Set &function_assignments = function[j];
+			
+			if (function_assignments.size() > 0)
+			{
+				bool temp = true;
+				
+				BOOST_FOREACH (const boost::shared_ptr<Assignment> &function_assignment, function_assignments)
+					temp &= function_assignment->digital(*this);
+				
+				if (temp)
+					is_down[i] = true;
+			}
+		}
+	}
+}
+
+
+int ConfigurableController::Assignment::analog( const Controller &controller ) const
+{
+	return (digital(controller) ? numeric_limits<Sint16>::max() : 0);
+}
+
+bool ConfigurableController::Assignment::digital( const Controller &controller ) const
+{
+	return (analog(controller) > numeric_limits<Sint16>::max() / 2);
+}
+
+
+void ConfigurableController::load_assignments( const string &conf_path )
+{
+	Json::Value root;
+	Json::Reader reader;
+	ifstream file(conf_path.c_str());
+	bool success = reader.parse(file, root);
+	
+	if (!success)
+	{
+		cerr << "failed to parse '" << conf_path << "': " << reader.getFormatedErrorMessages();
+	}
+	else
+	{
+		const Json::Value &controller_root = assignment_root(root);
+		
+		for (uint i = 0; i < assignments.size(); ++i)
+		{
+			Assignments &function = assignments[i];
+			const Json::Value &function_config = controller_root[i];
+			
+			function.resize(function_config.size());
+			
+			for (uint i = 0; i < function_config.size(); ++i)
+			{
+				Assignment::Set &function_assignments = function[i];
+				const Json::Value &function_assignments_config = function_config[i];
+				
+				for (uint i = 0; i < function_assignments_config.size(); ++i)
+				{
+					boost::shared_ptr<Assignment> temp = parse_assignment(function_assignments_config[i]);
+					if (temp.get() != NULL)
+						function_assignments.insert(temp);
+				}
+			}
+		}
+	}
 }

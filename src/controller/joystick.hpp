@@ -19,7 +19,7 @@
 
 #include "controller/controller.hpp"
 
-class Joystick : public Controller
+class Joystick : public ConfigurableController
 {
 public:
 	Joystick( int i = 0 );
@@ -28,9 +28,45 @@ public:
 	bool is_joystick( void ) { return true; }
 	
 private:
-	void update_down( void );
-	
 	SDL_Joystick *joystick;
+	
+	const Json::Value &assignment_root( const Json::Value & ) const;
+	boost::shared_ptr<Assignment> parse_assignment( const Json::Value & ) const;
+	
+	class Button : public Assignment
+	{
+	public:
+		bool digital( const Controller & ) const;
+		
+		Json::Value serialize( void ) const;
+		bool unserialize( const Json::Value & );
+		
+		uint num;
+	};
+	
+	class Axis : public Assignment
+	{
+	public:
+		int analog( const Controller & ) const;
+		
+		Json::Value serialize( void ) const;
+		bool unserialize( const Json::Value & );
+		
+		uint num;
+		bool positive_direction;
+	};
+	
+	class Hat : public Assignment
+	{
+	public:
+		bool digital( const Controller & ) const;
+		
+		Json::Value serialize( void ) const;
+		bool unserialize( const Json::Value & );
+		
+		uint num;
+		bool y_axis, positive_direction;
+	};
 };
 
 #endif // CONTROLLER_JOYSTICK_HPP

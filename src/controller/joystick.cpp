@@ -39,7 +39,10 @@ Joystick::Joystick( int j )
 	
 	cout << "joystick '" << SDL_JoystickName(j) << "' ("
 	     << SDL_JoystickNumAxes(joystick) << " axes, "
-	     << SDL_JoystickNumButtons(joystick) << " buttons)" << endl;
+	     << SDL_JoystickNumButtons(joystick) << " buttons, "
+	     << SDL_JoystickNumHats(joystick) << " hats)" << endl;
+	
+	load_assignments();
 }
 
 Joystick::~Joystick( void )
@@ -51,49 +54,110 @@ Joystick::~Joystick( void )
 	}
 }
 
-void Joystick::update_down( void )
+const Json::Value &Joystick::assignment_root( const Json::Value &root ) const
 {
-	if (joystick == NULL)
-		return;
+	const char *name = SDL_JoystickName(SDL_JoystickIndex(joystick));
 	
-#ifdef TARGET_GP2X
-	is_down[left]  = SDL_JoystickGetButton(joystick, GP2X_VK_UP_LEFT) ||
-	                 SDL_JoystickGetButton(joystick, GP2X_VK_LEFT) ||
-	                 SDL_JoystickGetButton(joystick, GP2X_VK_DOWN_LEFT);
-	is_down[right] = SDL_JoystickGetButton(joystick, GP2X_VK_UP_RIGHT) ||
-	                 SDL_JoystickGetButton(joystick, GP2X_VK_RIGHT) ||
-	                 SDL_JoystickGetButton(joystick, GP2X_VK_DOWN_RIGHT);
+	return root["joystick"][root["joystick"].isMember(name) ? name : "defaults"];
+}
+
+boost::shared_ptr<Joystick::Assignment> Joystick::parse_assignment( const Json::Value &serialized ) const
+{
+	boost::shared_ptr<Assignment> temp;
 	
-	is_down[left_shoulder]  = SDL_JoystickGetButton(joystick, GP2X_VK_FL);
-	is_down[right_shoulder] = SDL_JoystickGetButton(joystick, GP2X_VK_FR);
+	if (serialized.isMember("button"))
+	{
+		temp = boost::shared_ptr<Assignment>(new Button);
+		temp->unserialize(serialized);
+	}
+	else if (serialized.isMember("axis"))
+	{
+		temp = boost::shared_ptr<Assignment>(new Axis);
+		temp->unserialize(serialized);
+	}
+	else if (serialized.isMember("hat"))
+	{
+		temp = boost::shared_ptr<Assignment>(new Hat);
+		temp->unserialize(serialized);
+	}
 	
-	is_down[up]   = SDL_JoystickGetButton(joystick, GP2X_VK_UP_LEFT) ||
-	                SDL_JoystickGetButton(joystick, GP2X_VK_UP) ||
-	                SDL_JoystickGetButton(joystick, GP2X_VK_UP_RIGHT);
-	is_down[down] = SDL_JoystickGetButton(joystick, GP2X_VK_DOWN_LEFT) ||
-	                SDL_JoystickGetButton(joystick, GP2X_VK_DOWN) ||
-	                SDL_JoystickGetButton(joystick, GP2X_VK_DOWN_RIGHT);
+	return temp;
+}
+
+
+bool Joystick::Button::digital( const Controller &controller ) const
+{
+	return SDL_JoystickGetButton(dynamic_cast<const Joystick &>(controller).joystick, num);
+}
+
+Json::Value Joystick::Button::serialize( void ) const
+{
+	Json::Value root;
 	
-	is_down[select] = SDL_JoystickGetButton(joystick, GP2X_VK_FB);
-	is_down[back]   = SDL_JoystickGetButton(joystick, GP2X_VK_FX);
+	root["button"] = num;
 	
-	is_down[start] = SDL_JoystickGetButton(joystick, GP2X_VK_START);
-	is_down[quit]  = SDL_JoystickGetButton(joystick, GP2X_VK_START) &&
-	                 SDL_JoystickGetButton(joystick, GP2X_VK_SELECT);
+	return root;
+}
+
+bool Joystick::Button::unserialize( const Json::Value &serialized )
+{
+	num = serialized.get("button", 0).asInt();
 	
-	is_down[vol_up]   = SDL_JoystickGetButton(joystick, GP2X_VK_VOL_UP);
-	is_down[vol_down] = SDL_JoystickGetButton(joystick, GP2X_VK_VOL_DOWN);
-#else
-	is_down[left]  = SDL_JoystickGetAxis(joystick, 0) < numeric_limits<Sint16>::min() / 2;
-	is_down[right] = SDL_JoystickGetAxis(joystick, 0) > numeric_limits<Sint16>::max() / 2;
+	return true;
+}
+
+int Joystick::Axis::analog( const Controller &controller ) const
+{
+	Sint16 temp = SDL_JoystickGetAxis(dynamic_cast<const Joystick &>(controller).joystick, num);
+	if (!positive_direction)
+		temp = -temp - 1;
+	return max(Sint16(0), temp);
+}
+
+Json::Value Joystick::Axis::serialize( void ) const
+{
+	Json::Value root;
 	
-	is_down[up]   = SDL_JoystickGetAxis(joystick, 1) < numeric_limits<Sint16>::min() / 2;
-	is_down[down] = SDL_JoystickGetAxis(joystick, 1) > numeric_limits<Sint16>::max() / 2;
+	root["axis"] = num;
+	root["direction"] = positive_direction ? "positive" : "negative";
 	
-	is_down[select] = SDL_JoystickGetButton(joystick, 0);
-	is_down[back]   = SDL_JoystickGetButton(joystick, 1);
+	return root;
+}
+
+bool Joystick::Axis::unserialize( const Json::Value &serialized )
+{
+	num = serialized.get("axis", 0).asInt();
+	positive_direction = (serialized.get("direction", "").asString() == "positive");
 	
-	is_down[start] = SDL_JoystickGetButton(joystick, 2);
-	is_down[quit]  = SDL_JoystickGetButton(joystick, 3);
-#endif
+	return true;
+}
+
+bool Joystick::Hat::digital( const Controller &controller ) const
+{
+	Uint8 temp = SDL_JoystickGetHat(dynamic_cast<const Joystick &>(controller).joystick, num);
+	
+	temp &= y_axis ? (SDL_HAT_UP | SDL_HAT_DOWN) : (SDL_HAT_LEFT | SDL_HAT_RIGHT);
+	temp &= positive_direction ? (SDL_HAT_RIGHT | SDL_HAT_DOWN) : (SDL_HAT_LEFT | SDL_HAT_UP);
+	
+	return temp;
+}
+
+Json::Value Joystick::Hat::serialize( void ) const
+{
+	Json::Value root;
+	
+	root["hat"] = num;
+	root["hat_axis"] = y_axis ? "y" : "x";
+	root["direction"] = positive_direction ? "positive" : "negative";
+	
+	return root;
+}
+
+bool Joystick::Hat::unserialize( const Json::Value &serialized )
+{
+	num = serialized.get("hat", 0).asInt();
+	y_axis = (serialized.get("hat_axis", "").asString() == "y");
+	positive_direction = (serialized.get("direction", "").asString() == "positive");
+	
+	return true;
 }

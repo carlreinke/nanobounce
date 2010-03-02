@@ -21,25 +21,46 @@ using namespace std;
 Keyboard::Keyboard( void )
 {
 	key_state = SDL_GetKeyState(NULL);
+	
+	load_assignments();
 }
 
-void Keyboard::update_down( void )
+const Json::Value &Keyboard::assignment_root( const Json::Value &root ) const
 {
-	is_down[left]  = key_state[left_key];
-	is_down[right] = key_state[right_key];
+	return root["keyboard"];
+}
+
+boost::shared_ptr<Keyboard::Assignment> Keyboard::parse_assignment( const Json::Value &serialized ) const
+{
+	boost::shared_ptr<Assignment> temp;
 	
-	is_down[left_shoulder]  = key_state[left_shoulder_key];
-	is_down[right_shoulder] = key_state[right_shoulder_key];
+	if (serialized.isMember("key"))
+	{
+		temp = boost::shared_ptr<Assignment>(new Key);
+		temp->unserialize(serialized);
+	}
 	
-	is_down[up]   = key_state[up_key];
-	is_down[down] = key_state[down_key];
+	return temp;
+}
+
+
+bool Keyboard::Key::digital( const Controller &controller ) const
+{
+	return dynamic_cast<const Keyboard &>(controller).key_state[num];
+}
+
+Json::Value Keyboard::Key::serialize( void ) const
+{
+	Json::Value root;
 	
-	is_down[select] = key_state[select_key];
-	is_down[back]   = key_state[back_key];
+	root["key"] = num;
 	
-	is_down[start] = key_state[start_key];
-	is_down[quit]  = key_state[quit_key];
+	return root;
+}
+
+bool Keyboard::Key::unserialize( const Json::Value &serialized )
+{
+	num = serialized.get("key", 0).asInt();
 	
-	is_down[vol_up]   = key_state[vol_up_key] || key_state[SDLK_EQUALS];
-	is_down[vol_down] = key_state[vol_down_key] || key_state[SDLK_UNDERSCORE];
+	return true;
 }
