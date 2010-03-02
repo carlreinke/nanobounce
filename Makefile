@@ -57,6 +57,10 @@ $(TARGET) : $(OBJS)
 src/precompiled.hpp.gch : src/precompiled.hpp
 	-$(CXX) $(ALL_CXXFLAGS) -c -o $@ $<
 
+obj/json/%.o : src/json/%.cpp
+	@mkdir -p "$(dir $@)"
+	$(CXX) $(ALL_CXXFLAGS) -Wno-error -c -o $@ $< 
+
 obj/%.o : src/%.cpp src/precompiled.hpp.gch
 	@mkdir -p "$(dir $@)"
 	$(CXX) $(ALL_CXXFLAGS) -c -o $@ -include "precompiled.hpp" $< 
