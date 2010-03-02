@@ -168,7 +168,7 @@ int ConfigurableController::Assignment::analog( const Controller &controller ) c
 
 bool ConfigurableController::Assignment::digital( const Controller &controller ) const
 {
-	return (analog(controller) > numeric_limits<Sint16>::max() / 2);
+	return (analog(controller) > numeric_limits<Sint16>::max() / 3);
 }
 
 
