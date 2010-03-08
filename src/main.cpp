@@ -242,6 +242,12 @@ int main( int argc, char *argv[] )
 	controllers.clear();
 	disabled_controllers.clear();
 	
+	// freeing surfaces after SDL_Quit() is disasterous on some platforms, so we free them here
+	font_sprites.clear();
+	Ball::static_destruction_clean_up();
+	Block::static_destruction_clean_up();
+	Editor::static_destruction_clean_up();
+	
 	deinit_audio();
 	SDL_Quit();
 	

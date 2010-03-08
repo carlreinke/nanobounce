@@ -10,6 +10,8 @@ public:
 	Editor( void );
 	~Editor( void );
 	
+	static void static_destruction_clean_up( void ) { block_sprites.clear(); }
+	
 	void handle_event( SDL_Event & );
 	void update( void );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;

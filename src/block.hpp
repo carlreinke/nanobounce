@@ -47,6 +47,8 @@ public:
 	Block( int x, int y, Type type );
 	bool operator<( const Block &that ) const { return (y == that.y ? x < that.x : y < that.y); }
 	
+	static void static_destruction_clean_up( void ) { sprites.clear(); }
+	
 	void reset( void );
 	
 	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;

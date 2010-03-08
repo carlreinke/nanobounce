@@ -10,6 +10,8 @@ class Ball
 public:
 	Ball( Fixed x, Fixed y );
 	
+	static void static_destruction_clean_up( void ) { sprites.clear(); }
+	
 	void draw( SDL_Surface *, int x_offset = 0, int y_offset = 0, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	void tick( int x_push_direction );
 	
