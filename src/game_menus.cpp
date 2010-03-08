@@ -225,8 +225,8 @@ TextEntryMenu::TextEntryMenu( const string &title, const string &text )
 {
 	entries.push_back("END");
 	
-	typedef std::pair<char, char> Range;
-	std::pair<char, char> ranges[] =
+	typedef std::pair<int, int> Range;
+	std::pair<int, int> ranges[] =
 	{
 		make_pair('A', 'Z'),
 		make_pair('a', 'z'),

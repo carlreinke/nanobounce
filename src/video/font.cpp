@@ -23,7 +23,7 @@ Font font;
 vector<Sprite> font_sprites;
 
 Font::Font( void )
-: char_positions(255), char_widths(255)
+: char_positions(256), char_widths(256)
 {
 	// nothing to do
 }
