@@ -224,7 +224,7 @@ void Editor::menu( void )
 				if (level_set.invalid())
 				{
 					level_set.name = "UNNAMED";
-					level_set.author = "UNKNOWN AUTHOR";
+					level_set.author = "NOBODY";
 					
 					TextEntryMenu text_entry_menu("New Set:", level_set.name);
 					text_entry_menu.loop(surface);

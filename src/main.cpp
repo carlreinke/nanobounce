@@ -220,7 +220,7 @@ int main( int argc, char *argv[] )
 								bool restart = true;
 								while (restart)
 								{
-									Game game(level, Controller::Set(1, boost::shared_ptr<Controller>(new Replay(level.get_score_path()))));
+									Game game(level, Controller::Set(1, boost::shared_ptr<Controller>(new Replay(Highscore(level.get_score_path())))));
 									game.loop(surface);
 									
 									restart = (game.state == Game::restart);

@@ -156,7 +156,7 @@ void LevelIntroLoop::update( void )
 	BOOST_FOREACH (boost::shared_ptr<Controller> controller, controllers)
 		controller->update();
 	
-	if (++ticks == ms_to_updates(800))
+	if (++ticks == ms_to_updates(2000))
 		loop_quit = true;
 }
 
@@ -164,52 +164,33 @@ void LevelIntroLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	font.blit(surface, surface->w / 2, surface->h / 2 - font.height(font_sprites[4]), level_name, font_sprites[4], Font::center, alpha);
+	int x = surface->w / 2,
+	    y = surface->h / 2 - font.height(font_sprites[4]);
+	
+	font.blit(surface, x, y, level_name, font_sprites[4], Font::center, alpha);
 	
 	if (!score.invalid())
 	{
-		font.blit(surface, surface->w / 2, surface->h * 3 / 4 - font.height(font_sprites[3]), "Best Time", font_sprites[3], Font::majuscule, Font::center, alpha);
-		font.blit(surface, surface->w / 2, surface->h * 3 / 4, /*score.name + ": " +*/ score.time(), font_sprites[3], Font::center, alpha);
+		string temp = (!score.name.empty() ? score.name + ": " : "") + score.time();
+		
+		y = surface->h * 3 / 4 - font.height(font_sprites[3]);
+		font.blit(surface, x, y, "Best Time:", font_sprites[3], Font::majuscule, Font::center, alpha);
+		y += font.height(font_sprites[3]);
+		font.blit(surface, x, y, temp, font_sprites[3], Font::center, alpha);
 	}
 }
 
 LevelCongratsLoop::LevelCongratsLoop( const Level &level, const Highscore &score )
-: level_name(level.get_name()), score(score),
+: TextEntryMenu("New Best Time!", score.name),
+  level_name(level.get_name()), score(score),
   ticks(0)
 {
 	// nothing to do
 }
 
-void LevelCongratsLoop::handle_event( SDL_Event &e )
-{
-	switch (e.type)
-	{
-	case SDL_KEYDOWN:
-		switch (e.key.keysym.sym)
-		{
-		case Controller::back_key:
-		case Controller::quit_key:
-		case Controller::select_key:
-		case Controller::start_key:
-			loop_quit = true;
-			break;
-			
-		default:
-			break;
-		}
-		
-	default:
-		break;
-	}
-}
-
 void LevelCongratsLoop::update( void )
 {
-	BOOST_FOREACH (boost::shared_ptr<Controller> controller, controllers)
-		controller->update();
-	
-	if (++ticks == ms_to_updates(5000))
-		loop_quit = true;
+	TextEntryMenu::update();
 	
 	particles.push_back(WooshParticle((rand() % 2 == 1 ? 0 : screen_width), rand() % screen_height, SDL_Color_RGBA(64, 255, 64)));
 	
@@ -218,14 +199,17 @@ void LevelCongratsLoop::update( void )
 
 void LevelCongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
-	SDL_FillRect(surface, NULL, 0);
+	TextEntryMenu::draw(surface, alpha);
 	
 	BOOST_FOREACH (const Particle &particle, particles)
 		particle.draw(surface, 0, 0, alpha);
 	
-	font.blit(surface, surface->w / 2, surface->h / 4, "New Best Time!", font_sprites[3], Font::majuscule, Font::center, alpha);
-	font.blit(surface, surface->w / 2, surface->h / 2, level_name, font_sprites[4], Font::center, alpha);
-	font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), score.time(), font_sprites[3], Font::center, alpha);
+	int x = surface->w / 2,
+	    y = surface->h * 3 / 4 - font.height(font_sprites[4]);
+	
+	font.blit(surface, x, y, level_name, font_sprites[4], Font::center, alpha);
+	y += font.height(font_sprites[4]);
+	font.blit(surface, x, y, score.time(), font_sprites[3], Font::center, alpha);
 }
 
 WooshParticle::WooshParticle( Fixed x, Fixed y, const SDL_Color &color )

@@ -7,7 +7,7 @@ class Highscore
 {
 public:
 	Highscore( void ) { reset(); }
-	Highscore( const std::string &score_path ) { load(score_path); }
+	explicit Highscore( const std::string &score_path ) { load(score_path); }
 	bool invalid( void ) const { return ms() == 0; }
 	
 	bool load( const std::string &path );

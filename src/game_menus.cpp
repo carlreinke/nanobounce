@@ -61,7 +61,7 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 		font.blit(surface, x, y, entries[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? alpha : alpha / 2);
 	}
 	
-	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.3b BETA", font_sprites[1], Font::majuscule, Font::left, alpha);
+	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.3c BETA", font_sprites[1], Font::majuscule, Font::left, alpha);
 	
 	x = surface->w - 1;
 	y = surface->h - font.height(font_sprites[1]) * 3;
@@ -161,12 +161,13 @@ ScoredLevelMenu::ScoredLevelMenu( const LevelSet &level_set, bool show_one_incom
 	{
 		if (path_exists(level.get_score_path()))
 		{
-			Entry entry = { level.get_name(), level.get_path(), Highscore(level.get_score_path()).time() };
+			Highscore score(level.get_score_path());
+			Entry entry = { level.get_name(), level.get_path(), score.name, score.time() };
 			entries.push_back(entry);
 		}
 		else if (show_one_incomplete)
 		{
-			Entry entry = { level.get_name(), level.get_path(), "UNCOMPLETED" };
+			Entry entry = { level.get_name(), level.get_path(), "", "UNCOMPLETED" };
 			entries.push_back(entry);
 			break;
 		}
@@ -193,12 +194,16 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	for (uint i = 0; i < entry_count(); ++i)
 	{
+		const Entry &entry = entries[i];
+		
 		if (i == selection)
 		{
+			string subtext = (!entry.score_name.empty() ? entry.score_name + ": " : "") + entry.score_time;
+			
 			y += font.height(font_sprites[4]) / 3;
-			font.blit(surface, x, y, entries[i].name, font_sprites[4], Font::center, alpha);
+			font.blit(surface, x, y, entry.name, font_sprites[4], Font::center, alpha);
 			y += font.height(font_sprites[4]);
-			font.blit(surface, x_right, y, entries[i].time, font_sprites[1], Font::right, alpha);
+			font.blit(surface, x_right, y, subtext, font_sprites[1], Font::right, alpha);
 			y += font.height(font_sprites[4]) / 3;
 		}
 		else
@@ -207,7 +212,7 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 				break;
 			else if (y > -static_cast<int>(font.height(font_sprites[3])))
 			{
-				font.blit(surface, x_right, y + font.height(font_sprites[3]) - font.height(font_sprites[1]), entries[i].time, font_sprites[1], Font::right, alpha);
+				font.blit(surface, x_right, y + font.height(font_sprites[3]) - font.height(font_sprites[1]), entry.score_time, font_sprites[1], Font::right, alpha);
 				font.blit(surface, x, y, entries[i].name, font_sprites[3], Font::center, alpha / 2);
 			}
 			y += font.height(font_sprites[3]);

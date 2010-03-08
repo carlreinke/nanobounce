@@ -41,7 +41,7 @@ public:
 	void loop( SDL_Surface * );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
-	struct Entry { std::string name, path, time; };
+	struct Entry { std::string name, path, score_name, score_time; };
 	std::vector<Entry> entries;
 	uint entry_count( void ) const;
 	
