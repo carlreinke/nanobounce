@@ -31,7 +31,7 @@ void GameMenu::update( void )
 	
 	for (uint i = 0; i < ups_multiplier; ++i)
 	{
-		int x = screen_width * (selection + 1) / (entries.size() + 1),
+		int x = screen_width * (selection + 1) / (entry_count() + 1),
 			y = screen_height / 2 + font.height(font_sprites[4]) * 3 / 2 + font.height(font_sprites[3]);
 		
 		ball.tick(ball.x > x ? -1 : 1);
@@ -55,9 +55,9 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	font.blit(surface, x, y, "Nanobounce", font_sprites[4], Font::majuscule, Font::center, alpha);
 	y += font.height(font_sprites[4]) * 3;
 	
-	for (uint i = 0; i < entries.size(); ++i)
+	for (uint i = 0; i < entry_count(); ++i)
 	{
-		x = surface->w * (i + 1) / (entries.size() + 1);
+		x = surface->w * (i + 1) / (entry_count() + 1);
 		font.blit(surface, x, y, entries[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? alpha : alpha / 2);
 	}
 	
@@ -114,7 +114,7 @@ void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	int x = surface->w / 2,
 	    y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[4]) - font.height(font_sprites[4]) / 3) / 2;
 	
-	for (uint i = 0; i < entries.size(); ++i)
+	for (uint i = 0; i < entry_count(); ++i)
 	{
 		if (i == selection)
 		{
@@ -191,7 +191,7 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	if (entry_count() == 0)
 		font.blit(surface, x, surface->h / 2, "(EMPTY)", font_sprites[3], Font::center, alpha / 2);
 	
-	for (uint i = 0; i < entries.size(); ++i)
+	for (uint i = 0; i < entry_count(); ++i)
 	{
 		if (i == selection)
 		{
@@ -223,6 +223,8 @@ uint ScoredLevelMenu::entry_count( void ) const
 TextEntryMenu::TextEntryMenu( const string &title, const string &text )
 : text(text), title(title)
 {
+	entries.push_back("END");
+	
 	typedef std::pair<char, char> Range;
 	std::pair<char, char> ranges[] =
 	{
@@ -244,7 +246,6 @@ TextEntryMenu::TextEntryMenu( const string &title, const string &text )
 				entries.push_back(character);
 		}
 	}
-	entries.push_back("END");
 	
 	entry_height = font.height(font_sprites[1]);
 	y_accel = static_cast<int>(entry_height) / 2;
@@ -264,7 +265,7 @@ void TextEntryMenu::handle_event( SDL_Event &e )
 			break;
 			
 		case Controller::select_key:
-			if (selection == entries.size() - 1)
+			if (entries[selection].size() > 1) // selected "end"
 				goto made_selection;
 			text += entries[selection];
 			break;
@@ -315,7 +316,7 @@ void TextEntryMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	x += font.width(text, font_sprites[4]) / 2;
 	y += static_cast<int>(this->y);
 	
-	for (uint i = 0; i < entries.size(); ++i)
+	for (uint i = 0; i < entry_count(); ++i)
 	{
 		if (i == selection)
 		{
