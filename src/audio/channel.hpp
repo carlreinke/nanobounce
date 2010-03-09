@@ -71,12 +71,12 @@ void Channel::mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream_, uint l
 	
 	T *buffer = reinterpret_cast<T *>(get_buffer(len));
 	
-	for (uint i = 0; i < len / sizeof(T); )
+	for (uint i = len / (sizeof(T) * spec.channels); i > 0; --i)
 	{
-		for (int c = 0; c < spec.channels; ++c)
+		for (uint c = 0; c < spec.channels; ++c)
 		{
-			const Sint32 clip = stream[i] + static_cast<Sint32>(buffer[i] * channel_volume[c]);
-			stream[i++] = std::min(std::max(static_cast<Sint32>(std::numeric_limits<T>::min()), clip), static_cast<Sint32>(std::numeric_limits<T>::max()));
+			const Sint32 clip = *stream + static_cast<Sint32>(*(buffer++) * channel_volume[c]);
+			*(stream++) = std::min(std::max(static_cast<Sint32>(std::numeric_limits<T>::min()), clip), static_cast<Sint32>(std::numeric_limits<T>::max()));
 		}
 	}
 	
