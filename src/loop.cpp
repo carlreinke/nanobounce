@@ -6,14 +6,7 @@
 
 using namespace std;
 
-#ifndef TARGET_GP2X
-const uint fps = 30,
-#else
-const uint fps = 60,
-#endif
-           ups = 60, ups_multiplier = 2;
-const uint ms_per_frame = 1000 / fps,
-           ms_per_update = 1000 / ups;
+const uint frame_per_second_limit = 60;
 
 void Loop::loop( SDL_Surface *surface )
 {
@@ -22,9 +15,6 @@ void Loop::loop( SDL_Surface *surface )
 	loop_quit = false;
 	
 	fader.fade(Fader::in);
-	
-	static Uint32 next_update_ms = SDL_GetTicks(),
-	              next_frame_ms = SDL_GetTicks();
 	
 	bool done = false;
 	
@@ -62,32 +52,11 @@ void Loop::loop( SDL_Surface *surface )
 			}
 		}
 		
-		Uint32 now_ms = SDL_GetTicks();
+		static Uint32 last_update_usec = SDL_GetTicks() * 1000;
+		const Uint32 now_msec = SDL_GetTicks(),
+		             now_usec = now_msec * 1000;
 		
-		if (now_ms >= next_frame_ms + ms_per_frame)
-		{
-			// aw, frame was too late
-			uint dropped = (now_ms - next_frame_ms) / ms_per_frame + 1;
-			next_frame_ms += dropped * ms_per_frame;
-			
-			if (dropped > 2)
-				next_update_ms = next_frame_ms;
-			
-			clog << "dropped " << dropped << " frame(s)" << (dropped > 2 ? ", dropping updates to compensate" : "") << endl;
-		}
-		else
-		{
-			draw(surface, fader.value());
-			
-			draw_volume_notification(surface);
-			
-			scale_and_flip(surface);
-			
-			next_frame_ms += ms_per_frame;
-		}
-		
-		// process updates that will occur before next frame
-		while (next_update_ms <= next_frame_ms)
+		while (last_update_usec < now_usec)
 		{
 			update();
 			
@@ -99,13 +68,52 @@ void Loop::loop( SDL_Surface *surface )
 			
 			update_volume_notification();
 			
-			next_update_ms += ms_per_update;
+			// prevent too much jolt
+			if ((now_usec - last_update_usec) / usec_per_update >= update_per_sec / 2)
+				last_update_usec = now_usec;
+			else
+				last_update_usec += usec_per_update;
 		}
 		
-		// wait until next frame
-		Sint32 wait_ms = next_frame_ms - SDL_GetTicks();
-		if (wait_ms > 0)
-			SDL_Delay(wait_ms);
+		static uint delay_usec = 1000000 / frame_per_second_limit;
+		
+		// frame limiting
+		{
+			static Uint32 last_fps_msec = SDL_GetTicks();
+			static uint frames = 0;
+			const uint fps_refresh = 1000;
+			
+			++frames;
+			if (now_msec - last_fps_msec > fps_refresh)
+			{
+				uint frame_per_second = frames * (now_msec - last_fps_msec) / fps_refresh;
+				
+				// cout << frame_per_second << " fps (" << delay_usec << " usec delay)" << endl;
+				
+				if (frame_per_second > frame_per_second_limit)
+					delay_usec += fps_refresh;
+				else if (delay_usec > fps_refresh)
+					delay_usec -= fps_refresh;
+				
+				frames = 0;
+				last_fps_msec = now_msec;
+			}
+		}
+		
+		// draw frame
+		{
+			draw(surface, fader.value());
+			
+			draw_volume_notification(surface);
+			
+			scale_and_flip(surface);
+		}
+		
+#ifdef TARGET_GP2X
+		usleep(delay_usec);
+#else
+		SDL_Delay(delay_usec / 1000);
+#endif
 	}
 }
 

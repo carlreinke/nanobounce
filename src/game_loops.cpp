@@ -43,7 +43,7 @@ void LevelSetCongratsLoop::update( void )
 	
 	// TODO: fix: fireworks require old tick value, so they only tick every other time
 	static int i = 0;
-	if (++i % 2 != 0)
+	if (++i % 4 != 0)
 		return;
 	
 	// firework colors

@@ -56,14 +56,11 @@ void Game::update( void )
 	
 	if (!fader.is_fading(Fader::in))
 	{
-		for (uint i = 0; i < ups_multiplier; ++i)
-		{
-			// update replay controllers
-			BOOST_FOREACH (boost::shared_ptr<Controller> &controller, play_controllers)
-				controller->tick_update();
-			
-			tick();
-		}
+		// update replay controllers
+		BOOST_FOREACH (boost::shared_ptr<Controller> &controller, play_controllers)
+			controller->tick_update();
+		
+		tick();
 	}
 	
 	if (state != none)

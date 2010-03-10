@@ -29,15 +29,12 @@ void GameMenu::update( void )
 	BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
 		controller->update();
 	
-	for (uint i = 0; i < ups_multiplier; ++i)
-	{
-		int x = screen_width * (selection + 1) / (entry_count() + 1),
-			y = screen_height / 2 + font.height(font_sprites[4]) * 3 / 2 + font.height(font_sprites[3]);
-		
-		ball.tick(ball.x > x ? -1 : 1);
-		if (ball.y > y)
-			ball.y_vel = -ball.y_term_vel;
-	}
+	int x = screen_width * (selection + 1) / (entry_count() + 1),
+	    y = screen_height / 2 + font.height(font_sprites[4]) * 3 / 2 + font.height(font_sprites[3]);
+	
+	ball.tick(ball.x > x ? -1 : 1);
+	if (ball.y > y)
+		ball.y_vel = -ball.y_term_vel;
 }
 
 void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const

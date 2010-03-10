@@ -4,7 +4,7 @@ using namespace std;
 
 Fader::Fader( uint ms )
 : done(true),
-  alpha(SDL_ALPHA_TRANSPARENT), target(alpha), step(255 / ms_to_updates(ms == 0 ? 300 : ms))
+  alpha(SDL_ALPHA_TRANSPARENT), target(alpha), step(255 / ms_to_updates(ms == 0 ? 500 : ms))
 {
 	// good to go
 }

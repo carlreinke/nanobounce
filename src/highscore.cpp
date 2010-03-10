@@ -72,7 +72,7 @@ bool Highscore::save( ostream &os ) const
 
 void Highscore::reset( void )
 {
-	ticks_per_second = ups * ups_multiplier;
+	ticks_per_second = update_per_sec;
 	
 	ticks = 0;
 	x_direction.clear();

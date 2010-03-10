@@ -97,7 +97,7 @@ uint SimpleMenu::entry_count( void ) const
 
 SmoothMenu::SmoothMenu( void )
 : selection(0), no_selection(false),
-  y(0), y_vel(0), y_accel(Fixed(8) / static_cast<int>(ms_to_updates(250))),
+  y(0), y_vel(0), y_accel(Fixed(8) / static_cast<int>(ms_to_updates(500))),
   entry_height(font.height(font_sprites[3]))
 {
 	// nothing to do
