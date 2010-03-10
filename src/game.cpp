@@ -754,8 +754,6 @@ bool Game::play( SDL_Surface *surface, pair< vector<Level>::iterator, vector<Lev
 	string highscore_path;
 	Highscore highscore;
 	
-	string name = "NOBODY";
-	
 	while (game.state != Game::quit && level != levels.second && !global_quit)
 	{
 		if (game.state == Game::lost || game.state == Game::restart)
@@ -779,13 +777,13 @@ bool Game::play( SDL_Surface *surface, pair< vector<Level>::iterator, vector<Lev
 		{
 			if (game.highscore.ms() < highscore.ms() || highscore.invalid())
 			{
-				game.highscore.name = name;
+				game.highscore.name = player_name;
 				
 				LevelCongratsLoop congrats(*level, game.highscore);
 				congrats.loop(surface);
 				
 				if (!congrats.no_selection)
-					game.highscore.name = name = congrats.text;
+					game.highscore.name = player_name = congrats.text;
 				
 				game.highscore.save();
 			}

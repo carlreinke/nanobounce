@@ -22,6 +22,8 @@ const string level_directory = "levels/",
              sprite_directory = "sprites/",
              font_directory = sprite_directory + "fonts/";
 
+string player_name = "NOBODY";
+
 int main( int argc, char *argv[] )
 {
 	bool editor = false, replay = false;
@@ -93,6 +95,12 @@ int main( int argc, char *argv[] )
 	}
 	SDL_Surface *surface = init_video(false);
 	init_audio();
+	
+	// read player name
+	{
+		ifstream name_file("player");
+		getline(name_file, player_name);
+	}
 	
 	Game::load_resources();
 	
@@ -237,6 +245,12 @@ int main( int argc, char *argv[] )
 				break;
 			}
 		}
+	}
+	
+	// save player name
+	{
+		ofstream name_file("player");
+		name_file << player_name;
 	}
 	
 	controllers.clear();
