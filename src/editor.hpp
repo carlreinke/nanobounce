@@ -19,6 +19,9 @@ public:
 	bool load( const std::string &level_data_path );
 	bool save( const std::string &level_data_path ) const;
 	
+	bool load_last( void );
+	bool save_last( void ) const;
+	
 	void reset( void );
 	
 	static int align( int value, int mod ) { return value - value % mod; }

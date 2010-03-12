@@ -36,10 +36,14 @@ Editor::Editor( void )
 #ifndef TARGET_GP2X
 	SDL_ShowCursor(SDL_ENABLE);
 #endif
+	
+	load_last();
 }
 
 Editor::~Editor( void )
 {
+	save_last();
+	
 #ifndef TARGET_GP2X
 	SDL_ShowCursor(SDL_DISABLE);
 #endif
@@ -199,6 +203,8 @@ void Editor::menu( void )
 		{
 		case 0:  // Play
 			{
+				save_last();
+				
 				Game game(level);
 				
 				do
@@ -310,6 +316,31 @@ bool Editor::save( const string &level_data_path ) const
 		unlink(level.get_score_path().c_str());
 	
 	return success;
+}
+
+bool Editor::load_last( void )
+{
+	ifstream last("editor");
+	Level new_level;
+	new_level.load(last);
+	
+	if (!new_level.invalid())
+		level = new_level;
+	
+	return !new_level.invalid();
+}
+
+bool Editor::save_last( void ) const
+{
+	ofstream last("editor");
+	level.save(last);
+	last.close();
+	
+#if (_BSD_SOURCE || _XOPEN_SOURCE >= 500)
+	sync();
+#endif
+	
+	return last.good();
 }
 
 void Editor::reset( void )
