@@ -10,5 +10,6 @@ nanobounce.gpe
 
 *.dll
 
-levels/*/*.score
-
+*.score
+player
+editor
