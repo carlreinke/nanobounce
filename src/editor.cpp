@@ -190,6 +190,7 @@ void Editor::menu( void )
 		"Save",
 		"Save As",
 		"Load",
+		"Clear",
 		"Quit",
 	};
 	for (uint i = 0; i < COUNTOF(entries); ++i)
@@ -292,7 +293,13 @@ void Editor::menu( void )
 			}
 			break;
 			
-		case 4:  // Quit
+		case 4:  // Clear
+			level.blocks.clear();
+			level.name = "UNNAMED";
+			level.path.clear();
+			break;
+			
+		case 5:  // Quit
 			loop_quit = true;
 			break;
 		}
