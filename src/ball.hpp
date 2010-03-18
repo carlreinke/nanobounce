@@ -35,7 +35,7 @@ private:
 	Fixed x_accel;
 	
 	// after unboost
-	bool can_unboost, user_can_unboost;
+	bool can_unboost;
 	int ticks_until_unboost;
 	Fixed x_vel_unboost, y_vel_unboost;
 	

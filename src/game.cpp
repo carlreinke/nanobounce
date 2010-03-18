@@ -652,19 +652,18 @@ inline void Game::check_unboost( Ball &ball )
 {
 	if (ball.can_unboost)
 	{
-		if (ball.user_can_unboost)
+		bool tick_based = (ball.ticks_until_unboost > 0);
+		
+		// user can cancel the boost by pushing ball in opposite direction
+		if ((tick_based && --ball.ticks_until_unboost == 0) ||
+		    (ball.was_pushed_left() && ball.is_moving_right()) ||
+		    (ball.was_pushed_right() && ball.is_moving_left()))
 		{
-			// if boost is not time-bound, user can cancel the boost by pushing ball in opposite direction
-			if ((ball.was_pushed_left() && ball.is_moving_right()) ||
-			    (ball.was_pushed_right() && ball.is_moving_left()))
-			{
-				ball.unboost();
-				
-				play_sample(samples.unboost, 1, sample_pan(ball.x));
-			}
-		}
-		else if (--ball.ticks_until_unboost == 0)
 			ball.unboost();
+			
+			if (!tick_based)
+				play_sample(samples.unboost, 1, sample_pan(ball.x));
+		}
 	}
 }
 

@@ -37,7 +37,7 @@ Ball::Ball( Fixed x, Fixed y )
   no_accel(false), x_accel(0),
   
   // unboost
-  can_unboost(false), user_can_unboost(false),
+  can_unboost(false),
   ticks_until_unboost(0),
   x_vel_unboost(0), y_vel_unboost(0)
 {
@@ -98,7 +98,7 @@ void Ball::x_boost( Fixed x_boost )
 	y_vel_unboost = y_vel;
 	
 	can_unboost = true;
-	user_can_unboost = true;
+	ticks_until_unboost = 0;
 	
 	// because ball gets relocated before boost
 	trail.push_back(coord(x, y));
@@ -123,7 +123,7 @@ void Ball::unboost( void )
 	y_vel = y_vel_unboost;
 	
 	can_unboost = false;
-	user_can_unboost = false;
+	ticks_until_unboost = 0;
 }
 
 void Ball::wall_jump( void )
@@ -138,6 +138,5 @@ void Ball::wall_jump( void )
 	y_vel_unboost = wall_jump_y_vel_reset;
 	
 	can_unboost = true;
-	user_can_unboost = false;
 	ticks_until_unboost = wall_jump_ticks;
 }
