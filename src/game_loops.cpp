@@ -121,9 +121,9 @@ FireworkParticle::FireworkParticle( Fixed x, Fixed y, const SDL_Color &color )
 	alpha_per_tick = -alpha / static_cast<int>(ticks_to_live);
 }
 
-LevelIntroLoop::LevelIntroLoop( const Level &level, const Highscore &score )
-: level_name(level.get_name()), score(score),
-  ticks(0)
+LevelIntroLoop::LevelIntroLoop( const Level &level )
+: level_name(level.get_name()),
+  ticks(ms_to_updates(2000))
 {
 	// nothing to do
 }
@@ -156,7 +156,7 @@ void LevelIntroLoop::update( void )
 	BOOST_FOREACH (boost::shared_ptr<Controller> controller, controllers)
 		controller->update();
 	
-	if (++ticks == ms_to_updates(2000))
+	if (--ticks == 0)
 		loop_quit = true;
 }
 
@@ -165,22 +165,73 @@ void LevelIntroLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	SDL_FillRect(surface, NULL, 0);
 	
 	int x = surface->w / 2,
-	    y = surface->h / 2 - font.height(font_sprites[4]);
+	    y = surface->h / 2 - font.height(font_sprites[4]) / 2;
 	
 	font.blit(surface, x, y, level_name, font_sprites[4], Font::center, alpha);
-	
-	if (!score.invalid())
+}
+
+LevelWonLoop::LevelWonLoop( const Level &level, const Highscore &score, const Highscore &new_score )
+: level_name(level.get_name()), score(score), new_score(new_score),
+  ticks(ms_to_updates(3000))
+{
+	// nothing to do
+}
+
+void LevelWonLoop::handle_event( SDL_Event &e )
+{
+	switch (e.type)
 	{
-		string temp = (!score.name.empty() ? score.name + ": " : "") + score.time();
+	case SDL_KEYDOWN:
+		switch (e.key.keysym.sym)
+		{
+		case Controller::back_key:
+		case Controller::quit_key:
+		case Controller::select_key:
+		case Controller::start_key:
+			loop_quit = true;
+			break;
+			
+		default:
+			break;
+		}
 		
-		y = surface->h * 3 / 4 - font.height(font_sprites[3]);
-		font.blit(surface, x, y, "Best Time:", font_sprites[3], Font::majuscule, Font::center, alpha);
-		y += font.height(font_sprites[3]);
-		font.blit(surface, x, y, temp, font_sprites[3], Font::center, alpha);
+	default:
+		break;
 	}
 }
 
-LevelCongratsLoop::LevelCongratsLoop( const Level &level, const Highscore &score )
+void LevelWonLoop::update( void )
+{
+	BOOST_FOREACH (boost::shared_ptr<Controller> controller, controllers)
+		controller->update();
+	
+	if (--ticks == 0)
+		loop_quit = true;
+}
+
+void LevelWonLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
+{
+	const int x = surface->w / 2;
+	int y = surface->h * 1 / 4 - font.height(font_sprites[4]) / 2;
+	
+	font.blit(surface, x, y, level_name, font_sprites[4], Font::center, alpha);
+	
+	y = surface->h * 2 / 4 - font.height(font_sprites[3]);
+	font.blit(surface, x, y, "Best Time:", font_sprites[1], Font::majuscule, Font::center, alpha);
+	y += font.height(font_sprites[1]);
+	font.blit(surface, x, y, score.name, font_sprites[3], Font::center, alpha);
+	y += font.height(font_sprites[3]);
+	font.blit(surface, x, y, score.time(), font_sprites[3], Font::center, alpha);
+	
+	y = surface->h * 3 / 4 - font.height(font_sprites[3]) / 2;
+	font.blit(surface, x, y, "Your Time:", font_sprites[1], Font::majuscule, Font::center, alpha);
+	y += font.height(font_sprites[1]);
+	font.blit(surface, x, y, new_score.time(), font_sprites[3], Font::center, alpha);
+	y += font.height(font_sprites[3]);
+	font.blit(surface, x, y, "(+" + Highscore::time(new_score.ms() - score.ms()) + ")", font_sprites[1], Font::center, alpha);
+}
+
+LevelWonBestTimeLoop::LevelWonBestTimeLoop( const Level &level, const Highscore &score )
 : TextEntryMenu("New Best Time!", score.name),
   level_name(level.get_name()), score(score),
   ticks(0)
@@ -188,7 +239,7 @@ LevelCongratsLoop::LevelCongratsLoop( const Level &level, const Highscore &score
 	// nothing to do
 }
 
-void LevelCongratsLoop::update( void )
+void LevelWonBestTimeLoop::update( void )
 {
 	TextEntryMenu::update();
 	
@@ -197,7 +248,7 @@ void LevelCongratsLoop::update( void )
 	Particle::tick_all(particles);
 }
 
-void LevelCongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
+void LevelWonBestTimeLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	TextEntryMenu::draw(surface, alpha);
 	

@@ -764,9 +764,7 @@ bool Game::play( SDL_Surface *surface, pair< vector<Level>::iterator, vector<Lev
 		{
 			game = Game(*level);
 			
-			highscore.load(level->get_score_path());
-			
-			LevelIntroLoop level_intro(*level, highscore);
+			LevelIntroLoop level_intro(*level);
 			level_intro.loop(surface);
 		}
 		
@@ -774,17 +772,24 @@ bool Game::play( SDL_Surface *surface, pair< vector<Level>::iterator, vector<Lev
 		
 		if (game.state == Game::won)
 		{
+			highscore.load(level->get_score_path());
+			
 			if (game.highscore.ms() < highscore.ms() || highscore.invalid())
 			{
 				game.highscore.name = player_name;
 				
-				LevelCongratsLoop congrats(*level, game.highscore);
-				congrats.loop(surface);
+				LevelWonBestTimeLoop won_screen(*level, game.highscore);
+				won_screen.loop(surface);
 				
-				if (!congrats.no_selection)
-					game.highscore.name = player_name = congrats.text;
+				if (!won_screen.no_selection)
+					game.highscore.name = player_name = won_screen.text;
 				
 				game.highscore.save();
+			}
+			else
+			{
+				LevelWonLoop won_screen(*level, highscore, game.highscore);
+				won_screen.loop(surface);
 			}
 		}
 		

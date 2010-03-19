@@ -32,7 +32,7 @@ public:
 class LevelIntroLoop : public Loop
 {
 public:
-	LevelIntroLoop( const Level &, const Highscore & );
+	LevelIntroLoop( const Level & );
 	
 	void handle_event( SDL_Event & );
 	void update( void );
@@ -40,15 +40,30 @@ public:
 	
 private:
 	const std::string level_name;
-	const Highscore score;
 	
 	uint ticks;
 };
 
-class LevelCongratsLoop : public TextEntryMenu
+class LevelWonLoop : public Loop
 {
 public:
-	LevelCongratsLoop( const Level &, const Highscore & );
+	LevelWonLoop( const Level &, const Highscore &, const Highscore & );
+	
+	void handle_event( SDL_Event & );
+	void update( void );
+	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	
+private:
+	const std::string level_name;
+	const Highscore score, new_score;
+	
+	uint ticks;
+};
+
+class LevelWonBestTimeLoop : public TextEntryMenu
+{
+public:
+	LevelWonBestTimeLoop( const Level &, const Highscore & );
 	
 	void update( void );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;

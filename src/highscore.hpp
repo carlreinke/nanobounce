@@ -22,10 +22,12 @@ public:
 	void push_back_tick( int x_direction );
 	
 	int ms( void ) const { return ticks * 1000 / ticks_per_second; }
-	std::string time( void ) const;
+	std::string time( void ) const { return time(ms()); }
 	
 	std::string name;
 	std::string level_path;
+	
+	static std::string time( int ms );
 	
 private:
 	int ticks_per_second;

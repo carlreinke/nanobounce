@@ -87,17 +87,16 @@ void Highscore::push_back_tick( int x_direction )
 	++ticks;
 }
 
-string Highscore::time( void ) const
+string Highscore::time( int ms_temp )
 {
 	// split milliseconds into min, sec, ms
-	int temp = ms();
-	int ms = temp % 1000;
-	temp -= ms;
-	temp /= 1000;
-	int sec = temp % 60;
-	temp -= sec;
-	temp /= 60;
-	int min = temp;
+	int ms = ms_temp % 1000;
+	ms_temp -= ms;
+	ms_temp /= 1000;
+	int sec = ms_temp % 60;
+	ms_temp -= sec;
+	ms_temp /= 60;
+	int min = ms_temp;
 	
 	ostringstream out;
 	out << min << ":" << setfill('0') << setw(2) << sec << "." << setfill('0') << setw(3) << ms;
