@@ -69,7 +69,7 @@ void Loop::loop( SDL_Surface *surface )
 			update_volume_notification();
 			
 			// prevent too much jolt
-			if ((now_usec - last_update_usec) / usec_per_update >= update_per_sec / 2)
+			if ((now_usec - last_update_usec) / usec_per_update >= update_per_sec / 4)
 				last_update_usec = now_usec;
 			else
 				last_update_usec += usec_per_update;
