@@ -171,64 +171,46 @@ void LevelIntroLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 }
 
 LevelWonLoop::LevelWonLoop( const Level &level, const Highscore &score, const Highscore &new_score )
-: level_name(level.get_name()), score(score), new_score(new_score),
-  ticks(ms_to_updates(3000))
+: level_name(level.get_name()), score(score), new_score(new_score)
 {
-	// nothing to do
-}
-
-void LevelWonLoop::handle_event( SDL_Event &e )
-{
-	switch (e.type)
+	const string menu_items[] =
 	{
-	case SDL_KEYDOWN:
-		switch (e.key.keysym.sym)
-		{
-		case Controller::back_key:
-		case Controller::quit_key:
-		case Controller::select_key:
-		case Controller::start_key:
-			loop_quit = true;
-			break;
-			
-		default:
-			break;
-		}
-		
-	default:
-		break;
-	}
-}
-
-void LevelWonLoop::update( void )
-{
-	BOOST_FOREACH (boost::shared_ptr<Controller> controller, controllers)
-		controller->update();
-	
-	if (--ticks == 0)
-		loop_quit = true;
+		"Next",
+		"Retry"
+	};
+	for (uint i = 0; i < COUNTOF(menu_items); ++i)
+		entries.push_back(menu_items[i]);
 }
 
 void LevelWonLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
+	SDL_FillRect(surface, NULL, 0);
+	
 	const int x = surface->w / 2;
-	int y = surface->h * 1 / 4 - font.height(font_sprites[4]) / 2;
+	int y = surface->h * 1 / 5 - font.height(font_sprites[4]) / 2;
 	
 	font.blit(surface, x, y, level_name, font_sprites[4], Font::center, alpha);
 	
-	y = surface->h * 2 / 4 - font.height(font_sprites[3]);
+	y = surface->h * 2 / 5 - font.height(font_sprites[3]);
 	font.blit(surface, x, y, "Best Time:", font_sprites[1], Font::majuscule, Font::center, alpha);
 	y += font.height(font_sprites[1]);
 	font.blit(surface, x, y, score.name, font_sprites[3], Font::center, alpha);
 	y += font.height(font_sprites[3]);
 	font.blit(surface, x, y, score.time(), font_sprites[3], Font::center, alpha);
 	
-	y = surface->h * 3 / 4 - font.height(font_sprites[3]) / 2;
+	y = surface->h * 3 / 5 - font.height(font_sprites[3]) / 2;
 	font.blit(surface, x, y, "Your Time:", font_sprites[1], Font::majuscule, Font::center, alpha);
 	y += font.height(font_sprites[1]);
 	font.blit(surface, x, y, new_score.time(), font_sprites[3], Font::center, alpha);
 	y += font.height(font_sprites[3]);
 	font.blit(surface, x, y, "(+" + Highscore::time(new_score.ms() - score.ms()) + ")", font_sprites[1], Font::center, alpha);
+	
+	y = surface->h * 4 / 5;
+	for (uint i = 0; i < entry_count(); ++i)
+	{
+		int x = surface->w * (i + 1) / (entry_count() + 1);
+		font.blit(surface, x, y, entries[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? alpha : alpha / 2);
+	}
 }
 
 LevelWonBestTimeLoop::LevelWonBestTimeLoop( const Level &level, const Highscore &score )

@@ -44,20 +44,16 @@ private:
 	uint ticks;
 };
 
-class LevelWonLoop : public Loop
+class LevelWonLoop : public SimpleMenu
 {
 public:
 	LevelWonLoop( const Level &, const Highscore &, const Highscore & );
 	
-	void handle_event( SDL_Event & );
-	void update( void );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 private:
 	const std::string level_name;
 	const Highscore score, new_score;
-	
-	uint ticks;
 };
 
 class LevelWonBestTimeLoop : public TextEntryMenu

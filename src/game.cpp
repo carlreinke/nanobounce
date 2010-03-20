@@ -778,18 +778,25 @@ bool Game::play( SDL_Surface *surface, pair< vector<Level>::iterator, vector<Lev
 			{
 				game.highscore.name = player_name;
 				
-				LevelWonBestTimeLoop won_screen(*level, game.highscore);
-				won_screen.loop(surface);
+				LevelWonBestTimeLoop menu(*level, game.highscore);
+				menu.loop(surface);
 				
-				if (!won_screen.no_selection)
-					game.highscore.name = player_name = won_screen.text;
+				if (!menu.no_selection)
+					game.highscore.name = player_name = menu.text;
 				
 				game.highscore.save();
 			}
 			else
 			{
-				LevelWonLoop won_screen(*level, highscore, game.highscore);
-				won_screen.loop(surface);
+				LevelWonLoop menu(*level, highscore, game.highscore);
+				menu.loop(surface);
+				
+				switch (menu.selection)
+				{
+				case 1: // Retry
+					game.state = Game::restart;
+					break;
+				}
 			}
 		}
 		
