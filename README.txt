@@ -26,7 +26,7 @@ Credits
 
 Carl Reinke <carlreinke nothinglost net>
 
-http://www.nothinglost.net/nanobounce/
+http://www.nothinglost.net/projects/nanobounce/
 
 = Inspiration: Crazy Bound =====================================================
 
