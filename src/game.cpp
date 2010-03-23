@@ -753,6 +753,8 @@ bool Game::play( SDL_Surface *surface, pair< vector<Level>::iterator, vector<Lev
 	string highscore_path;
 	Highscore highscore;
 	
+	bool persistent_restart_selection = false;
+	
 	while (game.state != Game::quit && level != levels.second && !global_quit)
 	{
 		if (game.state == Game::lost || game.state == Game::restart)
@@ -763,6 +765,7 @@ bool Game::play( SDL_Surface *surface, pair< vector<Level>::iterator, vector<Lev
 		else
 		{
 			game = Game(*level);
+			persistent_restart_selection = false;
 			
 			LevelIntroLoop level_intro(*level);
 			level_intro.loop(surface);
@@ -789,12 +792,17 @@ bool Game::play( SDL_Surface *surface, pair< vector<Level>::iterator, vector<Lev
 			else
 			{
 				LevelWonLoop menu(*level, highscore, game.highscore);
+				if (persistent_restart_selection)
+					menu.selection = 1;
 				menu.loop(surface);
+				if (menu.no_selection)
+					menu.selection = 0;  // no retry
 				
 				switch (menu.selection)
 				{
 				case 1: // Retry
 					game.state = Game::restart;
+					persistent_restart_selection = true;
 					break;
 				}
 			}

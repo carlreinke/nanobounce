@@ -272,9 +272,8 @@ void Editor::menu( void )
 			break;
 			
 		case 3:  // Load
-			for (; ; )  // choose a level set
+			for (LevelSetMenu level_set_menu(false); ; )  // choose a level set
 			{
-				LevelSetMenu level_set_menu(false);
 				level_set_menu.loop(surface);
 				if (level_set_menu.no_selection)
 					break;  // back to editor
