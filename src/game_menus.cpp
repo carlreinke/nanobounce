@@ -43,9 +43,6 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	ball.draw(surface, 0, 0, alpha);
 	
-	// TODO: remove for non-beta
-	font.blit(surface, ball.x, screen_height - font.height(font_sprites[3]) * 2, "Private beta release!", font_sprites[1], Font::majuscule, Font::center, alpha);
-	
 	int x = surface->w / 2,
 	    y = surface->h / 2 - font.height(font_sprites[4]) * 3 / 2;
 	
@@ -58,7 +55,7 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 		font.blit(surface, x, y, entries[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? alpha : alpha / 2);
 	}
 	
-	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.3e BETA", font_sprites[1], Font::majuscule, Font::left, alpha);
+	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.3e", font_sprites[1], Font::majuscule, Font::left, alpha);
 	
 	x = surface->w - 1;
 	y = surface->h - font.height(font_sprites[1]) * 3;
