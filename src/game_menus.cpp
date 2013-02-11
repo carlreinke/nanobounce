@@ -207,7 +207,7 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 			else if (y > -static_cast<int>(font.height(font_sprites[3])))
 			{
 				font.blit(surface, x_right, y + font.height(font_sprites[3]) - font.height(font_sprites[1]), entry.score_time, font_sprites[1], Font::right, alpha);
-				font.blit(surface, x, y, entries[i].name, font_sprites[3], Font::center, alpha / 2);
+				font.blit(surface, x, y, entry.name, font_sprites[3], Font::center, alpha / 2);
 			}
 			y += font.height(font_sprites[3]);
 		}

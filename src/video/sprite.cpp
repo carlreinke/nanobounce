@@ -98,9 +98,9 @@ void Sprite::load_ppm( istream &ppm )
 	{
 		SDL_Color color =
 		{
-			get_no_comments<uint>(ppm) * component_max / 255,
-			get_no_comments<uint>(ppm) * component_max / 255,
-			get_no_comments<uint>(ppm) * component_max / 255
+			static_cast<Uint8>(get_no_comments<uint>(ppm) * 255 / component_max),
+			static_cast<Uint8>(get_no_comments<uint>(ppm) * 255 / component_max),
+			static_cast<Uint8>(get_no_comments<uint>(ppm) * 255 / component_max),
 		};
 		
 		SDL_SetPixel(surface, x, y, color);
@@ -136,17 +136,17 @@ void Sprite::destroy( void )
 	}
 }
 
-void Sprite::blit( SDL_Surface *surface, int x, int y, Uint8 alpha ) const
+void Sprite::blit( SDL_Surface *surface, Sint16 x, Sint16 y, Uint8 alpha ) const
 {
 	if (this->surface != NULL)
 	{
-		SDL_Rect rect = { x, y, this->surface->w, this->surface->h };
+		SDL_Rect rect = { x, y, static_cast<Uint16>(this->surface->w), static_cast<Uint16>(this->surface->h) };
 		SDL_SetAlpha(this->surface, (alpha != SDL_ALPHA_OPAQUE) ? SDL_SRCALPHA : 0, alpha);
 		SDL_BlitSurface(this->surface, NULL, surface, &rect);
 	}
 	else
 	{
-		SDL_Rect rect = { x, y, w, h };
+		SDL_Rect rect = { x, y, static_cast<Uint16>(w), static_cast<Uint16>(h) };
 		SDL_FillRectA(surface, &rect, color, alpha);
 	}
 }

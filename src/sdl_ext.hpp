@@ -21,7 +21,7 @@ inline SDL_Surface *SDL_DuplicateRGBSurface( SDL_Surface *src )
 	return dst;
 }
 
-inline SDL_Color SDL_Color_RGBA( int r, int g, int b, int a = 0 )
+inline SDL_Color SDL_Color_RGBA( Uint8 r, Uint8 g, Uint8 b, Uint8 a = 0 )
 {
 	SDL_Color c = { r, g, b, a };
 	return c;

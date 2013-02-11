@@ -39,7 +39,7 @@ public:
 	uint width( void ) const { return (surface != NULL) ? surface->w : w; }
 	uint height( void ) const { return (surface != NULL) ? surface->h : h; }
 	
-	void blit( SDL_Surface *, int x, int y, Uint8 alpha = SDL_ALPHA_OPAQUE) const;
+	void blit( SDL_Surface *, Sint16 x, Sint16 y, Uint8 alpha = SDL_ALPHA_OPAQUE) const;
 	
 protected:
 	void load_ppm( std::istream &ppm );
