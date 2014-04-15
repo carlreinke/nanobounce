@@ -21,14 +21,14 @@ using namespace std;
 
 Sample::Sample( void )
 : Channel(),
-  buffer(NULL), length(0), position(0)
+  buffer(), length(0), position(0)
 {
 	// good to go
 }
 
 Sample::Sample( const string &path )
 : Channel(),
-  buffer(NULL), length(0), position(0)
+  buffer(), length(0), position(0)
 {
 	Stream stream(path);
 	

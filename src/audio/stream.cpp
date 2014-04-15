@@ -21,7 +21,7 @@ using namespace std;
 
 Stream::Stream( const string &path )
 : Channel(),
-  buffer(NULL), size(0), start_position(0), end_position(0),
+  buffer(), size(0), start_position(0), end_position(0),
   end_of_file(true),
   vorbis_file(NULL)
 {
