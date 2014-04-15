@@ -12,7 +12,7 @@
  *  MAME License for more details.
  *  
  *  You should have received a copy of the MAME License along with this
- *  program; if not, see <http://www.nothinglost.net/licenses/MAME.txt>.
+ *  program; if not, see <http://www.intoorbit.org/licenses/MAME.txt>.
  */
 #ifndef VIDEO_FONT_HPP
 #define VIDEO_FONT_HPP
