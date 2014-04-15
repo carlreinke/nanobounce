@@ -156,7 +156,7 @@ int main( int argc, char *argv[] )
 			switch (menu.selection)
 			{
 			case 0:  // Play
-				for (LevelSetMenu set_menu; ; )  // choose a level set
+				for (LevelSetMenu set_menu; !global_quit; )  // choose a level set
 				{
 					set_menu.loop(surface);
 					if (set_menu.no_selection)
@@ -205,7 +205,7 @@ int main( int argc, char *argv[] )
 						}
 						break;
 					case 1:
-						for (LevelSetMenu set_menu; ; )  // choose a level set
+						for (LevelSetMenu set_menu; !global_quit; )  // choose a level set
 						{
 							set_menu.loop(surface);
 							if (set_menu.no_selection)
@@ -214,7 +214,7 @@ int main( int argc, char *argv[] )
 							LevelSet &level_set = set_menu.entries[set_menu.selection];
 							level_set.load_levels();
 							
-							for (ScoredLevelMenu level_menu(level_set, false, false); ; )  // choose a level
+							for (ScoredLevelMenu level_menu(level_set, false, false); !global_quit; )  // choose a level
 							{
 								level_menu.loop(surface);
 								if (level_menu.no_selection)
