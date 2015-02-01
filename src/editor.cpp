@@ -33,7 +33,7 @@ Editor::Editor( void )
 	
 	reset();
 	
-#ifndef TARGET_GP2X
+#ifdef HAS_MOUSE
 	SDL_ShowCursor(SDL_ENABLE);
 #endif
 	
@@ -44,7 +44,7 @@ Editor::~Editor( void )
 {
 	save_last();
 	
-#ifndef TARGET_GP2X
+#ifdef HAS_MOUSE
 	SDL_ShowCursor(SDL_DISABLE);
 #endif
 }
@@ -342,7 +342,7 @@ bool Editor::save_last( void ) const
 	level.save(last);
 	last.close();
 	
-#if (_BSD_SOURCE || _XOPEN_SOURCE >= 500)
+#if defined(HAVE_SYNC)
 	sync();
 #endif
 	

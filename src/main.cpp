@@ -113,14 +113,14 @@ int main( int argc, char *argv[] )
 	font_sprites[3] = Sprite(font_directory + "font_gray_3.ppm");
 	font_sprites[4] = Sprite(font_directory + "font_gray_4.ppm");
 	
-#ifndef TARGET_GP2X
+#if defined(HAS_KEYBOARD)
 	controllers.push_back(boost::shared_ptr<Controller>(new Keyboard()));
 #endif
 	controllers.push_back(boost::shared_ptr<Controller>(new Joystick(0)));
 	
 	if (editor)
 	{
-#ifndef TARGET_GP2X
+#if defined(HAS_MOUSE)
 		SDL_ShowCursor(SDL_ENABLE);
 #endif
 		
@@ -253,7 +253,7 @@ int main( int argc, char *argv[] )
 	controllers.clear();
 	disabled_controllers.clear();
 	
-	// freeing surfaces after SDL_Quit() is disasterous on some platforms, so we free them here
+	// freeing surfaces after SDL_Quit() is disastrous on some platforms, so we free them here
 	font_sprites.clear();
 	Ball::static_destruction_clean_up();
 	Block::static_destruction_clean_up();

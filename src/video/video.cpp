@@ -21,10 +21,10 @@ using namespace std;
 int screen_width = 320, screen_height = 240, screen_bpp = 32;
 const Uint32 surface_flags = SDL_HWSURFACE;
 
-#ifndef TARGET_GP2X
-int video_scale = 2;
-#else
+#if defined(HAS_320x240_VIDEO)
 int video_scale = 1;
+#else
+int video_scale = 2;
 #endif
 
 SDL_Surface *init_video( bool fullscreen )
@@ -62,7 +62,7 @@ SDL_Surface *init_video( bool fullscreen )
 	return surface;
 }
 
-#ifndef TARGET_GP2X
+#if !defined(HAS_320x240_VIDEO)
 template <int Bpp, typename T>
 static void nn( SDL_Surface *src_surface, SDL_Surface *dst_surface );
 
@@ -123,4 +123,4 @@ static void nn( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 		}
 	}
 }
-#endif // !TARGET_GP2X
+#endif // !defined(HAS_320x240_VIDEO)

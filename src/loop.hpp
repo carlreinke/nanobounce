@@ -5,9 +5,9 @@
 #include "misc.hpp"
 #include "SDL.h"
 
-static const uint update_per_sec = 125, usec_per_update = 1000000 / update_per_sec;
+static const uint update_per_sec = 125, msec_per_update = 1000 / update_per_sec;
 
-static inline uint ms_to_updates( uint ms ) { return ((ms * 1000) / usec_per_update); }
+static inline uint ms_to_updates( uint ms ) { return (ms / msec_per_update); }
 
 class Loop
 {

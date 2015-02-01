@@ -30,11 +30,11 @@ Stream::Stream( const string &path )
 	
 	vorbis_file = new OggVorbis_File;
 	
-#ifndef TARGET_WIN32
+#if defined(_WIN32)
+	if (ov_fopen(const_cast<char *>(path.c_str()), vorbis_file) != 0)
+#else
 	FILE *f = fopen(path.c_str(), "rb");
 	if (!f || ov_open(f, vorbis_file, NULL, 0) != 0)
-#else
-	if (ov_fopen(const_cast<char *>(path.c_str()), vorbis_file) != 0)
 #endif
 	{
 		cerr << "failed to load audio stream from '" << path << "'" << endl;
@@ -105,10 +105,10 @@ Uint8 * Stream::get_buffer( uint &len )
 	while (end_position - start_position < len && !end_of_file)
 	{
 		// fill empty section at end of buffer with raw audio
-#ifndef TARGET_GP2X
-		int read = ov_read(vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, 0, 2, 1, &bitstream);
-#else
+#if defined(USE_TREMOR)
 		int read = ov_read(vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, &bitstream);
+#else
+		int read = ov_read(vorbis_file, reinterpret_cast<char *>(&buffer[end_position]), (size - end_position) / cvt.len_mult, 0, 2, 1, &bitstream);
 #endif
 		switch (read)
 		{

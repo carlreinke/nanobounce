@@ -52,11 +52,10 @@ void Loop::loop( SDL_Surface *surface )
 			}
 		}
 		
-		static Uint32 last_update_usec = SDL_GetTicks() * 1000;
-		const Uint32 now_msec = SDL_GetTicks(),
-		             now_usec = now_msec * 1000;
+		static Uint32 last_update_msec = SDL_GetTicks();
+		const Uint32 now_msec = SDL_GetTicks();
 		
-		while (last_update_usec < now_usec)
+		while (last_update_msec < now_msec)
 		{
 			update();
 			
@@ -69,13 +68,13 @@ void Loop::loop( SDL_Surface *surface )
 			update_volume_notification();
 			
 			// prevent too much jolt
-			if ((now_usec - last_update_usec) / usec_per_update >= update_per_sec / 4)
-				last_update_usec = now_usec;
+			if ((now_msec - last_update_msec) / msec_per_update >= update_per_sec / 4)
+				last_update_msec = now_msec;
 			else
-				last_update_usec += usec_per_update;
+				last_update_msec += msec_per_update;
 		}
 		
-		static uint delay_usec = 1000000 / frame_per_second_limit;
+		static uint delay_msec = 1000 / frame_per_second_limit;
 		
 		// frame limiting
 		{
@@ -91,9 +90,9 @@ void Loop::loop( SDL_Surface *surface )
 				// cout << frame_per_second << " fps (" << delay_usec << " usec delay)" << endl;
 				
 				if (frame_per_second > frame_per_second_limit)
-					delay_usec += fps_refresh;
-				else if (delay_usec > fps_refresh)
-					delay_usec -= fps_refresh;
+					delay_msec += fps_refresh;
+				else if (delay_msec > fps_refresh)
+					delay_msec -= fps_refresh;
 				
 				frames = 0;
 				last_fps_msec = now_msec;
@@ -109,11 +108,7 @@ void Loop::loop( SDL_Surface *surface )
 			scale_and_flip(surface);
 		}
 		
-#ifdef TARGET_GP2X
-		usleep(delay_usec);
-#else
-		SDL_Delay(delay_usec / 1000);
-#endif
+		SDL_Delay(delay_msec);
 	}
 }
 

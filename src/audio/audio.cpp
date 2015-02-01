@@ -35,22 +35,19 @@ auto_ptr<Stream> music;
 vector<Sample> samples;
 list<string> music_paths;
 
+#if !defined(AUDIO_QUALITY)
+#define AUDIO_QUALITY 4
+#endif
+
 void init_audio( void )
 {
 	if (audio_disabled)
 		return;
 	
-#ifdef TARGET_GP2X
-	spec.freq = 11025 * 2;
-	spec.format = AUDIO_S16SYS;
-	spec.channels = 2;
-	spec.samples = 256;
-#else
-	spec.freq = 11025 * 4;
+	spec.freq = 11025 * AUDIO_QUALITY;
 	spec.format = AUDIO_S16SYS;
 	spec.channels = 2;
 	spec.samples = 512;
-#endif
 	spec.callback = &audio_callback;
 	
 	if (SDL_OpenAudio(&spec, NULL) == -1)

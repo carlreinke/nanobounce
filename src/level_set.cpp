@@ -51,10 +51,10 @@ void LevelSet::load_levels( void )
 void LevelSet::save_meta( void )
 {
 	if (!path_exists(directory))
-#ifndef TARGET_WIN32
-		mkdir(directory.c_str(), 0755);
-#else
+#if defined(_WIN32)
 		mkdir(directory.c_str());
+#else
+		mkdir(directory.c_str(), 0755);
 #endif
 	
 	ofstream meta((directory + "/meta").c_str());

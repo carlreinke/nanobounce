@@ -19,10 +19,10 @@
 
 #include "audio/channel.hpp"
 
-#ifndef TARGET_GP2X
-#include <vorbis/vorbisfile.h>
-#else
+#if defined(USE_TREMOR)
 #include <tremor/ivorbisfile.h>
+#else
+#include <vorbis/vorbisfile.h>
 #endif
 
 class Stream : public Channel, boost::noncopyable

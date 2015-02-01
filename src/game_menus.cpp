@@ -66,7 +66,7 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	y += font.height(font_sprites[1]);
 	font.blit(surface, x, y, "music: Jakob Svanholm, Seth Peelle", font_sprites[1], Font::majuscule, Font::right, alpha);
 	
-#ifdef TARGET_GP2X
+#ifdef HAS_SHOULDER_BUTTONS
 	x = surface->w / 2;
 	y = surface->h / 2;
 	
