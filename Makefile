@@ -48,7 +48,7 @@ SDL_LDLIBS := $(shell $(SDL_CONFIG) --libs)
 VORBIS_CFLAGS ?= 
 VORBIS_LDLIBS ?= -lvorbisfile
 
-ALL_CXXFLAGS := -std=c++98 \
+ALL_CXXFLAGS := -std=c++14 \
                 -I./src \
                 $(EXTRA_CXXFLAGS) \
                 $(SDL_CFLAGS) \
@@ -72,12 +72,12 @@ clean :
 	rm -rf obj/* src/precompiled.hpp.*
 	rm -f $(TARGET)
 
+$(TARGET) : $(OBJS)
+	$(CXX) $(ALL_LDFLAGS) -o $@ $^ $(LDLIBS)
+
 ifneq ($(MAKECMDGOALS), clean)
     -include $(OBJS:.o=.d)
 endif
-
-$(TARGET) : $(OBJS)
-	$(CXX) $(ALL_LDFLAGS) -o $@ $^ $(LDLIBS)
 
 src/precompiled.hpp.gch : src/precompiled.hpp
 	-$(CXX) $(ALL_CXXFLAGS) -c -o $@ $<

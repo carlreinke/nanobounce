@@ -17,6 +17,8 @@
 #include "audio/audio.hpp"
 #include "audio/stream.hpp"
 
+#include <memory>
+
 using namespace std;
 
 void audio_callback( void *, Uint8 *stream, int len );
@@ -30,7 +32,7 @@ Fixed volume = 0.5f, music_volume = 1.0f;
 SDL_AudioSpec spec;
 
 list<Channel *> channels;
-auto_ptr<Stream> music;
+unique_ptr<Stream> music;
 
 vector<Sample> samples;
 list<string> music_paths;
@@ -148,7 +150,7 @@ void play_music( const std::string &path )
 	
 	SDL_LockAudio();
 	
-	music = auto_ptr<Stream>(new Stream(path));
+	music = make_unique<Stream>(path);
 	
 	SDL_UnlockAudio();
 }
