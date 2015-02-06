@@ -36,7 +36,7 @@ std::shared_ptr<Keyboard::Assignment> Keyboard::parse_assignment( const Json::Va
 	
 	if (serialized.isMember("key"))
 	{
-		temp = std::shared_ptr<Assignment>(new Key);
+		temp = std::make_shared<Key>();
 		temp->unserialize(serialized);
 	}
 	

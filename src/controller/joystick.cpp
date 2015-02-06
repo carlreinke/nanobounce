@@ -67,17 +67,17 @@ std::shared_ptr<Joystick::Assignment> Joystick::parse_assignment( const Json::Va
 	
 	if (serialized.isMember("button"))
 	{
-		temp = std::shared_ptr<Assignment>(new Button);
+		temp = std::make_shared<Button>();
 		temp->unserialize(serialized);
 	}
 	else if (serialized.isMember("axis"))
 	{
-		temp = std::shared_ptr<Assignment>(new Axis);
+		temp = std::make_shared<Axis>();
 		temp->unserialize(serialized);
 	}
 	else if (serialized.isMember("hat"))
 	{
-		temp = std::shared_ptr<Assignment>(new Hat);
+		temp = std::make_shared<Hat>();
 		temp->unserialize(serialized);
 	}
 	
