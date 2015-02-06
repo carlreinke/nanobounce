@@ -24,7 +24,7 @@ bool Highscore::load( std::istream &is )
 	
 	boost::trim_right_if(level_path, boost::is_any_of("\r"));
 	
-	x_direction.clear();
+	ball_control_history.clear();
 	for (; ; )
 	{
 		int tick, x_direction;
@@ -33,7 +33,7 @@ bool Highscore::load( std::istream &is )
 		if (!is.good() || tick == ticks)
 			break;
 		
-		this->x_direction.push_back(std::make_pair(tick, x_direction));
+		this->ball_control_history.emplace_back(tick, x_direction);
 	}
 	
 	if (!is.good()) // highscore file corrupt?
@@ -61,8 +61,8 @@ bool Highscore::save( std::ostream &os ) const
 	os << ticks_per_second << " ";
 	os << ticks << " ";
 	
-	for (std::deque< std::pair<int, int> >::const_iterator i = x_direction.begin(); i != x_direction.end(); ++i)
-		os << i->first << " " << i->second << " ";
+	for (const auto ball_control_entry : ball_control_history)
+		os << ball_control_entry.tick << " " << ball_control_entry.x_direction << " ";
 	os << ticks << " " << 0 << std::endl;
 	
 	return os.good();
@@ -71,16 +71,15 @@ bool Highscore::save( std::ostream &os ) const
 void Highscore::reset( void )
 {
 	ticks_per_second = update_per_sec;
-	
 	ticks = 0;
-	x_direction.clear();
+	ball_control_history.clear();
 }
 
 void Highscore::push_back_tick( int x_direction )
 {
 	// if direction different than last tick, store it
-	if (this->x_direction.size() == 0 || this->x_direction.back().second != x_direction)
-		this->x_direction.push_back(std::make_pair(ticks, x_direction));
+	if (this->ball_control_history.size() == 0 || this->ball_control_history.back().x_direction != x_direction)
+		this->ball_control_history.emplace_back(ticks, x_direction);
 	
 	++ticks;
 }
@@ -102,8 +101,9 @@ std::string Highscore::time( int ms_temp )
 }
 
 Replay::Replay( const Highscore &score )
-: ticks(0),
-  highscore(score)
+: highscore(score),
+  ticks(0),
+  ball_control_index(0)
 {
 	// good to go
 }
@@ -112,9 +112,10 @@ void Replay::tick_update( void )
 {
 	is_down[quit] = ticks > (highscore.ticks + highscore.ticks_per_second);
 	
-	if (!highscore.x_direction.empty() && highscore.x_direction.front().first == ticks)
+	if (ball_control_index < highscore.ball_control_history.size() &&
+	    highscore.ball_control_history[ball_control_index].tick == ticks)
 	{
-		switch (highscore.x_direction.front().second)
+		switch (highscore.ball_control_history[ball_control_index].x_direction)
 		{
 		case -1:
 			is_down[left] = true;
@@ -132,7 +133,7 @@ void Replay::tick_update( void )
 			break;
 		}
 		
-		highscore.x_direction.pop_front();
+		++ball_control_index;
 	}
 	
 	++ticks;

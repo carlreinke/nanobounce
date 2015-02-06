@@ -33,7 +33,16 @@ private:
 	int ticks_per_second;
 	
 	int ticks;
-	std::deque< std::pair<int, int> > x_direction;
+	
+	struct BallControlEntry
+	{
+		BallControlEntry( int tick, int x_direction ) : tick(tick), x_direction(x_direction) { }
+		
+		const int tick;
+		const int x_direction;
+	};
+	
+	std::vector<BallControlEntry> ball_control_history;
 	
 	friend class Replay;
 };
@@ -48,9 +57,11 @@ public:
 private:
 	void update_down( void );
 	
+	const Highscore highscore;
+        
 	int ticks;
 	
-	Highscore highscore;
+	std::vector<Highscore::BallControlEntry>::size_type ball_control_index;
 };
 
 #endif // HIGHSCORE_HPP
