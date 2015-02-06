@@ -3,13 +3,11 @@
 #include "sdl_ext.hpp"
 #include "video/sprite.hpp"
 
-using namespace std;
-
 const int Block::width = 16, Block::height = 16;
 
 std::vector<Sprite> Block::sprites;
 
-struct SpriteName { Block::Type type; string name; uint offset; };
+struct SpriteName { Block::Type type; std::string name; uint offset; };
 
 Block::Block( int x, int y, Type type )
 : x(x), y(y), type(type), initial_type(type)

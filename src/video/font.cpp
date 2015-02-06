@@ -17,10 +17,8 @@
 #include "misc.hpp"
 #include "video/font.hpp"
 
-using namespace std;
-
 Font font;
-vector<Sprite> font_sprites;
+std::vector<Sprite> font_sprites;
 
 Font::Font( void )
 : char_positions(256), char_widths(256)
@@ -28,22 +26,22 @@ Font::Font( void )
 	// nothing to do
 }
 
-void Font::load( const string &pgm_path, const string &meta_path )
+void Font::load( const std::string &pgm_path, const std::string &meta_path )
 {
-	ifstream pgm(pgm_path.c_str());
+	std::ifstream pgm(pgm_path.c_str());
 	load_pgm(pgm);
 	
-	ifstream meta(meta_path.c_str());
+	std::ifstream meta(meta_path.c_str());
 	load_char_widths(meta);
 }
 
-void Font::load_pgm( istream &pgm )
+void Font::load_pgm( std::istream &pgm )
 {
-	string type;
+	std::string type;
 	pgm >> type;
 	if (type != "P2")
 	{
-		cerr << "error: font loading failed" << endl;
+		std::cerr << "error: font loading failed" << std::endl;
 		return;
 	}
 	
@@ -68,7 +66,7 @@ void Font::load_pgm( istream &pgm )
 	}
 }
 
-void Font::load_char_widths( istream &is )
+void Font::load_char_widths( std::istream &is )
 {
 	if (graymap.size() == 0)
 		return;

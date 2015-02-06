@@ -5,7 +5,8 @@
 #include "misc.hpp"
 #include "sdl_ext.hpp"
 
-using namespace std;
+using std::max;
+using std::min;
 
 const int Ball::width = 2, Ball::height = 2;
 
@@ -54,7 +55,7 @@ Ball::Ball( Fixed x, Fixed y )
 
 void Ball::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
 {
-	for (deque<coord>::const_iterator i = trail.begin(); i != trail.end(); ++i)
+	for (std::deque<coord>::const_iterator i = trail.begin(); i != trail.end(); ++i)
 		sprites[trail.end() - i - 1].blit(surface, x_offset + i->first, y_offset + i->second, alpha);
 }
 

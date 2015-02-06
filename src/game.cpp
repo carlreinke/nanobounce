@@ -5,7 +5,8 @@
 #include "menu.hpp"
 #include "misc.hpp"
 
-using namespace std;
+using std::max;
+using std::min;
 
 Game::Samples Game::samples;
 
@@ -80,7 +81,7 @@ void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
 		particle.draw(surface, x_offset, y_offset, alpha);
 }
 
-bool Game::load( const string &level_data_path )
+bool Game::load( const std::string &level_data_path )
 {
 	bool temp = level.load(level_data_path);
 	reset();
@@ -197,22 +198,22 @@ void Game::tick( void )
 
 void Game::load_resources( void )
 {
-	boost::array<pair<Sample *, string>, 9> sample_names =
+	boost::array<std::pair<Sample *, std::string>, 9> sample_names =
 	{{
-		make_pair(&samples.bounce,    "bounce"),
-		make_pair(&samples.unboost,   "unboost"),
-		make_pair(&samples.wall_jump, "wall_jump"),
+		std::make_pair(&samples.bounce,    "bounce"),
+		std::make_pair(&samples.unboost,   "unboost"),
+		std::make_pair(&samples.wall_jump, "wall_jump"),
 		
-		make_pair(&samples.boost,     "boost"),
-		make_pair(&samples.nuke,      "nuke"),
-		make_pair(&samples.recycle,   "recycle"),
-		make_pair(&samples.toggle,    "toggle"),
+		std::make_pair(&samples.boost,     "boost"),
+		std::make_pair(&samples.nuke,      "nuke"),
+		std::make_pair(&samples.recycle,   "recycle"),
+		std::make_pair(&samples.toggle,    "toggle"),
 		
-		make_pair(&samples.lost,      "lost"),
-		make_pair(&samples.won,       "won"),
+		std::make_pair(&samples.lost,      "lost"),
+		std::make_pair(&samples.won,       "won"),
 	}};
 	
-	typedef pair<Sample *, string> SamplePair;
+	typedef std::pair<Sample *, std::string> SamplePair;
 	for (const SamplePair &i : sample_names)
 	{
 		if (i.first->empty())
@@ -717,7 +718,7 @@ bool Game::ball_overlaps_any_block( const Ball &ball ) const
 void Game::menu( void )
 {
 	SimpleMenu menu(surface);
-	const string entries[] =
+	const std::string entries[] =
 	{
 		"Continue",
 		"Restart",
@@ -744,13 +745,13 @@ void Game::menu( void )
 	}
 }
 
-bool Game::play( SDL_Surface *surface, pair< vector<Level>::iterator, vector<Level>::iterator > levels )
+bool Game::play( SDL_Surface *surface, std::pair< std::vector<Level>::iterator, std::vector<Level>::iterator > levels )
 {
 	Game game;
 	
-	vector<Level>::iterator level = levels.first;
+	std::vector<Level>::iterator level = levels.first;
 	
-	string highscore_path;
+	std::string highscore_path;
 	Highscore highscore;
 	
 	bool persistent_restart_selection = false;

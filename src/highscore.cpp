@@ -1,23 +1,21 @@
 #include "highscore.hpp"
 #include "loop.hpp"
 
-using namespace std;
-
-bool Highscore::load( const string &data_path )
+bool Highscore::load( const std::string &data_path )
 {
-	ifstream data(data_path.c_str());
+	std::ifstream data(data_path.c_str());
 	
 	bool success = load(data);
 	
 	if (success)
-		cout << "loaded score '" << name << "' " << ms() << " ms from '" << data_path << "'" << endl;
+		std::cout << "loaded score '" << name << "' " << ms() << " ms from '" << data_path << "'" << std::endl;
 	else
-		cout << "warning: failed to load score from '" << data_path << "'" << endl;
+		std::cout << "warning: failed to load score from '" << data_path << "'" << std::endl;
 	
 	return success;
 }
 
-bool Highscore::load( istream &is )
+bool Highscore::load( std::istream &is )
 {
 	getline(is, level_path);
 	getline(is, name);
@@ -35,7 +33,7 @@ bool Highscore::load( istream &is )
 		if (!is.good() || tick == ticks)
 			break;
 		
-		this->x_direction.push_back(make_pair(tick, x_direction));
+		this->x_direction.push_back(std::make_pair(tick, x_direction));
 	}
 	
 	if (!is.good()) // highscore file corrupt?
@@ -44,28 +42,28 @@ bool Highscore::load( istream &is )
 	return !invalid();
 }
 
-bool Highscore::save( const string &data_path ) const
+bool Highscore::save( const std::string &data_path ) const
 {
-	ofstream data(data_path.c_str());
+	std::ofstream data(data_path.c_str());
 	
 	bool success = save(data);
 	
-	cout << (success ? "saved" : "warning: failed to save") << " score"
-	     << " '" << name << "' " << ms() << " ms to '" << data_path << "'" << endl;
+	std::cout << (success ? "saved" : "warning: failed to save") << " score"
+	          << " '" << name << "' " << ms() << " ms to '" << data_path << "'" << std::endl;
 	
 	return success;
 }
 
-bool Highscore::save( ostream &os ) const
+bool Highscore::save( std::ostream &os ) const
 {
-	os << level_path << endl;
-	os << name << endl;
+	os << level_path << std::endl;
+	os << name << std::endl;
 	os << ticks_per_second << " ";
 	os << ticks << " ";
 	
-	for (deque< pair<int, int> >::const_iterator i = x_direction.begin(); i != x_direction.end(); ++i)
+	for (std::deque< std::pair<int, int> >::const_iterator i = x_direction.begin(); i != x_direction.end(); ++i)
 		os << i->first << " " << i->second << " ";
-	os << ticks << " " << 0 << endl;
+	os << ticks << " " << 0 << std::endl;
 	
 	return os.good();
 }
@@ -82,12 +80,12 @@ void Highscore::push_back_tick( int x_direction )
 {
 	// if direction different than last tick, store it
 	if (this->x_direction.size() == 0 || this->x_direction.back().second != x_direction)
-		this->x_direction.push_back(make_pair(ticks, x_direction));
+		this->x_direction.push_back(std::make_pair(ticks, x_direction));
 	
 	++ticks;
 }
 
-string Highscore::time( int ms_temp )
+std::string Highscore::time( int ms_temp )
 {
 	// split milliseconds into min, sec, ms
 	int ms = ms_temp % 1000;
@@ -98,8 +96,8 @@ string Highscore::time( int ms_temp )
 	ms_temp /= 60;
 	int min = ms_temp;
 	
-	ostringstream out;
-	out << min << ":" << setfill('0') << setw(2) << sec << "." << setfill('0') << setw(3) << ms;
+	std::ostringstream out;
+	out << min << ":" << std::setfill('0') << std::setw(2) << sec << "." << std::setfill('0') << std::setw(3) << ms;
 	return out.str();
 }
 

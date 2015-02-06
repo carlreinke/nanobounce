@@ -16,7 +16,8 @@
  */
 #include "audio/channel.hpp"
 
-using namespace std;
+using std::max;
+using std::min;
 
 bool reverse_stereo = false;
 

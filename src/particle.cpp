@@ -1,7 +1,8 @@
 #include "block.hpp"
 #include "particle.hpp"
 
-using namespace std;
+using std::max;
+using std::min;
 
 const Fixed Particle::constant = 1;
 
@@ -26,7 +27,7 @@ void Particle::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alp
 	alpha = static_cast<int>(this->alpha) * alpha / 256;
 	Uint8 alpha_trail = alpha / trail.size();
 	
-	for (deque<coord>::const_reverse_iterator i = trail.rbegin(); i != trail.rend(); ++i)
+	for (std::deque<coord>::const_reverse_iterator i = trail.rbegin(); i != trail.rend(); ++i)
 	{
 		SDL_SetPixelA(surface, x_offset + i->first, y_offset + i->second, color, alpha);
 		alpha -= alpha_trail;
@@ -54,9 +55,9 @@ void Particle::tick( void )
 		trail.pop_front();
 }
 
-void Particle::tick_all( list<Particle> &particles )
+void Particle::tick_all( std::list<Particle> &particles )
 {
-	for (list<Particle>::iterator i = particles.begin(); i != particles.end(); )
+	for (std::list<Particle>::iterator i = particles.begin(); i != particles.end(); )
 	{
 		i->tick();
 		

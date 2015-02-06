@@ -2,21 +2,19 @@
 #include "level_set.hpp"
 #include "main.hpp"
 
-using namespace std;
-
 LevelSet::LevelSet( void )
 : valid(false)
 {
 	int i = 0;
 	do
-		directory = level_directory + boost::lexical_cast<string>(++i);
+		directory = level_directory + boost::lexical_cast<std::string>(++i);
 	while (path_exists(directory));
 }
 
 LevelSet::LevelSet( const std::string &directory )
 : valid(false), directory(directory)
 {
-	ifstream meta((directory + "/meta").c_str());
+	std::ifstream meta((directory + "/meta").c_str());
 	getline(meta, name);
 	getline(meta, author);
 	
@@ -28,12 +26,12 @@ void LevelSet::load_levels( void )
 	if (invalid())
 		return;
 	
-	ifstream meta((directory + "/meta").c_str());
+	std::ifstream meta((directory + "/meta").c_str());
 	
 	getline(meta, name);
 	getline(meta, author);
 	
-	string level_path;
+	std::string level_path;
 	while (getline(meta, level_path))
 	{
 		boost::trim_right_if(level_path, boost::is_any_of("\r"));
@@ -57,12 +55,12 @@ void LevelSet::save_meta( void )
 		mkdir(directory.c_str(), 0755);
 #endif
 	
-	ofstream meta((directory + "/meta").c_str());
-	meta << name << endl;
-	meta << author << endl;
+	std::ofstream meta((directory + "/meta").c_str());
+	meta << name << std::endl;
+	meta << author << std::endl;
 	
 	for (const Level &level : levels)
-		meta << level.path.substr(directory.size() + 1) << endl;
+		meta << level.path.substr(directory.size() + 1) << std::endl;
 	
 	valid = meta.good();
 }
@@ -71,9 +69,9 @@ void LevelSet::append_level( Level &level )
 {
 	if (!level.path.empty())
 	{
-		string::size_type basename_offset = level.path.find_last_of('/');
+		std::string::size_type basename_offset = level.path.find_last_of('/');
 		
-		assert(basename_offset != string::npos);
+		assert(basename_offset != std::string::npos);
 		assert(basename_offset != level.path.size() - 1);
 		
 		level.path = directory + "/" + level.path.substr(basename_offset + 1);
@@ -84,7 +82,7 @@ void LevelSet::append_level( Level &level )
 	{
 		uint i = 0;
 		do
-			level.path = directory + "/" + boost::lexical_cast<string>(++i);
+			level.path = directory + "/" + boost::lexical_cast<std::string>(++i);
 		while (path_exists(level.path));
 	}
 	

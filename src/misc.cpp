@@ -1,10 +1,8 @@
 #include "misc.hpp"
 
-using namespace std;
-
-void getline( istream &is, istringstream &iss )
+void getline( std::istream &is, std::istringstream &iss )
 {
-	string temp;
+	std::string temp;
 	getline(is, temp);
 	iss.str(temp);
 }

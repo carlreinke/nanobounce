@@ -16,7 +16,7 @@
  */
 #include "video/video.hpp"
 
-using namespace std;
+using std::min;
 
 int screen_width = 320, screen_height = 240, screen_bpp = 32;
 const Uint32 surface_flags = SDL_HWSURFACE;
@@ -44,16 +44,16 @@ SDL_Surface *init_video( bool fullscreen )
 	
 	if (surface == NULL)
 	{
-		cerr << SDL_GetError() << endl;
+		std::cerr << SDL_GetError() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	
 	screen_width = surface->w;
 	screen_height = surface->h;
 	
-	cout << "video: " << screen_width << "x" << screen_height << "x" << screen_bpp << endl;
+	std::cout << "video: " << screen_width << "x" << screen_height << "x" << screen_bpp << std::endl;
 	if (video_scale > 1)
-		cout << "shadow video: " << SDL_GetVideoSurface()->w << "x" << SDL_GetVideoSurface()->h << "x" << screen_bpp << endl;
+		std::cout << "shadow video: " << SDL_GetVideoSurface()->w << "x" << SDL_GetVideoSurface()->h << "x" << screen_bpp << std::endl;
 	
 	SDL_WM_SetCaption("Nanobounce", NULL);
 	

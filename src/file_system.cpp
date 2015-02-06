@@ -1,10 +1,8 @@
 #include "file_system.hpp"
 
-using namespace std;
-
-vector<string> directory_listing( const string &directory )
+std::vector<std::string> read_directory_listing( const std::string &directory )
 {
-	vector<string> entries;
+	std::vector<std::string> entries;
 	
 	DIR *dir = opendir(directory.c_str());
 	if (dir != NULL)
@@ -12,7 +10,7 @@ vector<string> directory_listing( const string &directory )
 		struct dirent *dir_ent;
 		while ((dir_ent = readdir(dir)) != NULL)
 		{
-			const string entry = dir_ent->d_name;
+			const std::string entry = dir_ent->d_name;
 			
 			if (entry != "." && entry != "..")
 				entries.push_back(entry);
@@ -24,7 +22,7 @@ vector<string> directory_listing( const string &directory )
 	return entries;
 }
 
-bool path_exists( const string &path )
+bool path_exists( const std::string &path )
 {
 	struct stat buffer;
 	return (stat(path.c_str(), &buffer) == 0);

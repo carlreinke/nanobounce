@@ -8,12 +8,10 @@
 #include "video/video.hpp"
 #include "video/font.hpp"
 
-using namespace std;
-
 GameMenu::GameMenu( void )
 : ball(screen_width / 2, screen_height)
 {
-	const string menu_items[] =
+	const std::string menu_items[] =
 	{
 		"Play",
 		"More",
@@ -80,17 +78,17 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 
 LevelSetMenu::LevelSetMenu( bool allow_new )
 {
-	vector<string> dir_entries = directory_listing(level_directory);
+	std::vector<std::string> dir_entries = read_directory_listing(level_directory);
 	
 	// populate the level set list
-	for (const string &dir_entry : dir_entries)
+	for (const std::string &dir_entry : dir_entries)
 	{
 		LevelSet entry(level_directory + dir_entry);
 		if (!entry.invalid())
 			entries.push_back(entry);
 	}
 	
-	sort(entries.begin(), entries.end());
+	std::sort(entries.begin(), entries.end());
 	
 	if (allow_new)
 	{
@@ -142,7 +140,7 @@ LevelMenu::LevelMenu( const LevelSet &level_set, bool allow_new )
 	
 	if (allow_new)
 	{
-		static string new_level = "New Level...";
+		static std::string new_level = "New Level...";
 		boost::to_upper(new_level);
 		entries.push_back(new_level);
 	}
@@ -192,7 +190,7 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 		
 		if (i == selection)
 		{
-			string subtext = (!entry.score_name.empty() ? entry.score_name + ": " : "") + entry.score_time;
+			std::string subtext = (!entry.score_name.empty() ? entry.score_name + ": " : "") + entry.score_time;
 			
 			y += font.height(font_sprites[4]) / 3;
 			font.blit(surface, x, y, entry.name, font_sprites[4], Font::center, alpha);
@@ -219,7 +217,7 @@ uint ScoredLevelMenu::entry_count( void ) const
 	return entries.size();
 }
 
-TextEntryMenu::TextEntryMenu( const string &title, const string &text )
+TextEntryMenu::TextEntryMenu( const std::string &title, const std::string &text )
 : text(text), title(title)
 {
 	entries.push_back("END");
@@ -227,20 +225,20 @@ TextEntryMenu::TextEntryMenu( const string &title, const string &text )
 	typedef std::pair<int, int> Range;
 	std::pair<int, int> ranges[] =
 	{
-		make_pair('A', 'Z'),
-		make_pair('a', 'z'),
-		make_pair('0', '9'),
+		std::make_pair('A', 'Z'),
+		std::make_pair('a', 'z'),
+		std::make_pair('0', '9'),
 		
-		make_pair(      0, '0' - 1),
-		make_pair('9' + 1, 'A' - 1),
-		make_pair('Z' + 1, 'a' - 1),
-		make_pair('z' + 1, 255),
+		std::make_pair(      0, '0' - 1),
+		std::make_pair('9' + 1, 'A' - 1),
+		std::make_pair('Z' + 1, 'a' - 1),
+		std::make_pair('z' + 1, 255),
 	};
 	for (const Range &range : ranges)
 	{
 		for (int c = range.first; c <= range.second; ++c)
 		{
-			const string character = boost::lexical_cast<string>(static_cast<char>(c));
+			const std::string character = boost::lexical_cast<std::string>(static_cast<char>(c));
 			if (font.width(character, font_sprites[1]) > 0)
 				entries.push_back(character);
 		}

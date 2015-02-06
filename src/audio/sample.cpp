@@ -17,7 +17,7 @@
 #include "audio/audio.hpp"
 #include "audio/sample.hpp"
 
-using namespace std;
+using std::min;
 
 Sample::Sample( void )
 : Channel(),
@@ -26,7 +26,7 @@ Sample::Sample( void )
 	// good to go
 }
 
-Sample::Sample( const string &path )
+Sample::Sample( const std::string &path )
 : Channel(),
   buffer(), length(0), position(0)
 {

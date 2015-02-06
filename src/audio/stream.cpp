@@ -17,9 +17,10 @@
 #include "audio/audio.hpp"
 #include "audio/stream.hpp"
 
-using namespace std;
+using std::max;
+using std::min;
 
-Stream::Stream( const string &path )
+Stream::Stream( const std::string &path )
 : Channel(),
   buffer(), size(0), start_position(0), end_position(0),
   end_of_file(true),
@@ -37,7 +38,7 @@ Stream::Stream( const string &path )
 	if (!f || ov_open(f, vorbis_file, NULL, 0) != 0)
 #endif
 	{
-		cerr << "failed to load audio stream from '" << path << "'" << endl;
+		std::cerr << "failed to load audio stream from '" << path << "'" << std::endl;
 		
 		delete vorbis_file;
 		vorbis_file = NULL;
@@ -51,7 +52,7 @@ Stream::Stream( const string &path )
 	if (SDL_BuildAudioCVT(&cvt, AUDIO_S16SYS, channels,      freq,
 	                            spec.format,  spec.channels, spec.freq) == -1)
 	{
-		cerr << "failed to convert audio stream from '" << path << "'" << endl;
+		std::cerr << "failed to convert audio stream from '" << path << "'" << std::endl;
 		return;
 	}
 	

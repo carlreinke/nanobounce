@@ -3,10 +3,11 @@
 #include "video/font.hpp"
 #include "volume.hpp"
 
-using namespace std;
+using std::max;
+using std::min;
 
 static int show_volume_ticks = 0;
-static ostringstream volume_text;
+static std::ostringstream volume_text;
 
 void trigger_volume_change( Fixed delta )
 {
@@ -35,7 +36,7 @@ void trigger_volume_change( Fixed delta )
 		volume_text << static_cast<int>(volume * 100 + 0.5f) << "%";
 	}
 	
-	cout << "volume: " << volume_text.str() << endl;
+	std::cout << "volume: " << volume_text.str() << std::endl;
 }
 
 void update_volume_notification( void )

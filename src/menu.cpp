@@ -5,8 +5,6 @@
 #include "video/font.hpp"
 #include "volume.hpp"
 
-using namespace std;
-
 SimpleMenu::SimpleMenu( SDL_Surface *background )
 : selection(0), no_selection(false),
   background(NULL)

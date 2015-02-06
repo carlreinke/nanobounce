@@ -1,7 +1,5 @@
 #include "SDL.h"
 
-using namespace std;
-
 template <typename T>
 inline Uint32 get_pixel( const void *pixels )
 {

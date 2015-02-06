@@ -16,7 +16,7 @@
  */
 #include "controller/joystick.hpp"
 
-using namespace std;
+using std::max;
 
 Joystick::Joystick( int j )
 : joystick(NULL)
@@ -25,7 +25,7 @@ Joystick::Joystick( int j )
 	
 	if (j >= SDL_NumJoysticks())
 	{
-		cerr << "error: joystick " << j << " does not exist" << endl;
+		std::cerr << "error: joystick " << j << " does not exist" << std::endl;
 		return;
 	}
 	
@@ -33,14 +33,14 @@ Joystick::Joystick( int j )
 	
 	if (joystick == NULL)
 	{
-		cerr << "error: joystick " << j << " failed: " << SDL_GetError() << endl;
+		std::cerr << "error: joystick " << j << " failed: " << SDL_GetError() << std::endl;
 		return;
 	}
 	
-	cout << "joystick '" << SDL_JoystickName(j) << "' ("
-	     << SDL_JoystickNumAxes(joystick) << " axes, "
-	     << SDL_JoystickNumButtons(joystick) << " buttons, "
-	     << SDL_JoystickNumHats(joystick) << " hats)" << endl;
+	std::cout << "joystick '" << SDL_JoystickName(j) << "' ("
+	          << SDL_JoystickNumAxes(joystick) << " axes, "
+	          << SDL_JoystickNumButtons(joystick) << " buttons, "
+	          << SDL_JoystickNumHats(joystick) << " hats)" << std::endl;
 	
 	load_assignments();
 }

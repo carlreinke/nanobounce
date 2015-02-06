@@ -3,9 +3,7 @@
 #include "level.hpp"
 #include "misc.hpp"
 
-using namespace std;
-
-boost::bimap<Block::Type, string> Level::block_names;
+boost::bimap<Block::Type, std::string> Level::block_names;
 
 Level::Level( void )
 : valid(false),
@@ -22,22 +20,22 @@ Level::Level( std::string name, int width, int height )
 	load_resources();
 }
 
-bool Level::load( const string &data_path )
+bool Level::load( const std::string &data_path )
 {
 	path = data_path;
 	
-	ifstream data(path.c_str());
+	std::ifstream data(path.c_str());
 	bool success = load(data);
 	
 	if (success)
-		cout << "loaded level '" << name << "' from '" << path << "'" << endl;
+		std::cout << "loaded level '" << name << "' from '" << path << "'" << std::endl;
 	else
-		cout << "warning: failed to load level from '" << path << "'" << endl;
+		std::cout << "warning: failed to load level from '" << path << "'" << std::endl;
 	
 	return success;
 }
 
-bool Level::load( istream &data )
+bool Level::load( std::istream &data )
 {
 	getline(data, name);
 	
@@ -51,7 +49,7 @@ bool Level::load( istream &data )
 	blocks.clear();
 	
 	int x, y;
-	string block_name;
+	std::string block_name;
 	
 	while (data >> x >> y >> block_name)
 	{
@@ -63,40 +61,40 @@ bool Level::load( istream &data )
 			
 			blocks.push_back(Block(x, y, type));
 		}
-		catch (out_of_range &e) { assert(false); }
+		catch (std::out_of_range &e) { assert(false); }
 	}
 	
 	return valid;
 }
 
-bool Level::save( const string &data_path ) const
+bool Level::save( const std::string &data_path ) const
 {
 	path = data_path;
 	
-	ofstream data(path.c_str());
+	std::ofstream data(path.c_str());
 	bool success = save(data);
 	
-	cout << (success ? "saved" : "warning: failed to save") << " level"
-	     << " '" << name << "' to '" << data_path << "'" << endl;
+	std::cout << (success ? "saved" : "warning: failed to save") << " level"
+	          << " '" << name << "' to '" << data_path << "'" << std::endl;
 	
 	return success;
 }
 
-bool Level::save( ostream &data ) const
+bool Level::save( std::ostream &data ) const
 {
 	if (invalid())
 		return false;
 	
-	data << name << endl;
+	data << name << std::endl;
 	
 	data << (width / Block::width) << " "
-	     << (height / Block::height) << endl;
+	     << (height / Block::height) << std::endl;
 	
 	for (const Block &block : blocks)
 	{
 		data << (block.x / block.width) << " "
 		     << (block.y / block.height) << " "
-		     << block_names.left.at(block.type) << endl;
+		     << block_names.left.at(block.type) << std::endl;
 	}
 	
 	return data.good();
@@ -105,7 +103,7 @@ bool Level::save( ostream &data ) const
 void Level::validate( void )
 {
 	// remove blocks outside boundaries
-	for (vector<Block>::iterator block = blocks.begin(); block != blocks.end(); )
+	for (std::vector<Block>::iterator block = blocks.begin(); block != blocks.end(); )
 	{
 		if (block->x >= width || block->y >= height)
 			block = blocks.erase(block);
@@ -134,29 +132,29 @@ void Level::load_resources( void )
 {
 	if (block_names.empty())
 	{
-		boost::array<pair<Block::Type, string>, Block::_max> temp_block_names =
+		boost::array<std::pair<Block::Type, std::string>, Block::_max> temp_block_names =
 		{{
-			make_pair(Block::ball,    "ball"),
-			make_pair(Block::exit,    "exit"),
-			make_pair(Block::normal,  "block"),
-			make_pair(Block::nuke,    "nuke"),
-			make_pair(Block::recycle, "recycle"),
+			std::make_pair(Block::ball,    "ball"),
+			std::make_pair(Block::exit,    "exit"),
+			std::make_pair(Block::normal,  "block"),
+			std::make_pair(Block::nuke,    "nuke"),
+			std::make_pair(Block::recycle, "recycle"),
 			
-			make_pair(Block::toggle_0_0,    "toggle_0"),
-			make_pair(Block::toggle_0_star, "toggle_0_star"),
-			make_pair(Block::toggle_1_1,    "toggle_1"),
-			make_pair(Block::toggle_1_star, "toggle_1_star"),
+			std::make_pair(Block::toggle_0_0,    "toggle_0"),
+			std::make_pair(Block::toggle_0_star, "toggle_0_star"),
+			std::make_pair(Block::toggle_1_1,    "toggle_1"),
+			std::make_pair(Block::toggle_1_star, "toggle_1_star"),
 			
-			make_pair(Block::boost_up,    "boost_up"),
-			make_pair(Block::boost_left,  "boost_left"),
-			make_pair(Block::boost_right, "boost_right"),
+			std::make_pair(Block::boost_up,    "boost_up"),
+			std::make_pair(Block::boost_left,  "boost_left"),
+			std::make_pair(Block::boost_right, "boost_right"),
 			
-			make_pair(Block::push_up,    "push_up"),
-			make_pair(Block::push_left,  "push_left"),
-			make_pair(Block::push_right, "push_right"),
+			std::make_pair(Block::push_up,    "push_up"),
+			std::make_pair(Block::push_left,  "push_left"),
+			std::make_pair(Block::push_right, "push_right"),
 		}};
 		
-		typedef pair<Block::Type, string> BlockPair;
+		typedef std::pair<Block::Type, std::string> BlockPair;
 		for (const BlockPair &i : temp_block_names)
 			block_names.insert(make_bipair(i.first, i.second));
 	}

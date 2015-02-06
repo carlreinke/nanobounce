@@ -12,22 +12,22 @@
 #include "video/font.hpp"
 #include "video/video.hpp"
 
-using namespace std;
+using std::max;
 
 bool global_quit = false;
 
-const string level_directory = "levels/",
-             music_directory = "music/",
-             sample_directory = "samples/",
-             sprite_directory = "sprites/",
-             font_directory = sprite_directory + "fonts/";
+const std::string level_directory = "levels/",
+                  music_directory = "music/",
+                  sample_directory = "samples/",
+                  sprite_directory = "sprites/",
+                  font_directory = sprite_directory + "fonts/";
 
-string player_name = "NOBODY";
+std::string player_name = "NOBODY";
 
 int main( int argc, char *argv[] )
 {
 	bool editor = false, replay = false;
-	string level_path;
+	std::string level_path;
 	
 	int opt;
 	while ((opt = getopt(argc, argv, "ae:mr:sv:")) != -1)
@@ -37,7 +37,7 @@ int main( int argc, char *argv[] )
 		case 'a':
 			audio_disabled = true;
 			
-			cout << "audio disabled" << endl;
+			std::cout << "audio disabled" << std::endl;
 			break;
 			
 		case 'e':
@@ -63,7 +63,7 @@ int main( int argc, char *argv[] )
 		case 's':
 			reverse_stereo = true;
 			
-			cout << "stereo reversal enabled" << endl;
+			std::cout << "stereo reversal enabled" << std::endl;
 			break;
 			
 		case 'v':
@@ -78,19 +78,19 @@ int main( int argc, char *argv[] )
 	} 
 	
 	{
-		vector<string> music_filenames = directory_listing(music_directory);
-		for (const string &filename : music_filenames)
+		std::vector<std::string> music_filenames = read_directory_listing(music_directory);
+		for (const std::string &filename : music_filenames)
 			music_paths.push_back(music_directory + filename);
 	}
 	
-	cout << "Nanobounce" << endl
-	     << "Copyright 2010 Carl Reinke" << endl
-	     << "This program comes with ABSOLUTELY NO WARRANTY." << endl
-	     << endl;
+	std::cout << "Nanobounce" << std::endl
+	          << "Copyright 2010 Carl Reinke" << std::endl
+	          << "This program comes with ABSOLUTELY NO WARRANTY." << std::endl
+	          << std::endl;
 	
 	if (SDL_Init(0) == -1)
 	{
-		cerr << SDL_GetError() << endl;
+		std::cerr << SDL_GetError() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	SDL_Surface *surface = init_video(false);
@@ -98,7 +98,7 @@ int main( int argc, char *argv[] )
 	
 	// read player name
 	{
-		ifstream name_file("player");
+		std::ifstream name_file("player");
 		getline(name_file, player_name);
 	}
 	
@@ -170,7 +170,7 @@ int main( int argc, char *argv[] )
 					if (level_menu.no_selection)
 						continue;  // back to level set menu
 					
-					if (Game::play(surface, make_pair(level_set.levels.begin() + level_menu.selection, level_set.levels.end())))
+					if (Game::play(surface, std::make_pair(level_set.levels.begin() + level_menu.selection, level_set.levels.end())))
 					{
 						LevelSetCongratsLoop congrats(level_set);
 						congrats.loop(surface);
@@ -183,7 +183,7 @@ int main( int argc, char *argv[] )
 			case 1:  // More
 				{
 					SimpleMenu more_menu;
-					const string menu_items[] =
+					const std::string menu_items[] =
 					{
 						"Edit Levels",
 						"View Replays",
@@ -246,7 +246,7 @@ int main( int argc, char *argv[] )
 	
 	// save player name
 	{
-		ofstream name_file("player");
+		std::ofstream name_file("player");
 		name_file << player_name;
 	}
 	

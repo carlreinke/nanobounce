@@ -17,10 +17,6 @@
 #include "audio/audio.hpp"
 #include "audio/stream.hpp"
 
-#include <memory>
-
-using namespace std;
-
 void audio_callback( void *, Uint8 *stream, int len );
 
 bool audio_disabled = false;
@@ -31,11 +27,11 @@ Fixed volume = 0.75f, music_volume = 1.0f;
 
 SDL_AudioSpec spec;
 
-list<Channel *> channels;
-unique_ptr<Stream> music;
+std::list<Channel *> channels;
+std::unique_ptr<Stream> music;
 
-vector<Sample> samples;
-list<string> music_paths;
+std::vector<Sample> samples;
+std::list<std::string> music_paths;
 
 #if !defined(AUDIO_QUALITY)
 #define AUDIO_QUALITY 4
@@ -54,12 +50,12 @@ void init_audio( void )
 	
 	if (SDL_OpenAudio(&spec, NULL) == -1)
 	{
-		cerr << SDL_GetError() << endl;
+		std::cerr << SDL_GetError() << std::endl;
 		audio_disabled = true;
 		return;
 	}
 	
-	cout << "audio: " << spec.freq << " Hz, " << +spec.channels << " channels, " << spec.samples << " samples" << endl;
+	std::cout << "audio: " << spec.freq << " Hz, " << +spec.channels << " channels, " << spec.samples << " samples" << std::endl;
 	
 	SDL_PauseAudio(0);
 	
@@ -105,7 +101,7 @@ void audio_callback( void *, Uint8 *stream, int len )
 	}
 	
 	// channels
-	for (list<Channel *>::iterator channel_i = channels.begin(); channel_i != channels.end(); )
+	for (std::list<Channel *>::iterator channel_i = channels.begin(); channel_i != channels.end(); )
 	{
 		Channel *channel = *channel_i;
 		
@@ -150,7 +146,7 @@ void play_music( const std::string &path )
 	
 	SDL_LockAudio();
 	
-	music = make_unique<Stream>(path);
+	music = std::make_unique<Stream>(path);
 	
 	SDL_UnlockAudio();
 }
@@ -160,10 +156,10 @@ void play_next_music( void )
 	if (audio_disabled || audio_mode == NO_MUSIC)
 		return;
 	
-	static list<string>::iterator current = music_paths.begin();
+	static std::list<std::string>::iterator current = music_paths.begin();
 	
 	// release old music stream
-	music = auto_ptr<Stream>(NULL);
+	music = std::unique_ptr<Stream>(nullptr);
 	
 	// if no music files
 	if (music_paths.size() == 0)

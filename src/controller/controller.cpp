@@ -16,8 +16,6 @@
  */
 #include "controller/controller.hpp"
 
-using namespace std;
-
 bool Controller::push_events = true;
 
 const boost::array<SDLKey, Controller::functions_count> Controller::push_as_key = 
@@ -52,7 +50,7 @@ Controller::Controller( void )
 	was_down.reset();
 	is_triggered.reset();
 	
-	fill(repeat_tick.begin(), repeat_tick.end(), 0);
+	std::fill(repeat_tick.begin(), repeat_tick.end(), 0);
 	
 	if (!drop_input_enabled)
 	{
@@ -163,25 +161,25 @@ void ConfigurableController::update_down( void )
 
 int ConfigurableController::Assignment::analog( const Controller &controller ) const
 {
-	return (digital(controller) ? numeric_limits<Sint16>::max() : 0);
+	return (digital(controller) ? std::numeric_limits<Sint16>::max() : 0);
 }
 
 bool ConfigurableController::Assignment::digital( const Controller &controller ) const
 {
-	return (analog(controller) > numeric_limits<Sint16>::max() / 3);
+	return (analog(controller) > std::numeric_limits<Sint16>::max() / 3);
 }
 
 
-void ConfigurableController::load_assignments( const string &conf_path )
+void ConfigurableController::load_assignments( const std::string &conf_path )
 {
 	Json::Value root;
 	Json::Reader reader;
-	ifstream file(conf_path.c_str());
+	std::ifstream file(conf_path.c_str());
 	bool success = reader.parse(file, root);
 	
 	if (!success)
 	{
-		cerr << "failed to parse '" << conf_path << "': " << reader.getFormatedErrorMessages();
+		std::cerr << "failed to parse '" << conf_path << "': " << reader.getFormatedErrorMessages();
 	}
 	else
 	{

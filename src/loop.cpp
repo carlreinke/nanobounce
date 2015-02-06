@@ -4,8 +4,6 @@
 #include "volume.hpp"
 #include "video/video.hpp"
 
-using namespace std;
-
 const uint frame_per_second_limit = 60;
 
 void Loop::loop( SDL_Surface *surface )
@@ -87,7 +85,7 @@ void Loop::loop( SDL_Surface *surface )
 			{
 				uint frame_per_second = frames * (now_msec - last_fps_msec) / fps_refresh;
 				
-				// cout << frame_per_second << " fps (" << delay_usec << " usec delay)" << endl;
+				// std::cout << frame_per_second << " fps (" << delay_msec << " ms delay)" << std::endl;
 				
 				if (frame_per_second > frame_per_second_limit)
 					delay_msec += fps_refresh;

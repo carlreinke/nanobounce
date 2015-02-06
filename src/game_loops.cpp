@@ -5,8 +5,6 @@
 #include "main.hpp"
 #include "video/font.hpp"
 
-using namespace std;
-
 LevelSetCongratsLoop::LevelSetCongratsLoop( const LevelSet &level_set )
 : set_name(level_set.name)
 {
@@ -173,7 +171,7 @@ void LevelIntroLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 LevelWonLoop::LevelWonLoop( const Level &level, const Highscore &score, const Highscore &new_score )
 : level_name(level.get_name()), score(score), new_score(new_score)
 {
-	const string menu_items[] =
+	const std::string menu_items[] =
 	{
 		"Next",
 		"Retry"

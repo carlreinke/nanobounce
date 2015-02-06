@@ -9,10 +9,11 @@
 #include "video/video.hpp"
 #include "volume.hpp"
 
-using namespace std;
+using std::max;
+using std::min;
 
-vector<Sprite> Editor::block_sprites;
-bitset<Block::_max> Editor::block_type_unusable;
+std::vector<Sprite> Editor::block_sprites;
+std::bitset<Block::_max> Editor::block_type_unusable;
 
 Editor::Editor( void )
 : cursor_block(Block::none),
@@ -99,7 +100,7 @@ void Editor::handle_event( SDL_Event &e )
 			break;
 		case Controller::back_key:
 			{
-				vector<Block>::iterator block = block_at_position(cursor_x, cursor_y);
+				std::vector<Block>::iterator block = block_at_position(cursor_x, cursor_y);
 				cursor_block = (block == level.blocks.end()) ? Block::none : block->type;
 			}
 			break;
@@ -144,7 +145,7 @@ void Editor::handle_event( SDL_Event &e )
 			break;
 		case SDL_BUTTON_RIGHT:
 			{
-				vector<Block>::iterator block = block_at_position(-x_offset + e.button.x, -y_offset + e.button.y);
+				std::vector<Block>::iterator block = block_at_position(-x_offset + e.button.x, -y_offset + e.button.y);
 				cursor_block = (block == level.blocks.end()) ? Block::none : block->type;
 			}
 			break;
@@ -184,7 +185,7 @@ void Editor::update( void )
 void Editor::menu( void )
 {
 	SimpleMenu menu(surface);
-	const string entries[] =
+	const std::string entries[] =
 	{
 		"Play",
 		"Save",
@@ -305,7 +306,7 @@ void Editor::menu( void )
 	}
 }
 
-bool Editor::load( const string &level_data_path )
+bool Editor::load( const std::string &level_data_path )
 {
 	bool temp = level.load(level_data_path);
 	reset();
@@ -313,7 +314,7 @@ bool Editor::load( const string &level_data_path )
 	return temp;
 }
 
-bool Editor::save( const string &level_data_path ) const
+bool Editor::save( const std::string &level_data_path ) const
 {
 	bool success = level.save(level_data_path);
 	
@@ -326,7 +327,7 @@ bool Editor::save( const string &level_data_path ) const
 
 bool Editor::load_last( void )
 {
-	ifstream last("editor");
+	std::ifstream last("editor");
 	Level new_level;
 	new_level.load(last);
 	
@@ -338,7 +339,7 @@ bool Editor::load_last( void )
 
 bool Editor::save_last( void ) const
 {
-	ofstream last("editor");
+	std::ofstream last("editor");
 	level.save(last);
 	last.close();
 	
@@ -400,18 +401,18 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 		            ? (surface->h - (font.height(sprite) * 3) / 2)
 		            : (font.height(sprite) / 2);
 		
-		ostringstream buffer;
+		std::ostringstream buffer;
 		buffer << (cursor_x / Block::width) << ", " << (cursor_y / Block::height);
 		font.blit(surface, x, y, buffer.str(), sprite, Font::majuscule, Font::left, alpha);
 	}
 }
 
-vector<Block>::iterator Editor::block_at_position( int x, int y )
+std::vector<Block>::iterator Editor::block_at_position( int x, int y )
 {
 	x -= x % Block::width;
 	y -= y % Block::height;
 	
-	for (vector<Block>::reverse_iterator block = level.blocks.rbegin(); block != level.blocks.rend(); ++block)
+	for (std::vector<Block>::reverse_iterator block = level.blocks.rbegin(); block != level.blocks.rend(); ++block)
 		if (block->x == x && block->y == y)
 			return block.base() - 1;
 	
@@ -423,7 +424,7 @@ void Editor::set_block_at_position( int x, int y, Block::Type type )
 	x -= x % Block::width;
 	y -= y % Block::height;
 	
-	vector<Block>::iterator block = block_at_position(x, y);
+	std::vector<Block>::iterator block = block_at_position(x, y);
 	
 	if (type == Block::none)
 	{

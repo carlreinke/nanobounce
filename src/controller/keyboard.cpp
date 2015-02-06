@@ -16,8 +16,6 @@
  */
 #include "controller/keyboard.hpp"
 
-using namespace std;
-
 Keyboard::Keyboard( void )
 {
 	key_state = SDL_GetKeyState(NULL);

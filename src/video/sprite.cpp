@@ -19,8 +19,6 @@
 #include "video/sprite.hpp"
 #include "video/video.hpp"
 
-using namespace std;
-
 Sprite::Sprite( void )
 : surface(NULL), w(0), h(0)
 {
@@ -33,16 +31,16 @@ Sprite::Sprite( uint width, uint height, const SDL_Color &color )
 	assert(width > 0 && height > 0);
 }
 
-Sprite::Sprite( istream &netpbm )
+Sprite::Sprite( std::istream &netpbm )
 : surface(NULL)
 {
 	load_ppm(netpbm);
 }
 
-Sprite::Sprite( const string &netpbm_file )
+Sprite::Sprite( const std::string &netpbm_file )
 : surface(NULL)
 {
-	ifstream netpbm(netpbm_file.c_str());
+	std::ifstream netpbm(netpbm_file.c_str());
 	load_ppm(netpbm);
 }
 
@@ -74,15 +72,15 @@ Sprite & Sprite::operator=( const Sprite &that )
 	return *this;
 }
 
-void Sprite::load_ppm( istream &ppm )
+void Sprite::load_ppm( std::istream &ppm )
 {
 	destroy();
 	
-	string type;
+	std::string type;
 	ppm >> type;
 	if (type != "P3")
 	{
-		cerr << "error: sprite loading failed" << endl;
+		std::cerr << "error: sprite loading failed" << std::endl;
 		return;
 	}
 	

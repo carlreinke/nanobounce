@@ -1,6 +1,7 @@
 #include "loop.hpp"
 
-using namespace std;
+using std::max;
+using std::min;
 
 Fader::Fader( uint ms )
 : done(true),
