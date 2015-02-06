@@ -61,7 +61,7 @@ void LevelSet::save_meta( void )
 	meta << name << endl;
 	meta << author << endl;
 	
-	BOOST_FOREACH (const Level &level, levels)
+	for (const Level &level : levels)
 		meta << level.path.substr(directory.size() + 1) << endl;
 	
 	valid = meta.good();

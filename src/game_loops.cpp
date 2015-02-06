@@ -38,7 +38,7 @@ void LevelSetCongratsLoop::handle_event( SDL_Event &e )
 
 void LevelSetCongratsLoop::update( void )
 {
-	BOOST_FOREACH (boost::shared_ptr<Controller> controller, controllers)
+	for (boost::shared_ptr<Controller> controller : controllers)
 		controller->update();
 	
 	// TODO: fix: fireworks require old tick value, so they only tick every other time
@@ -96,7 +96,7 @@ void LevelSetCongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	BOOST_FOREACH (const Particle &particle, particles)
+	for (const Particle &particle : particles)
 		particle.draw(surface, 0, 0, alpha);
 	
 	font.blit(surface, surface->w / 2, surface->h / 4, "Congratulations!", font_sprites[3], Font::majuscule, Font::center, alpha);
@@ -153,7 +153,7 @@ void LevelIntroLoop::handle_event( SDL_Event &e )
 
 void LevelIntroLoop::update( void )
 {
-	BOOST_FOREACH (boost::shared_ptr<Controller> controller, controllers)
+	for (boost::shared_ptr<Controller> controller : controllers)
 		controller->update();
 	
 	if (--ticks == 0)
@@ -234,7 +234,7 @@ void LevelWonBestTimeLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	TextEntryMenu::draw(surface, alpha);
 	
-	BOOST_FOREACH (const Particle &particle, particles)
+	for (const Particle &particle : particles)
 		particle.draw(surface, 0, 0, alpha);
 	
 	int x = surface->w / 2,

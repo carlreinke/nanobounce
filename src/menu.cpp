@@ -65,7 +65,7 @@ void SimpleMenu::handle_event( SDL_Event &e )
 void SimpleMenu::update( void )
 {
 	// update controller
-	BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+	for (boost::shared_ptr<Controller> &controller : controllers)
 		controller->update();
 }
 
@@ -147,7 +147,7 @@ void SmoothMenu::handle_event( SDL_Event &e )
 void SmoothMenu::update( void )
 {
 	// update controller
-	BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+	for (boost::shared_ptr<Controller> &controller : controllers)
 		controller->update();
 	
 	// smooth menu movement

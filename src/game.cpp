@@ -51,13 +51,13 @@ void Game::handle_event( SDL_Event &e )
 void Game::update( void )
 {
 	// update controller
-	BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+	for (boost::shared_ptr<Controller> &controller : controllers)
 		controller->update();
 	
 	if (!fader.is_fading(Fader::in))
 	{
 		// update replay controllers
-		BOOST_FOREACH (boost::shared_ptr<Controller> &controller, play_controllers)
+		for (boost::shared_ptr<Controller> &controller : play_controllers)
 			controller->tick_update();
 		
 		tick();
@@ -73,10 +73,10 @@ void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	level.draw(surface, x_offset, y_offset, alpha);
 	
-	BOOST_FOREACH (const Ball &ball, balls)
+	for (const Ball &ball : balls)
 		ball.draw(surface, x_offset, y_offset, alpha);
 	
-	BOOST_FOREACH (const Particle &particle, particles)
+	for (const Particle &particle : particles)
 		particle.draw(surface, x_offset, y_offset, alpha);
 }
 
@@ -98,7 +98,7 @@ void Game::reset( void )
 	int ball_x = 0, ball_y = 0;
 	
 	balls.clear();
-	BOOST_FOREACH (const Block &block, level.blocks)
+	for (const Block &block : level.blocks)
 	{
 		if (block.type == Block::ball)
 		{
@@ -133,7 +133,7 @@ void Game::tick( void )
 {
 	int x_direction = 0;
 	
-	BOOST_FOREACH (boost::shared_ptr<Controller> &c, play_controllers)
+	for (boost::shared_ptr<Controller> &c : play_controllers)
 	{
 		const bool left = c->is_down[Controller::left] || c->is_down[Controller::left_shoulder],
 		           right = c->is_down[Controller::right] || c->is_down[Controller::right_shoulder];
@@ -156,7 +156,7 @@ void Game::tick( void )
 	
 	highscore.push_back_tick(x_direction);
 	
-	BOOST_FOREACH (Ball &ball, balls)
+	for (Ball &ball : balls)
 	{
 		ball.tick(x_direction);
 		check_collide(ball);
@@ -213,7 +213,7 @@ void Game::load_resources( void )
 	}};
 	
 	typedef pair<Sample *, string> SamplePair;
-	BOOST_FOREACH (const SamplePair &i, sample_names)
+	for (const SamplePair &i : sample_names)
 	{
 		if (i.first->empty())
 			*i.first = Sample(sample_directory + i.second + ".ogg");
@@ -244,7 +244,7 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 	     << endl;*/
 	
 	// check each block for collision
-	BOOST_FOREACH (Block &block, level.blocks)
+	for (Block &block : level.blocks)
 	{
 		if (block.property == Block::collidable)
 		{
@@ -336,7 +336,7 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 	else  // no collisions left
 	{
 		// check triggerable blocks
-		BOOST_FOREACH (Block &block, level.blocks)
+		for (Block &block : level.blocks)
 		{
 			if (block.property == Block::triggerable && ball_half_inside_block(ball, block))
 			{
@@ -508,7 +508,7 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 		case Block::toggle_0_star:
 			temp = 0;
 			
-			BOOST_FOREACH (Block &block, level.blocks)
+			for (Block &block : level.blocks)
 			{
 				const bool is_toggle_0 = block.type == Block::toggle_0_0;
 				
@@ -530,7 +530,7 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			break;
 			
 		case Block::toggle_1_star:
-			BOOST_FOREACH (Block &block, level.blocks)
+			for (Block &block : level.blocks)
 			{
 				const bool is_toggle_1 = block.type == Block::toggle_1_1 || block.type == Block::toggle_1_star;
 				
@@ -704,7 +704,7 @@ inline bool Game::ball_half_inside_block( const Ball &ball, const Block &block )
 // check if ball is in collision with any collideable block
 bool Game::ball_overlaps_any_block( const Ball &ball ) const
 {
-	BOOST_FOREACH (const Block &block, level.blocks)
+	for (const Block &block : level.blocks)
 	{
 		if (block.property == Block::collidable)
 			if (ball_overlaps_block(ball, block))

@@ -42,7 +42,7 @@ Block::Block( int x, int y, Type type )
 			{ push_right, "push", 2 },
 		}};
 		
-		BOOST_FOREACH (const SpriteName &i, sprite_names)
+		for (const SpriteName &i : sprite_names)
 			sprites[i.type] = Sprite(Sprite(sprite_directory + i.name + ".ppm"), SDL_RectXYWH(i.offset * width, 0, width, height));
 	}
 }

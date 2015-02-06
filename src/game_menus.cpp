@@ -26,7 +26,7 @@ GameMenu::GameMenu( void )
 void GameMenu::update( void )
 {
 	// update controller
-	BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+	for (boost::shared_ptr<Controller> &controller : controllers)
 		controller->update();
 	
 	int x = screen_width * (selection + 1) / (entry_count() + 1),
@@ -83,7 +83,7 @@ LevelSetMenu::LevelSetMenu( bool allow_new )
 	vector<string> dir_entries = directory_listing(level_directory);
 	
 	// populate the level set list
-	BOOST_FOREACH (const string &dir_entry, dir_entries)
+	for (const string &dir_entry : dir_entries)
 	{
 		LevelSet entry(level_directory + dir_entry);
 		if (!entry.invalid())
@@ -137,7 +137,7 @@ uint LevelSetMenu::entry_count( void ) const
 
 LevelMenu::LevelMenu( const LevelSet &level_set, bool allow_new )
 {
-	BOOST_FOREACH (const Level &level, level_set.levels)
+	for (const Level &level : level_set.levels)
 		entries.push_back(level.get_name());
 	
 	if (allow_new)
@@ -151,7 +151,7 @@ LevelMenu::LevelMenu( const LevelSet &level_set, bool allow_new )
 ScoredLevelMenu::ScoredLevelMenu( const LevelSet &level_set, bool show_one_incomplete, bool auto_select_single_entry )
 : auto_select_single_entry(auto_select_single_entry)
 {
-	BOOST_FOREACH (const Level &level, level_set.levels)
+	for (const Level &level : level_set.levels)
 	{
 		if (path_exists(level.get_score_path()))
 		{
@@ -236,7 +236,7 @@ TextEntryMenu::TextEntryMenu( const string &title, const string &text )
 		make_pair('Z' + 1, 'a' - 1),
 		make_pair('z' + 1, 255),
 	};
-	BOOST_FOREACH (const Range &range, ranges)
+	for (const Range &range : ranges)
 	{
 		for (int c = range.first; c <= range.second; ++c)
 		{

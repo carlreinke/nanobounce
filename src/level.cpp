@@ -92,7 +92,7 @@ bool Level::save( ostream &data ) const
 	data << (width / Block::width) << " "
 	     << (height / Block::height) << endl;
 	
-	BOOST_FOREACH (const Block &block, blocks)
+	for (const Block &block : blocks)
 	{
 		data << (block.x / block.width) << " "
 		     << (block.y / block.height) << " "
@@ -118,7 +118,7 @@ void Level::validate( void )
 
 void Level::reset( void )
 {
-	BOOST_FOREACH (Block &block, blocks)
+	for (Block &block : blocks)
 		block.reset();
 }
 
@@ -126,7 +126,7 @@ void Level::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha 
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	BOOST_FOREACH (const Block &block, blocks)
+	for (const Block &block : blocks)
 		block.draw(surface, x_offset, y_offset, alpha);
 }
 
@@ -157,7 +157,7 @@ void Level::load_resources( void )
 		}};
 		
 		typedef pair<Block::Type, string> BlockPair;
-		BOOST_FOREACH (const BlockPair &i, temp_block_names)
+		for (const BlockPair &i : temp_block_names)
 			block_names.insert(make_bipair(i.first, i.second));
 	}
 }

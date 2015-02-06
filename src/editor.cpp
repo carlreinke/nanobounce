@@ -177,7 +177,7 @@ void Editor::handle_event( SDL_Event &e )
 void Editor::update( void )
 {
 	// update controller
-	BOOST_FOREACH (boost::shared_ptr<Controller> &controller, controllers)
+	for (boost::shared_ptr<Controller> &controller : controllers)
 		controller->update();
 }
 
@@ -362,7 +362,7 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	BOOST_FOREACH (const Block &block, level.blocks)
+	for (const Block &block : level.blocks)
 		block_sprites[block.type].blit(surface, x_offset + block.x, y_offset + block.y, alpha);
 	
 	// cursor

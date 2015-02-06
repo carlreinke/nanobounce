@@ -150,7 +150,7 @@ void ConfigurableController::update_down( void )
 			{
 				bool temp = true;
 				
-				BOOST_FOREACH (const boost::shared_ptr<Assignment> &function_assignment, function_assignments)
+				for (const boost::shared_ptr<Assignment> &function_assignment : function_assignments)
 					temp &= function_assignment->digital(*this);
 				
 				if (temp)
