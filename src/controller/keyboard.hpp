@@ -30,7 +30,7 @@ private:
 	Uint8 *key_state;
 	
 	const Json::Value &assignment_root( const Json::Value & ) const;
-	boost::shared_ptr<Assignment> parse_assignment( const Json::Value & ) const;
+	std::shared_ptr<Assignment> parse_assignment( const Json::Value & ) const;
 	
 	class Key : public Assignment
 	{

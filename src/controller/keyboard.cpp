@@ -30,13 +30,13 @@ const Json::Value &Keyboard::assignment_root( const Json::Value &root ) const
 	return root["keyboard"];
 }
 
-boost::shared_ptr<Keyboard::Assignment> Keyboard::parse_assignment( const Json::Value &serialized ) const
+std::shared_ptr<Keyboard::Assignment> Keyboard::parse_assignment( const Json::Value &serialized ) const
 {
-	boost::shared_ptr<Assignment> temp;
+	std::shared_ptr<Assignment> temp;
 	
 	if (serialized.isMember("key"))
 	{
-		temp = boost::shared_ptr<Assignment>(new Key);
+		temp = std::shared_ptr<Assignment>(new Key);
 		temp->unserialize(serialized);
 	}
 	

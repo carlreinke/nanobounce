@@ -21,5 +21,4 @@
 #include <boost/bimap.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/smart_ptr/shared_array.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/utility.hpp>

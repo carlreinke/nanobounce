@@ -38,7 +38,7 @@ void LevelSetCongratsLoop::handle_event( SDL_Event &e )
 
 void LevelSetCongratsLoop::update( void )
 {
-	for (boost::shared_ptr<Controller> controller : controllers)
+	for (std::shared_ptr<Controller> controller : controllers)
 		controller->update();
 	
 	// TODO: fix: fireworks require old tick value, so they only tick every other time
@@ -153,7 +153,7 @@ void LevelIntroLoop::handle_event( SDL_Event &e )
 
 void LevelIntroLoop::update( void )
 {
-	for (boost::shared_ptr<Controller> controller : controllers)
+	for (std::shared_ptr<Controller> controller : controllers)
 		controller->update();
 	
 	if (--ticks == 0)

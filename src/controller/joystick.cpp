@@ -61,23 +61,23 @@ const Json::Value &Joystick::assignment_root( const Json::Value &root ) const
 	return root["joystick"][root["joystick"].isMember(name) ? name : "defaults"];
 }
 
-boost::shared_ptr<Joystick::Assignment> Joystick::parse_assignment( const Json::Value &serialized ) const
+std::shared_ptr<Joystick::Assignment> Joystick::parse_assignment( const Json::Value &serialized ) const
 {
-	boost::shared_ptr<Assignment> temp;
+	std::shared_ptr<Assignment> temp;
 	
 	if (serialized.isMember("button"))
 	{
-		temp = boost::shared_ptr<Assignment>(new Button);
+		temp = std::shared_ptr<Assignment>(new Button);
 		temp->unserialize(serialized);
 	}
 	else if (serialized.isMember("axis"))
 	{
-		temp = boost::shared_ptr<Assignment>(new Axis);
+		temp = std::shared_ptr<Assignment>(new Axis);
 		temp->unserialize(serialized);
 	}
 	else if (serialized.isMember("hat"))
 	{
-		temp = boost::shared_ptr<Assignment>(new Hat);
+		temp = std::shared_ptr<Assignment>(new Hat);
 		temp->unserialize(serialized);
 	}
 	

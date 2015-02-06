@@ -177,7 +177,7 @@ void Editor::handle_event( SDL_Event &e )
 void Editor::update( void )
 {
 	// update controller
-	for (boost::shared_ptr<Controller> &controller : controllers)
+	for (std::shared_ptr<Controller> &controller : controllers)
 		controller->update();
 }
 

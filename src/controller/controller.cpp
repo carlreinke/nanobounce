@@ -150,7 +150,7 @@ void ConfigurableController::update_down( void )
 			{
 				bool temp = true;
 				
-				for (const boost::shared_ptr<Assignment> &function_assignment : function_assignments)
+				for (const std::shared_ptr<Assignment> &function_assignment : function_assignments)
 					temp &= function_assignment->digital(*this);
 				
 				if (temp)
@@ -201,7 +201,7 @@ void ConfigurableController::load_assignments( const string &conf_path )
 				
 				for (uint i = 0; i < function_assignments_config.size(); ++i)
 				{
-					boost::shared_ptr<Assignment> temp = parse_assignment(function_assignments_config[i]);
+					std::shared_ptr<Assignment> temp = parse_assignment(function_assignments_config[i]);
 					if (temp.get() != NULL)
 						function_assignments.insert(temp);
 				}

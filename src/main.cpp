@@ -56,7 +56,7 @@ int main( int argc, char *argv[] )
 			{
 				const Highscore score(optarg);
 				level_path = score.level_path;
-				disabled_controllers.push_back(boost::shared_ptr<Controller>(new Replay(score)));
+				disabled_controllers.push_back(std::shared_ptr<Controller>(new Replay(score)));
 			}
 			break;
 			
@@ -114,9 +114,9 @@ int main( int argc, char *argv[] )
 	font_sprites[4] = Sprite(font_directory + "font_gray_4.ppm");
 	
 #if defined(HAS_KEYBOARD)
-	controllers.push_back(boost::shared_ptr<Controller>(new Keyboard()));
+	controllers.push_back(std::shared_ptr<Controller>(new Keyboard()));
 #endif
-	controllers.push_back(boost::shared_ptr<Controller>(new Joystick(0)));
+	controllers.push_back(std::shared_ptr<Controller>(new Joystick(0)));
 	
 	if (editor)
 	{
@@ -225,7 +225,7 @@ int main( int argc, char *argv[] )
 								bool restart = true;
 								while (restart)
 								{
-									Game game(level, Controller::Set(1, boost::shared_ptr<Controller>(new Replay(Highscore(level.get_score_path())))));
+									Game game(level, Controller::Set(1, std::shared_ptr<Controller>(new Replay(Highscore(level.get_score_path())))));
 									game.loop(surface);
 									
 									restart = (game.state == Game::restart);

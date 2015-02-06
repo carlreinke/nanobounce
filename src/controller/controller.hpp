@@ -32,7 +32,7 @@ public:
 	
 	virtual bool is_keyboard( void ) { return false; }
 	
-	typedef std::vector< boost::shared_ptr<Controller> > Set;
+	typedef std::vector< std::shared_ptr<Controller> > Set;
 	
 	enum Functions
 	{
@@ -115,20 +115,20 @@ protected:
 			{
 				return (lhs.serialize() < rhs.serialize());
 			}
-			bool operator()( const boost::shared_ptr<Assignment> lhs, const boost::shared_ptr<Assignment> rhs )
+			bool operator()( const std::shared_ptr<Assignment> lhs, const std::shared_ptr<Assignment> rhs )
 			{
 				return operator()(*lhs, *rhs);
 			}
 		};
 		
-		typedef std::set<boost::shared_ptr<Assignment>, Cmp> Set;
+		typedef std::set<std::shared_ptr<Assignment>, Cmp> Set;
 	};
 	
 	typedef std::vector<Assignment::Set> Assignments;
 	boost::array<Assignments, functions_count> assignments;
 	
 	virtual const Json::Value &assignment_root( const Json::Value & ) const = 0;
-	virtual boost::shared_ptr<Assignment> parse_assignment( const Json::Value & ) const = 0;
+	virtual std::shared_ptr<Assignment> parse_assignment( const Json::Value & ) const = 0;
 	
 	void load_assignments( const std::string & = "controller.conf" );
 };

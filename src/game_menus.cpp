@@ -26,7 +26,7 @@ GameMenu::GameMenu( void )
 void GameMenu::update( void )
 {
 	// update controller
-	for (boost::shared_ptr<Controller> &controller : controllers)
+	for (std::shared_ptr<Controller> &controller : controllers)
 		controller->update();
 	
 	int x = screen_width * (selection + 1) / (entry_count() + 1),

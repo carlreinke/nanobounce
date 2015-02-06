@@ -51,13 +51,13 @@ void Game::handle_event( SDL_Event &e )
 void Game::update( void )
 {
 	// update controller
-	for (boost::shared_ptr<Controller> &controller : controllers)
+	for (std::shared_ptr<Controller> &controller : controllers)
 		controller->update();
 	
 	if (!fader.is_fading(Fader::in))
 	{
 		// update replay controllers
-		for (boost::shared_ptr<Controller> &controller : play_controllers)
+		for (std::shared_ptr<Controller> &controller : play_controllers)
 			controller->tick_update();
 		
 		tick();
@@ -133,7 +133,7 @@ void Game::tick( void )
 {
 	int x_direction = 0;
 	
-	for (boost::shared_ptr<Controller> &c : play_controllers)
+	for (std::shared_ptr<Controller> &c : play_controllers)
 	{
 		const bool left = c->is_down[Controller::left] || c->is_down[Controller::left_shoulder],
 		           right = c->is_down[Controller::right] || c->is_down[Controller::right_shoulder];
