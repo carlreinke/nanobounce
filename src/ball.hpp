@@ -47,10 +47,16 @@ private:
 	static const Fixed wall_jump_y_vel_reset;
 	static const int wall_jump_ticks;
 	
-	typedef std::pair<int, int> coord;
+	struct Coord
+	{
+		Coord( int x, int y ) : x(x), y(y) { }
+		
+		int x;
+		int y;
+	};
 	
 	static const uint trail_max = 40;
-	std::deque<coord> trail;
+	std::deque<Coord> trail;
 	
 	static std::vector<Sprite> sprites;
 	

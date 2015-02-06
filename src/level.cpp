@@ -103,13 +103,11 @@ bool Level::save( std::ostream &data ) const
 void Level::validate( void )
 {
 	// remove blocks outside boundaries
-	for (std::vector<Block>::iterator block = blocks.begin(); block != blocks.end(); )
-	{
-		if (block->x >= width || block->y >= height)
-			block = blocks.erase(block);
-		else
-			++block;
-	}
+	blocks.erase(std::remove_if(blocks.begin(), blocks.end(),
+		[this]( const Block &block ) { return block.x < 0 ||
+		                                      block.y < 0 ||
+		                                      block.x >= width ||
+		                                      block.y >= height; }));
 	
 	stable_sort(blocks.begin(), blocks.end());
 }

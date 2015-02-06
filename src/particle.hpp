@@ -18,10 +18,16 @@ public:
 	
 	Fixed alpha, alpha_per_tick;
 	
-	typedef std::pair<int, int> coord;
+	struct Coord
+	{
+		Coord( int x, int y ) : x(x), y(y) { }
+		
+		const int x;
+		const int y;
+	};
 	
 	static const uint trail_max = 15;
-	std::deque<coord> trail;
+	std::deque<Coord> trail;
 	
 	SDL_Color color;
 	

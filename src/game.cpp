@@ -236,13 +236,15 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 		return false;
 	}
 	
-/*	cout << fixed;
-	cout << "pre"
-	     << "\tx " << setprecision(8) << ball.x
-	     << "\ty " << setprecision(8) << ball.y
-	     << "\tvx " << setprecision(8) << ball.x_vel
-	     << "\tvy " << setprecision(8) << ball.y_vel
-	     << endl;*/
+#if defined(DEBUG_COLLIDE)
+	std::cout << std::fixed;
+	std::cout << "pre"
+	          << "\tx " << std::setprecision(8) << ball.x
+	          << "\ty " << std::setprecision(8) << ball.y
+	          << "\tvx " << std::setprecision(8) << ball.x_vel
+	          << "\tvy " << std::setprecision(8) << ball.y_vel
+	          << std::endl;
+#endif
 	
 	// check each block for collision
 	for (Block &block : level.blocks)
@@ -267,23 +269,27 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 				edge_dist_y = edge_dist_y_temp;
 			}
 			
-/*			if (order_temp > 0)
-				cout << "? " << &block << " " << (hit_x_temp ? "x" : " ") << (hit_y_temp ? "y" : " ")
-				     << "\to " << setprecision(8) << order_temp
-				     << "\trx " << setprecision(8) << revert_x
-				     << "\try " << setprecision(8) << revert_y
-				     << endl;*/
+#if defined(DEBUG_COLLIDE)
+			if (order_temp > 0)
+				std::cout << "? " << &block << " " << (hit_x_temp ? "x" : " ") << (hit_y_temp ? "y" : " ")
+				          << "\to " << std::setprecision(8) << order_temp
+				          << "\trx " << std::setprecision(8) << revert_x
+				          << "\try " << std::setprecision(8) << revert_y
+				          << std::endl;
+#endif
 		}
 	}
 	
 	// found collision, revert ball to edge
 	if (order > 0)
 	{
-/*		cout << block_hit << " " << (hit_x ? "x" : " ") << (hit_y ? "y" : " ")
-		     << "\to " << setprecision(8) <<  order
-		     << "\trx " << setprecision(8) << revert_x
-		     << "\try " << setprecision(8) << revert_y
-		     << endl;*/
+#if defined(DEBUG_COLLIDE)
+		std::cout << block_hit << " " << (hit_x ? "x" : " ") << (hit_y ? "y" : " ")
+		          << "\to " << std::setprecision(8) <<  order
+		          << "\trx " << std::setprecision(8) << revert_x
+		          << "\try " << std::setprecision(8) << revert_y
+		          << std::endl;
+#endif
 		
 		if (hit_x)
 		{
@@ -292,13 +298,13 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 				// prevent wall climbing via corner collisions
 				// if ball is in one-half-unit-deep corner-collision with block, try to reposition it to reduce false collisions
 				ball.y -= edge_dist_y;
-				ball.trail.back().second = ball.y + make_frac<Fixed>(1, 2);
+				ball.trail.back().y = ball.y + make_frac<Fixed>(1, 2);
 				
 				return check_collide(ball, recursion_depth + 1);
 			}
 			else
 			{
-				ball.trail.back().first = ball.x - revert_x + make_frac<Fixed>(1, 2);
+				ball.trail.back().x = ball.x - revert_x + make_frac<Fixed>(1, 2);
 				ball.x -= 2 * revert_x;
 				
 				// ball was repositioned, check again
@@ -315,13 +321,13 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 			if (!hit_x && fabsf(edge_dist_x) < make_frac<Fixed>(1, 2))
 			{
 				ball.x -= edge_dist_x;
-				ball.trail.back().first = ball.x + make_frac<Fixed>(1, 2);
+				ball.trail.back().x = ball.x + make_frac<Fixed>(1, 2);
 				
 				return check_collide(ball, recursion_depth + 1);
 			}
 			else
 			{
-				ball.trail.back().second = ball.y - revert_y + make_frac<Fixed>(1, 2);
+				ball.trail.back().y = ball.y - revert_y + make_frac<Fixed>(1, 2);
 				ball.y -= 2 * revert_y;
 				
 				// ball was repositioned, check again
@@ -346,13 +352,15 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 		}
 	}
 	
-/*	cout << "post"
-	     << "\tx " << setprecision(8) << ball.x
-	     << "\ty " << setprecision(8) << ball.y
-	     << "\tvx " << setprecision(8) << ball.x_vel
-	     << "\tvy " << setprecision(8) << ball.y_vel
-	     << endl
-	     << endl;*/
+#if defined(DEBUG_COLLIDE)
+	std::cout << "post"
+	          << "\tx " << std::setprecision(8) << ball.x
+	          << "\ty " << std::setprecision(8) << ball.y
+	          << "\tvx " << std::setprecision(8) << ball.x_vel
+	          << "\tvy " << std::setprecision(8) << ball.y_vel
+	          << std::endl
+	          << std::endl;
+#endif
 	
 	return (order > 0);
 }
@@ -482,7 +490,6 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			}
 			
 			ball.no_vel = true;
-			block.property = Block::hidden;
 			
 			for (int y = 0; y < block.height; y += 3)
 				for (int x = 0; x < block.width; x += 3)

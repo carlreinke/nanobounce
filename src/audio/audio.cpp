@@ -27,7 +27,7 @@ Fixed volume = 0.75f, music_volume = 1.0f;
 
 SDL_AudioSpec spec;
 
-std::list<Channel *> channels;
+std::list<std::unique_ptr<Channel>> channels;
 std::unique_ptr<Stream> music;
 
 std::vector<Sample> samples;
@@ -101,9 +101,9 @@ void audio_callback( void *, Uint8 *stream, int len )
 	}
 	
 	// channels
-	for (std::list<Channel *>::iterator channel_i = channels.begin(); channel_i != channels.end(); )
+	for (auto channel_i = channels.begin(); channel_i != channels.end(); )
 	{
-		Channel *channel = *channel_i;
+		std::unique_ptr<Channel> &channel = *channel_i;
 		
 		switch (spec.format)
 		{
@@ -117,10 +117,7 @@ void audio_callback( void *, Uint8 *stream, int len )
 		}
 		
 		if (channel->empty())
-		{
-			delete channel;
 			channel_i = channels.erase(channel_i);
-		}
 		else
 			++channel_i;
 	}
@@ -134,7 +131,7 @@ void play_sample( const Sample &sample, Fixed volume, Fixed pan )
 	
 	SDL_LockAudio();
 	
-	channels.push_back(new Sample(sample, volume, pan));
+	channels.emplace_back(std::make_unique<Sample>(sample, volume, pan));
 	
 	SDL_UnlockAudio();
 }
@@ -156,7 +153,7 @@ void play_next_music( void )
 	if (audio_disabled || audio_mode == NO_MUSIC)
 		return;
 	
-	static std::list<std::string>::iterator current = music_paths.begin();
+	static auto current = music_paths.begin();
 	
 	// release old music stream
 	music = std::unique_ptr<Stream>(nullptr);

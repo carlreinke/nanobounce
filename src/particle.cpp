@@ -27,9 +27,9 @@ void Particle::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alp
 	alpha = static_cast<int>(this->alpha) * alpha / 256;
 	Uint8 alpha_trail = alpha / trail.size();
 	
-	for (std::deque<coord>::const_reverse_iterator i = trail.rbegin(); i != trail.rend(); ++i)
+	for (auto coord = trail.crbegin(); coord != trail.crend(); ++coord)
 	{
-		SDL_SetPixelA(surface, x_offset + i->first, y_offset + i->second, color, alpha);
+		SDL_SetPixelA(surface, x_offset + coord->x, y_offset + coord->y, color, alpha);
 		alpha -= alpha_trail;
 	}
 }
@@ -50,14 +50,14 @@ void Particle::tick( void )
 	
 	alpha = min(max(Fixed(SDL_ALPHA_TRANSPARENT), alpha + alpha_per_tick), Fixed(SDL_ALPHA_OPAQUE));
 	
-	trail.push_back(coord(x, y));
-	if (trail.size() > trail_max)
+	if (trail.size() == trail_max)
 		trail.pop_front();
+	trail.emplace_back(x, y);
 }
 
 void Particle::tick_all( std::list<Particle> &particles )
 {
-	for (std::list<Particle>::iterator i = particles.begin(); i != particles.end(); )
+	for (auto i = particles.begin(); i != particles.end(); )
 	{
 		i->tick();
 		

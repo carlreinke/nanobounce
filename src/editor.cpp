@@ -412,7 +412,7 @@ std::vector<Block>::iterator Editor::block_at_position( int x, int y )
 	x -= x % Block::width;
 	y -= y % Block::height;
 	
-	for (std::vector<Block>::reverse_iterator block = level.blocks.rbegin(); block != level.blocks.rend(); ++block)
+	for (auto block = level.blocks.rbegin(); block != level.blocks.rend(); ++block)
 		if (block->x == x && block->y == y)
 			return block.base() - 1;
 	
