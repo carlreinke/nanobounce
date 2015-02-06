@@ -17,8 +17,6 @@
 #include <unistd.h>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/array.hpp>
 #include <boost/bimap.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/smart_ptr/shared_array.hpp>
-#include <boost/utility.hpp>
