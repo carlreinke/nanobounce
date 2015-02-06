@@ -42,14 +42,14 @@ public:
 		minuscule
 	};
 	
-	void blit( SDL_Surface *, int x, int y, const std::string &, const Sprite &, justifications = left, Uint8 alpha = SDL_ALPHA_OPAQUE );
-	void blit( SDL_Surface *, int x, int y, std::string, const Sprite &, styles, justifications = left, Uint8 alpha = SDL_ALPHA_OPAQUE );
+	void blit( SDL_Surface *, int x, int y, const std::string &, const Sprite &, justifications = left, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	void blit( SDL_Surface *, int x, int y, std::string, const Sprite &, styles, justifications = left, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 	uint height( const Sprite &sprite ) const { return graymap.size() * sprite.height(); };
 	uint width( const std::string &, const Sprite & ) const;
 	
 private:
-	void blit_char( SDL_Surface *, int x, int y, char, const Sprite &, Uint8 alpha );
+	void blit_char( SDL_Surface *, int x, int y, char, const Sprite &, Uint8 alpha ) const;
 	
 	typedef std::vector< std::vector<unsigned char> > Graymap;
 	

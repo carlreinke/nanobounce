@@ -87,7 +87,7 @@ void Font::load_char_widths( std::istream &is )
 	assert(x == graymap[0].size());
 }
 
-void Font::blit( SDL_Surface *surface, int x, int y, const std::string &text, const Sprite &sprite, justifications justify, Uint8 alpha )
+void Font::blit( SDL_Surface *surface, int x, int y, const std::string &text, const Sprite &sprite, justifications justify, Uint8 alpha ) const
 {
 	switch (justify)
 	{
@@ -101,28 +101,29 @@ void Font::blit( SDL_Surface *surface, int x, int y, const std::string &text, co
 		break;
 	}
 	
-	for (Graymap::const_iterator y_line = graymap.begin(); y_line != graymap.end(); ++y_line)
+	const int start_x = x;
+	
+	for (const auto scanline : graymap)
 	{
-		int x_temp = x;
-		
 		for (const unsigned char c : text)
 		{
-			uint g_x = char_positions[c];
+			uint char_position = char_positions[c];
 			
-			for (uint x = 0; x < char_widths[c]; ++x)
+			for (uint char_x = 0; char_x < char_widths[c]; ++char_x)
 			{
-				if ((*y_line)[g_x + x] > 0)
-					sprite.blit(surface, x_temp, y, alpha);
+				if (scanline[char_position + char_x] > 0)
+					sprite.blit(surface, x, y, alpha);
 				
-				x_temp += sprite.width();
+				x += sprite.width();
 			}
 		}
 		
 		y += sprite.width();
+		x = start_x;
 	}
 }
 
-void Font::blit( SDL_Surface *surface, int x, int y, std::string text, const Sprite &sprite, styles style, justifications justify, Uint8 alpha )
+void Font::blit( SDL_Surface *surface, int x, int y, std::string text, const Sprite &sprite, styles style, justifications justify, Uint8 alpha ) const
 {
 	switch (style)
 	{
