@@ -130,26 +130,26 @@ void Level::load_resources( void )
 {
 	if (block_names.empty())
 	{
-		boost::array<std::pair<Block::Type, std::string>, Block::_max> temp_block_names =
+		boost::array<std::pair<Block::Type, std::string>, Block::Type_COUNT> temp_block_names =
 		{{
-			std::make_pair(Block::ball,    "ball"),
-			std::make_pair(Block::exit,    "exit"),
-			std::make_pair(Block::normal,  "block"),
-			std::make_pair(Block::nuke,    "nuke"),
-			std::make_pair(Block::recycle, "recycle"),
+			std::make_pair(Block::BALL,    "ball"),
+			std::make_pair(Block::EXIT,    "exit"),
+			std::make_pair(Block::NORMAL,  "block"),
+			std::make_pair(Block::NUKE,    "nuke"),
+			std::make_pair(Block::RECYCLE, "recycle"),
 			
-			std::make_pair(Block::toggle_0_0,    "toggle_0"),
-			std::make_pair(Block::toggle_0_star, "toggle_0_star"),
-			std::make_pair(Block::toggle_1_1,    "toggle_1"),
-			std::make_pair(Block::toggle_1_star, "toggle_1_star"),
+			std::make_pair(Block::TOGGLE_0_0,    "toggle_0"),
+			std::make_pair(Block::TOGGLE_0_STAR, "toggle_0_star"),
+			std::make_pair(Block::TOGGLE_1_1,    "toggle_1"),
+			std::make_pair(Block::TOGGLE_1_STAR, "toggle_1_star"),
 			
-			std::make_pair(Block::boost_up,    "boost_up"),
-			std::make_pair(Block::boost_left,  "boost_left"),
-			std::make_pair(Block::boost_right, "boost_right"),
+			std::make_pair(Block::BOOST_UP,    "boost_up"),
+			std::make_pair(Block::BOOST_LEFT,  "boost_left"),
+			std::make_pair(Block::BOOST_RIGHT, "boost_right"),
 			
-			std::make_pair(Block::push_up,    "push_up"),
-			std::make_pair(Block::push_left,  "push_left"),
-			std::make_pair(Block::push_right, "push_right"),
+			std::make_pair(Block::PUSH_UP,    "push_up"),
+			std::make_pair(Block::PUSH_LEFT,  "push_left"),
+			std::make_pair(Block::PUSH_RIGHT, "push_right"),
 		}};
 		
 		typedef std::pair<Block::Type, std::string> BlockPair;

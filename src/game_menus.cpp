@@ -53,7 +53,7 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 		font.blit(surface, x, y, entries[i], font_sprites[3], Font::MAJUSCULE, Font::CENTER, (i == selection) ? alpha : alpha / 2);
 	}
 	
-	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.3e", font_sprites[1], Font::MAJUSCULE, Font::LEFT, alpha);
+	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.4-alpha", font_sprites[1], Font::MAJUSCULE, Font::LEFT, alpha);
 	
 	x = surface->w - 1;
 	y = surface->h - font.height(font_sprites[1]) * 3;

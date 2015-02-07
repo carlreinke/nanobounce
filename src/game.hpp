@@ -26,26 +26,34 @@ public:
 	
 	enum State
 	{
-		none,
-		won,
-		cheat_won,
-		lost,
+		NONE,
+		WON,
+		CHEAT_WON,
+		LOST,
 		
-		restart,
-		quit
+		RESTART,
+		QUIT
 	};
+	
 	State state;
 	
 	Highscore highscore;
 	
-	static void load_resources( void );
-	static struct Samples
+	struct Samples
 	{
-		Sample bounce, unboost, wall_jump,
-		       boost, nuke, recycle, toggle,
-		       lost, won;
-	}
-	samples;
+		Sample bounce;
+		Sample unboost;
+		Sample wall_jump;
+		Sample boost;
+		Sample nuke;
+		Sample recycle;
+		Sample toggle;
+		Sample lost;
+		Sample won;
+	};
+
+	static void load_resources( void );
+	static Samples samples;
 	
 private:
 	bool check_collide( Ball &, int = 0 );

@@ -12,8 +12,8 @@ public:
 	
 	enum Direction
 	{
-		in = SDL_ALPHA_OPAQUE,
-		out = SDL_ALPHA_TRANSPARENT
+		IN = SDL_ALPHA_OPAQUE,
+		OUT = SDL_ALPHA_TRANSPARENT
 	};
 	
 	void fade( Direction );

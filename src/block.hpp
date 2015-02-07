@@ -10,39 +10,39 @@ class Block
 public:
 	enum Type
 	{
-		none,
-		ball,
-		exit,
+		NONE,
+		BALL,
+		EXIT,
 		
-		normal,
-		nuke,
-		recycle,
+		NORMAL,
+		NUKE,
+		RECYCLE,
 		
-		toggle_0_0,
-		toggle_0_1,
-		toggle_0_star,
+		TOGGLE_0_0,
+		TOGGLE_0_1,
+		TOGGLE_0_STAR,
 		
-		toggle_1_0,
-		toggle_1_1,
-		toggle_1_star,
+		TOGGLE_1_0,
+		TOGGLE_1_1,
+		TOGGLE_1_STAR,
 		
-		boost_up,
-		boost_left,
-		boost_right,
+		BOOST_UP,
+		BOOST_LEFT,
+		BOOST_RIGHT,
 		
-		push_up,
-		push_left,
-		push_right,
+		PUSH_UP,
+		PUSH_LEFT,
+		PUSH_RIGHT,
 		
-		_max
+		Type_COUNT
 	};
 	
 	enum Property
 	{
-		hidden,
-		ignored,
-		collidable,
-		triggerable
+		HIDDEN,
+		IGNORED,
+		COLLIDABLE,
+		TRIGGERABLE
 	};
 	
 	Block( int x, int y, Type type );

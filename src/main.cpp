@@ -16,18 +16,20 @@ using std::max;
 
 bool global_quit = false;
 
-const std::string level_directory = "levels/",
-                  music_directory = "music/",
-                  sample_directory = "samples/",
-                  sprite_directory = "sprites/",
-                  font_directory = sprite_directory + "fonts/";
+const std::string level_directory = "levels/";
+const std::string music_directory = "music/";
+const std::string sample_directory = "samples/";
+const std::string sprite_directory = "sprites/";
+const std::string font_directory = sprite_directory + "fonts/";
 
 std::string player_name = "NOBODY";
 
 int main( int argc, char *argv[] )
 {
-	bool editor = false, replay = false;
+	bool editor = false;
+	bool replay = false;
 	std::string level_path;
+	std::shared_ptr<Controller> replay_controller;
 	
 	int opt;
 	while ((opt = getopt(argc, argv, "ae:mr:sv:")) != -1)
@@ -56,7 +58,7 @@ int main( int argc, char *argv[] )
 			{
 				const Highscore score(optarg);
 				level_path = score.level_path;
-				disabled_controllers.push_back(std::make_shared<Replay>(score));
+				replay_controller = std::make_shared<Replay>(score);
 			}
 			break;
 			
@@ -131,14 +133,10 @@ int main( int argc, char *argv[] )
 	}
 	else if (replay)
 	{
-		disabled_controllers.swap(controllers);
-		
-		Game game;
+		Game game(Controllers(1, replay_controller));
 		game.load(level_path);
 		
 		game.loop(surface);
-		
-		disabled_controllers.swap(controllers);
 	}
 	else
 	{
@@ -185,8 +183,8 @@ int main( int argc, char *argv[] )
 					SimpleMenu more_menu;
 					const std::string menu_items[] =
 					{
-						"Edit Levels",
 						"View Replays",
+						"Make Levels",
 						"Back"
 					};
 					for (uint i = 0; i < COUNTOF(menu_items); ++i)
@@ -199,12 +197,6 @@ int main( int argc, char *argv[] )
 					switch (more_menu.selection)
 					{
 					case 0:
-						{
-							Editor editor;
-							editor.loop(surface);
-						}
-						break;
-					case 1:
 						for (LevelSetMenu set_menu; !global_quit; )  // choose a level set
 						{
 							set_menu.loop(surface);
@@ -228,9 +220,15 @@ int main( int argc, char *argv[] )
 									Game game(level, Controllers(1, std::make_shared<Replay>(Highscore(level.get_score_path()))));
 									game.loop(surface);
 									
-									restart = (game.state == Game::restart);
+									restart = (game.state == Game::RESTART);
 								}
 							}
+						}
+						break;
+					case 1:
+						{
+							Editor editor;
+							editor.loop(surface);
 						}
 						break;
 					}

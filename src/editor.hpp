@@ -38,7 +38,7 @@ private:
 	Level level;
 	
 	static std::vector<Sprite> block_sprites;
-	static std::bitset<Block::_max> block_type_unusable;
+	static std::bitset<Block::Type_COUNT> block_type_unusable;
 	
 	void menu( void );
 };

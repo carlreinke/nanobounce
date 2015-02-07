@@ -36,6 +36,7 @@ enum AudioMode
 	NO_MUSIC,
 	ALL_AUDIO
 };
+
 enum MusicMode
 {
 	NO_REPEAT,

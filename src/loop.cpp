@@ -12,7 +12,7 @@ void Loop::loop( SDL_Surface *surface )
 	
 	loop_quit = false;
 	
-	fader.fade(Fader::in);
+	fader.fade(Fader::IN);
 	
 	bool done = false;
 	
@@ -57,11 +57,11 @@ void Loop::loop( SDL_Surface *surface )
 		{
 			update();
 			
-			if (loop_quit && !fader.was_fading(Fader::out))
-				fader.fade(Fader::out);
+			if (loop_quit && !fader.was_fading(Fader::OUT))
+				fader.fade(Fader::OUT);
 			
 			fader.update();
-			done = fader.is_done() && fader.was_fading(Fader::out);
+			done = fader.is_done() && fader.was_fading(Fader::OUT);
 			
 			update_volume_notification();
 			

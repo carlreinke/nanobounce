@@ -11,7 +11,7 @@ using std::min;
 Game::Samples Game::samples;
 
 Game::Game( Controllers controllers )
-: state(none),
+: state(NONE),
   play_controllers(controllers)
 {
 	// good to go
@@ -32,11 +32,11 @@ void Game::handle_event( SDL_Event &e )
 		switch (e.key.keysym.sym)
 		{
 		case Controller::START_KEY:
-			if (state != quit)
+			if (state != QUIT)
 				menu();
 			break;
 		case Controller::QUIT_KEY:
-			state = quit;
+			state = QUIT;
 			break;
 		
 		default:
@@ -55,7 +55,7 @@ void Game::update( void )
 	for (std::shared_ptr<Controller> &controller : controllers)
 		controller->update();
 	
-	if (!fader.is_fading(Fader::in))
+	if (!fader.is_fading(Fader::IN))
 	{
 		// update replay controllers
 		for (std::shared_ptr<Controller> &controller : play_controllers)
@@ -64,7 +64,7 @@ void Game::update( void )
 		tick();
 	}
 	
-	if (state != none)
+	if (state != NONE)
 		loop_quit = true;
 }
 
@@ -101,7 +101,7 @@ void Game::reset( void )
 	balls.clear();
 	for (const Block &block : level.blocks)
 	{
-		if (block.type == Block::ball)
+		if (block.type == Block::BALL)
 		{
 			balls.push_back(Ball(block.x + (Block::width - Ball::width) / 2,
 			                     block.y + (Block::height - Ball::height) / 2));
@@ -111,7 +111,7 @@ void Game::reset( void )
 		}
 	}
 	
-	state = none;
+	state = NONE;
 	
 	// initial pan
 	x_offset = -(level.width - screen_width) / 2;
@@ -147,8 +147,8 @@ void Game::tick( void )
 		    c->is_down[Controller::LEFT_SHOULDER] &&
 		    c->is_down[Controller::RIGHT_SHOULDER])
 		{
-			if (state == none)
-				state = cheat_won;
+			if (state == NONE)
+				state = CHEAT_WON;
 		}
 	}
 	
@@ -165,9 +165,9 @@ void Game::tick( void )
 		check_unboost(ball);
 		
 		// if ball outside level, it's dead
-		if (!ball_overlaps_level(ball) && state == none)
+		if (!ball_overlaps_level(ball) && state == NONE)
 		{
-			state = lost;
+			state = LOST;
 			
 			highscore.save("last_lost.score");
 			
@@ -249,7 +249,7 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 	// check each block for collision
 	for (Block &block : level.blocks)
 	{
-		if (block.property == Block::collidable)
+		if (block.property == Block::COLLIDABLE)
 		{
 			Fixed revert_x_temp, revert_y_temp;
 			bool hit_x_temp, hit_y_temp;
@@ -345,7 +345,7 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 		// check triggerable blocks
 		for (Block &block : level.blocks)
 		{
-			if (block.property == Block::triggerable && ball_half_inside_block(ball, block))
+			if (block.property == Block::TRIGGERABLE && ball_half_inside_block(ball, block))
 			{
 				handle_noncollidable_block(ball, block);
 			}
@@ -481,10 +481,10 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 		{
 			int temp;
 			
-		case Block::nuke:
-			if (state == none)
+		case Block::NUKE:
+			if (state == NONE)
 			{
-				state = lost;
+				state = LOST;
 				
 				highscore.save("last_lost.score");
 			}
@@ -503,8 +503,8 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			sample = &samples.nuke;
 			break;
 			
-		case Block::recycle:
-			block.property = Block::hidden;
+		case Block::RECYCLE:
+			block.property = Block::HIDDEN;
 			
 			for (int y = 0; y < block.height; y += 3)
 				for (int x = 0; x < block.width; x += 3)
@@ -513,17 +513,17 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			sample = &samples.recycle;
 			break;
 			
-		case Block::toggle_0_star:
+		case Block::TOGGLE_0_STAR:
 			temp = 0;
 			
 			for (Block &block : level.blocks)
 			{
-				const bool is_toggle_0 = block.type == Block::toggle_0_0;
+				const bool is_toggle_0 = block.type == Block::TOGGLE_0_0;
 				
 				if (is_toggle_0 && !ball_overlaps_block(ball, block))
 				{
-					block.type = Block::toggle_0_1;
-					block.property = Block::collidable;
+					block.type = Block::TOGGLE_0_1;
+					block.property = Block::COLLIDABLE;
 					
 					for (int y = 0; y < block.height; y += 5)
 						for (int x = 0; x < block.width; x += 5)
@@ -537,15 +537,15 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 				sample = &samples.toggle;
 			break;
 			
-		case Block::toggle_1_star:
+		case Block::TOGGLE_1_STAR:
 			for (Block &block : level.blocks)
 			{
-				const bool is_toggle_1 = block.type == Block::toggle_1_1 || block.type == Block::toggle_1_star;
+				const bool is_toggle_1 = block.type == Block::TOGGLE_1_1 || block.type == Block::TOGGLE_1_STAR;
 				
 				if (is_toggle_1)
 				{
-					block.type = Block::toggle_1_0;
-					block.property = Block::ignored;
+					block.type = Block::TOGGLE_1_0;
+					block.property = Block::IGNORED;
 					
 					for (int y = 0; y < block.height; y += 5)
 						for (int x = 0; x < block.width; x += 5)
@@ -556,7 +556,7 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			sample = &samples.toggle;
 			break;
 			
-		case Block::boost_up:
+		case Block::BOOST_UP:
 			ball.y_boost(-ball.y_boost_block);
 			
 			for (int i = 0; i < 10; ++i)
@@ -565,7 +565,7 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			sample = &samples.boost;
 			break;
 			
-		case Block::boost_left:
+		case Block::BOOST_LEFT:
 			{
 				Ball temp(block.x - ball.width, block.y);
 				
@@ -583,7 +583,7 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			}
 			break;
 			
-		case Block::boost_right:
+		case Block::BOOST_RIGHT:
 			{
 				Ball temp(block.x + block.width, block.y);
 				
@@ -616,10 +616,10 @@ inline void Game::handle_noncollidable_block( Ball &ball, Block &block )
 {
 	switch (block.type)
 	{
-	case Block::exit:
-		if (state == none)
+	case Block::EXIT:
+		if (state == NONE)
 		{
-			state = won;
+			state = WON;
 			ball.no_accel = true;
 			// TODO: maybe trap ball inside block?
 			
@@ -629,21 +629,21 @@ inline void Game::handle_noncollidable_block( Ball &ball, Block &block )
 		}
 		break;
 		
-	case Block::push_up:
+	case Block::PUSH_UP:
 		ball.y_vel -= ball.y_accel * 3 / 2;
 		
 		if (SDL_GetTicks() % 2 == 0)
 			particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(192, 192, 255) : SDL_Color_RGBA(0, 0, 255)));
 		
 		break;
-	case Block::push_left:
+	case Block::PUSH_LEFT:
 		ball.x_vel -= ball.y_accel / 2;
 		
 		if (SDL_GetTicks() % 2 == 0)
 			particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(192, 192, 255) : SDL_Color_RGBA(0, 0, 255)));
 		
 		break;
-	case Block::push_right:
+	case Block::PUSH_RIGHT:
 		ball.x_vel += ball.y_accel / 2;
 		
 		if (SDL_GetTicks() % 2 == 0)
@@ -714,7 +714,7 @@ bool Game::ball_overlaps_any_block( const Ball &ball ) const
 {
 	for (const Block &block : level.blocks)
 	{
-		if (block.property == Block::collidable)
+		if (block.property == Block::COLLIDABLE)
 			if (ball_overlaps_block(ball, block))
 				return true;
 	}
@@ -743,10 +743,10 @@ void Game::menu( void )
 		case 0:  // Continue
 			break;
 		case 1:  // Restart
-			state = restart;
+			state = RESTART;
 			break;
 		case 2:  // Quit
-			state = quit;
+			state = QUIT;
 			break;
 		}
 	}
@@ -763,9 +763,9 @@ bool Game::play( SDL_Surface *surface, std::pair< std::vector<Level>::iterator, 
 	
 	bool persistent_restart_selection = false;
 	
-	while (game.state != Game::quit && level != levels.second && !global_quit)
+	while (game.state != Game::QUIT && level != levels.second && !global_quit)
 	{
-		if (game.state == Game::lost || game.state == Game::restart)
+		if (game.state == Game::LOST || game.state == Game::RESTART)
 		{
 			// retry level
 			game.reset();
@@ -781,7 +781,7 @@ bool Game::play( SDL_Surface *surface, std::pair< std::vector<Level>::iterator, 
 		
 		game.loop(surface);
 		
-		if (game.state == Game::won)
+		if (game.state == Game::WON)
 		{
 			highscore.load(level->get_score_path());
 			
@@ -809,14 +809,14 @@ bool Game::play( SDL_Surface *surface, std::pair< std::vector<Level>::iterator, 
 				switch (menu.selection)
 				{
 				case 1: // Retry
-					game.state = Game::restart;
+					game.state = Game::RESTART;
 					persistent_restart_selection = true;
 					break;
 				}
 			}
 		}
 		
-		if (game.state == Game::won || game.state == Game::cheat_won)
+		if (game.state == Game::WON || game.state == Game::CHEAT_WON)
 			++level;
 	}
 	

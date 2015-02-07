@@ -13,23 +13,23 @@ using std::max;
 using std::min;
 
 std::vector<Sprite> Editor::block_sprites;
-std::bitset<Block::_max> Editor::block_type_unusable;
+std::bitset<Block::Type_COUNT> Editor::block_type_unusable;
 
 Editor::Editor( void )
-: cursor_block(Block::none),
+: cursor_block(Block::NONE),
   level("UNNAMED", align(screen_width, Block::width), align(screen_height, Block::height))
 {
 	if (block_sprites.empty())
 	{
-		block_sprites = Block(0, 0, Block::none).sprites;
-		block_sprites[Block::none] = Sprite(Block::width, Block::height, SDL_Color_RGBA(0, 0, 0));
-		block_sprites[Block::ball] = Sprite(sprite_directory + "editor/ball.ppm");
-		block_sprites[Block::exit] = Sprite(sprite_directory + "editor/exit.ppm");
+		block_sprites = Block(0, 0, Block::NONE).sprites;
+		block_sprites[Block::NONE] = Sprite(Block::width, Block::height, SDL_Color_RGBA(0, 0, 0));
+		block_sprites[Block::BALL] = Sprite(sprite_directory + "editor/ball.ppm");
+		block_sprites[Block::EXIT] = Sprite(sprite_directory + "editor/exit.ppm");
 	}
 	if (block_type_unusable.none())
 	{
-		block_type_unusable.set(Block::toggle_0_1);
-		block_type_unusable.set(Block::toggle_1_0);
+		block_type_unusable.set(Block::TOGGLE_0_1);
+		block_type_unusable.set(Block::TOGGLE_1_0);
 	}
 	
 	reset();
@@ -101,7 +101,7 @@ void Editor::handle_event( SDL_Event &e )
 		case Controller::BACK_KEY:
 			{
 				std::vector<Block>::iterator block = block_at_position(cursor_x, cursor_y);
-				cursor_block = (block == level.blocks.end()) ? Block::none : block->type;
+				cursor_block = (block == level.blocks.end()) ? Block::NONE : block->type;
 			}
 			break;
 			
@@ -109,7 +109,7 @@ void Editor::handle_event( SDL_Event &e )
 			do
 			{
 				if (cursor_block == 0)
-					cursor_block = Block::_max;
+					cursor_block = Block::Type_COUNT;
 				--cursor_block;
 			}
 			while (block_type_unusable[cursor_block]);
@@ -117,7 +117,7 @@ void Editor::handle_event( SDL_Event &e )
 		case Controller::RIGHT_SHOULDER_KEY:
 			do
 			{
-				++cursor_block %= Block::_max;
+				++cursor_block %= Block::Type_COUNT;
 			}
 			while (block_type_unusable[cursor_block]);
 			break;
@@ -146,7 +146,7 @@ void Editor::handle_event( SDL_Event &e )
 		case SDL_BUTTON_RIGHT:
 			{
 				std::vector<Block>::iterator block = block_at_position(-x_offset + e.button.x, -y_offset + e.button.y);
-				cursor_block = (block == level.blocks.end()) ? Block::none : block->type;
+				cursor_block = (block == level.blocks.end()) ? Block::NONE : block->type;
 			}
 			break;
 			
@@ -154,7 +154,7 @@ void Editor::handle_event( SDL_Event &e )
 			do
 			{
 				if (cursor_block == 0)
-					cursor_block = Block::_max;
+					cursor_block = Block::Type_COUNT;
 				--cursor_block;
 			}
 			while (block_type_unusable[cursor_block]);
@@ -163,7 +163,7 @@ void Editor::handle_event( SDL_Event &e )
 		case SDL_BUTTON_WHEELDOWN:
 			do
 			{
-				++cursor_block %= Block::_max;
+				++cursor_block %= Block::Type_COUNT;
 			}
 			while (block_type_unusable[cursor_block]);
 			break;
@@ -214,7 +214,7 @@ void Editor::menu( void )
 					game.reset();
 					game.loop(surface);
 				}
-				while (game.state == Game::lost || game.state == Game::restart);
+				while (game.state == Game::LOST || game.state == Game::RESTART);
 			}
 			break;
 			
@@ -426,7 +426,7 @@ void Editor::set_block_at_position( int x, int y, Block::Type type )
 	
 	std::vector<Block>::iterator block = block_at_position(x, y);
 	
-	if (type == Block::none)
+	if (type == Block::NONE)
 	{
 		if (block != level.blocks.end())
 			level.blocks.erase(block);
