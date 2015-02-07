@@ -32,22 +32,23 @@ public:
 	Channel( const Channel & );
 	
 	template <class T>
-	void mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream, uint len, Fixed global_volume = 1 );
+	void mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream, size_t len, Fixed global_volume = 1 );
 	
 	virtual bool empty( void ) const = 0;
 	
 protected:
 	void copy( const Channel & );
 	
-	virtual Uint8 *get_buffer( uint &len ) = 0;
-	virtual void flush( uint len ) = 0;
+	virtual Uint8 *get_buffer( size_t &len ) = 0;
+	virtual void flush( size_t len ) = 0;
 	
-	Fixed volume, pan;
+	Fixed volume;
+	Fixed pan;
 };
 
 
 template <typename T>
-void Channel::mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream_, uint len, Fixed global_volume )
+void Channel::mix_into_stream( const SDL_AudioSpec &spec, Uint8 *stream_, size_t len, Fixed global_volume )
 {
 	if (empty())
 		return;

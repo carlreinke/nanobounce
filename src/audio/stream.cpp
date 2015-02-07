@@ -22,8 +22,8 @@ using std::min;
 
 Stream::Stream( const std::string &path )
 : Channel(),
-  buffer(), size(0), start_position(0), end_position(0),
-  end_of_file(true),
+  buffer(), size(0),
+  start_position(0), end_position(0), end_of_file(true),
   vorbis_file(NULL)
 {
 	if (audio_disabled)
@@ -91,7 +91,7 @@ void Stream::destroy( void )
 	}
 }
 
-Uint8 * Stream::get_buffer( uint &len )
+Uint8 * Stream::get_buffer( size_t &len )
 {
 	assert(len <= size);
 	
@@ -139,7 +139,7 @@ Uint8 * Stream::get_buffer( uint &len )
 	return &buffer[start_position];
 }
 
-void Stream::flush( uint len )
+void Stream::flush( size_t len )
 {
 	start_position += len;
 }

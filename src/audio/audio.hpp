@@ -22,13 +22,13 @@
 
 #include <SDL.h>
 
-void init_audio( void );
-void deinit_audio( void );
+extern void init_audio( void );
+extern void deinit_audio( void );
 
-void play_sample( const Sample &, Fixed volume = 1, Fixed pan = 0.5f );
-void play_music( const std::string &path );
+extern void play_sample( const Sample &, Fixed volume = 1, Fixed pan = 0.5f );
+extern void play_music( const std::string &path );
 
-void play_next_music( void );
+extern void play_next_music( void );
 
 enum AudioMode
 {
@@ -47,11 +47,11 @@ extern bool audio_disabled;
 
 extern AudioMode audio_mode;
 extern MusicMode music_mode;
+
 extern Fixed volume;
 
 extern SDL_AudioSpec spec;
 
-extern std::vector<Sample> samples;
 extern std::list<std::string> music_paths;
 
 inline AudioMode & operator++( AudioMode &audio_mode )

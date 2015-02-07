@@ -23,14 +23,15 @@ bool audio_disabled = false;
 
 AudioMode audio_mode = ALL_AUDIO;
 MusicMode music_mode = REPEAT_ALL;
-Fixed volume = 0.75f, music_volume = 1.0f;
+
+Fixed volume = 0.75f;
+Fixed music_volume = 1.0f;
 
 SDL_AudioSpec spec;
 
 std::list<std::unique_ptr<Channel>> channels;
 std::unique_ptr<Stream> music;
 
-std::vector<Sample> samples;
 std::list<std::string> music_paths;
 
 #if !defined(AUDIO_QUALITY)

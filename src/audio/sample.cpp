@@ -21,14 +21,16 @@ using std::min;
 
 Sample::Sample( void )
 : Channel(),
-  buffer(), length(0), position(0)
+  buffer(), length(0),
+  position(0)
 {
 	// good to go
 }
 
 Sample::Sample( const std::string &path )
 : Channel(),
-  buffer(), length(0), position(0)
+  buffer(), length(0),
+  position(0)
 {
 	Stream stream(path);
 	
@@ -41,7 +43,7 @@ Sample::Sample( const std::string &path )
 	// copy entire stream into buffer
 	while (position < length && !stream.empty())
 	{
-		uint amount = min(stream.size, length - position);
+		size_t amount = min(stream.size, length - position);
 		memcpy(&buffer[position], stream.get_buffer(amount), amount);
 		stream.flush(amount);
 		position += amount;
@@ -90,13 +92,13 @@ void Sample::copy( const Sample &that )
 	position = 0;
 }
 
-Uint8 * Sample::get_buffer( uint &len )
+Uint8 * Sample::get_buffer( size_t &len )
 {
 	len = min(len, length - position);
 	return &buffer[position];
 }
 
-void Sample::flush( uint len )
+void Sample::flush( size_t len )
 {
 	position += len;
 }

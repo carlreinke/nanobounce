@@ -38,13 +38,14 @@ public:
 private:
 	void destroy( void );
 	
-	Uint8 *get_buffer( uint &len );
-	void flush( uint len );
+	Uint8 *get_buffer( size_t &len );
+	void flush( size_t len );
 	
 	boost::shared_array<Uint8> buffer;
-	uint size;
+	size_t size;
 	
-	uint start_position, end_position;
+	size_t start_position;
+	size_t end_position;
 	bool end_of_file;
 	int bitstream;
 	
