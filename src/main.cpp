@@ -225,7 +225,7 @@ int main( int argc, char *argv[] )
 								bool restart = true;
 								while (restart)
 								{
-									Game game(level, Controller::Set(1, std::make_shared<Replay>(Highscore(level.get_score_path()))));
+									Game game(level, Controllers(1, std::make_shared<Replay>(Highscore(level.get_score_path()))));
 									game.loop(surface);
 									
 									restart = (game.state == Game::restart);

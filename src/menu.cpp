@@ -26,25 +26,25 @@ void SimpleMenu::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case Controller::back_key:
-		case Controller::quit_key:
+		case Controller::BACK_KEY:
+		case Controller::QUIT_KEY:
 			no_selection = true;
-		case Controller::select_key:
-		case Controller::start_key:
+		case Controller::SELECT_KEY:
+		case Controller::START_KEY:
 			loop_quit = true;
 			break;
 			
-		case Controller::left_shoulder_key:
-		case Controller::left_key:
-		case Controller::up_key:
+		case Controller::LEFT_SHOULDER_KEY:
+		case Controller::LEFT_KEY:
+		case Controller::UP_KEY:
 			if (selection == 0)
 				selection = entry_count();
 			--selection;
 			break;
 			
-		case Controller::right_shoulder_key:
-		case Controller::right_key:
-		case Controller::down_key:
+		case Controller::RIGHT_SHOULDER_KEY:
+		case Controller::RIGHT_KEY:
+		case Controller::DOWN_KEY:
 			++selection;
 			if (selection == entry_count())
 				selection = 0;
@@ -108,29 +108,29 @@ void SmoothMenu::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case Controller::back_key:
-		case Controller::quit_key:
+		case Controller::BACK_KEY:
+		case Controller::QUIT_KEY:
 			no_selection = true;
 			loop_quit = true;
 			break;
 			
-		case Controller::up_key:
-		case Controller::left_key:
-		case Controller::left_shoulder_key:
+		case Controller::UP_KEY:
+		case Controller::LEFT_KEY:
+		case Controller::LEFT_SHOULDER_KEY:
 			if (selection == 0)
 				selection = entry_count();
 			--selection;
 			break;
 			
-		case Controller::down_key:
-		case Controller::right_key:
-		case Controller::right_shoulder_key:
+		case Controller::DOWN_KEY:
+		case Controller::RIGHT_KEY:
+		case Controller::RIGHT_SHOULDER_KEY:
 			if (++selection >= entry_count())
 				selection = 0;
 			break;
 			
-		case Controller::select_key:
-		case Controller::start_key:
+		case Controller::SELECT_KEY:
+		case Controller::START_KEY:
 			no_selection = (entry_count() == 0);
 			loop_quit = true;
 			break;

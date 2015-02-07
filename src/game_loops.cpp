@@ -18,10 +18,10 @@ void LevelSetCongratsLoop::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case Controller::back_key:
-		case Controller::quit_key:
-		case Controller::select_key:
-		case Controller::start_key:
+		case Controller::BACK_KEY:
+		case Controller::QUIT_KEY:
+		case Controller::SELECT_KEY:
+		case Controller::START_KEY:
 			loop_quit = true;
 			break;
 			
@@ -133,10 +133,10 @@ void LevelIntroLoop::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case Controller::back_key:
-		case Controller::quit_key:
-		case Controller::select_key:
-		case Controller::start_key:
+		case Controller::BACK_KEY:
+		case Controller::QUIT_KEY:
+		case Controller::SELECT_KEY:
+		case Controller::START_KEY:
 			loop_quit = true;
 			break;
 			

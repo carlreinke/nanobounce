@@ -10,14 +10,14 @@ using std::min;
 
 Game::Samples Game::samples;
 
-Game::Game( Controller::Set controllers )
+Game::Game( Controllers controllers )
 : state(none),
   play_controllers(controllers)
 {
 	// good to go
 }
 
-Game::Game( const Level &level, Controller::Set controllers )
+Game::Game( const Level &level, Controllers controllers )
 : play_controllers(controllers)
 {
 	this->level = level;
@@ -31,11 +31,11 @@ void Game::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case Controller::start_key:
+		case Controller::START_KEY:
 			if (state != quit)
 				menu();
 			break;
-		case Controller::quit_key:
+		case Controller::QUIT_KEY:
 			state = quit;
 			break;
 		
@@ -136,16 +136,16 @@ void Game::tick( void )
 	
 	for (std::shared_ptr<Controller> &c : play_controllers)
 	{
-		const bool left = c->is_down[Controller::left] || c->is_down[Controller::left_shoulder],
-		           right = c->is_down[Controller::right] || c->is_down[Controller::right_shoulder];
+		const bool left = c->is_down[Controller::LEFT] || c->is_down[Controller::LEFT_SHOULDER],
+		           right = c->is_down[Controller::RIGHT] || c->is_down[Controller::RIGHT_SHOULDER];
 		
 		x_direction += (left ? -1 : 0) + (right ? 1 : 0);
 		
 		// skip-level cheat
-		if (c->is_down[Controller::up] &&
-		    c->is_down[Controller::down] &&
-		    c->is_down[Controller::left_shoulder] &&
-		    c->is_down[Controller::right_shoulder])
+		if (c->is_down[Controller::UP] &&
+		    c->is_down[Controller::DOWN] &&
+		    c->is_down[Controller::LEFT_SHOULDER] &&
+		    c->is_down[Controller::RIGHT_SHOULDER])
 		{
 			if (state == none)
 				state = cheat_won;

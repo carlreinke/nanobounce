@@ -18,29 +18,31 @@
 
 bool Controller::push_events = true;
 
-const boost::array<SDLKey, Controller::control_count> Controller::push_as_key = 
+const boost::array<SDLKey, Controller::Control_COUNT> Controller::push_as_key = 
 {{
-	static_cast<SDLKey>(up_key),
-	static_cast<SDLKey>(right_key),
-	static_cast<SDLKey>(down_key),
-	static_cast<SDLKey>(left_key),
+	static_cast<SDLKey>(UP_KEY),
+	static_cast<SDLKey>(RIGHT_KEY),
+	static_cast<SDLKey>(DOWN_KEY),
+	static_cast<SDLKey>(LEFT_KEY),
 	
-	static_cast<SDLKey>(left_shoulder_key),
-	static_cast<SDLKey>(right_shoulder_key),
+	static_cast<SDLKey>(LEFT_SHOULDER_KEY),
+	static_cast<SDLKey>(RIGHT_SHOULDER_KEY),
 	
-	static_cast<SDLKey>(select_key),
-	static_cast<SDLKey>(back_key),
+	static_cast<SDLKey>(SELECT_KEY),
+	static_cast<SDLKey>(BACK_KEY),
 	
-	static_cast<SDLKey>(start_key),
-	static_cast<SDLKey>(quit_key),
+	static_cast<SDLKey>(START_KEY),
+	static_cast<SDLKey>(QUIT_KEY),
 	
-	static_cast<SDLKey>(vol_down_key),
-	static_cast<SDLKey>(vol_up_key),
+	static_cast<SDLKey>(VOLUME_DOWN_KEY),
+	static_cast<SDLKey>(VOLUME_UP_KEY),
 }};
 
-Uint32 Controller::repeat_delay = SDL_DEFAULT_REPEAT_DELAY, Controller::repeat_interval = SDL_DEFAULT_REPEAT_INTERVAL;
+Uint32 Controller::repeat_delay = SDL_DEFAULT_REPEAT_DELAY;
+Uint32 Controller::repeat_interval = SDL_DEFAULT_REPEAT_INTERVAL;
 
-Controller::Set controllers, disabled_controllers;
+Controllers controllers;
+Controllers disabled_controllers;
 
 bool Controller::drop_input_enabled = false;
 
@@ -89,7 +91,7 @@ void Controller::update( void )
 	
 	const Uint32 tick = SDL_GetTicks();
 	
-	for (int i = 0; i < control_count; ++i)
+	for (int i = 0; i < Control_COUNT; ++i)
 	{
 		if (is_down[i])
 		{

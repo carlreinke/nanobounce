@@ -255,37 +255,37 @@ void TextEntryMenu::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case Controller::back_key:
+		case Controller::BACK_KEY:
 			if (text.size() == 0)
 				goto made_no_selection;
 			text.resize(text.size() - 1);
 			break;
 			
-		case Controller::select_key:
+		case Controller::SELECT_KEY:
 			if (entries[selection].size() > 1) // selected "end"
 				goto made_selection;
 			text += entries[selection];
 			break;
 			
-		case Controller::quit_key:
+		case Controller::QUIT_KEY:
 made_no_selection:
 			no_selection = true;
-		case Controller::start_key:
+		case Controller::START_KEY:
 made_selection:
 			loop_quit = true;
 			break;
 			
-		case Controller::left_shoulder_key:
-		case Controller::left_key:
-		case Controller::up_key:
+		case Controller::LEFT_SHOULDER_KEY:
+		case Controller::LEFT_KEY:
+		case Controller::UP_KEY:
 			if (selection == 0)
 				selection = entry_count();
 			--selection;
 			break;
 			
-		case Controller::right_shoulder_key:
-		case Controller::right_key:
-		case Controller::down_key:
+		case Controller::RIGHT_SHOULDER_KEY:
+		case Controller::RIGHT_KEY:
+		case Controller::DOWN_KEY:
 			++selection;
 			if (selection == entry_count())
 				selection = 0;

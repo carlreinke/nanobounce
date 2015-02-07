@@ -57,14 +57,14 @@ void Editor::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case Controller::start_key:
+		case Controller::START_KEY:
 			menu();
 			break;
-		case Controller::quit_key:
+		case Controller::QUIT_KEY:
 			loop_quit = true;
 			break;
 			
-		case Controller::right_key:
+		case Controller::RIGHT_KEY:
 			cursor_x += Block::width;
 			if (cursor_x < level.width)
 			{
@@ -72,14 +72,14 @@ void Editor::handle_event( SDL_Event &e )
 				break;
 			}
 			// if cursor outside level, undo movement
-		case Controller::left_key:
+		case Controller::LEFT_KEY:
 			if (cursor_x > 0)
 			{
 				cursor_x -= Block::width;
 				x_offset = max(x_offset, -cursor_x);
 			}
 			break;
-		case Controller::down_key:
+		case Controller::DOWN_KEY:
 			cursor_y += Block::height;
 			if (cursor_y < level.height)
 			{
@@ -87,7 +87,7 @@ void Editor::handle_event( SDL_Event &e )
 				break;
 			}
 			// if cursor outside level, undo movement
-		case Controller::up_key:
+		case Controller::UP_KEY:
 			if (cursor_y > 0)
 			{
 				cursor_y -= Block::height;
@@ -95,17 +95,17 @@ void Editor::handle_event( SDL_Event &e )
 			}
 			break;
 			
-		case Controller::select_key:
+		case Controller::SELECT_KEY:
 			set_block_at_position(cursor_x, cursor_y, static_cast<Block::Type>(cursor_block));
 			break;
-		case Controller::back_key:
+		case Controller::BACK_KEY:
 			{
 				std::vector<Block>::iterator block = block_at_position(cursor_x, cursor_y);
 				cursor_block = (block == level.blocks.end()) ? Block::none : block->type;
 			}
 			break;
 			
-		case Controller::left_shoulder_key:
+		case Controller::LEFT_SHOULDER_KEY:
 			do
 			{
 				if (cursor_block == 0)
@@ -114,7 +114,7 @@ void Editor::handle_event( SDL_Event &e )
 			}
 			while (block_type_unusable[cursor_block]);
 			break;
-		case Controller::right_shoulder_key:
+		case Controller::RIGHT_SHOULDER_KEY:
 			do
 			{
 				++cursor_block %= Block::_max;

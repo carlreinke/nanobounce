@@ -65,7 +65,8 @@ private:
 		bool unserialize( const Json::Value & );
 		
 		uint num;
-		bool y_axis, positive_direction;
+		bool y_axis;
+		bool positive_direction;
 	};
 };
 

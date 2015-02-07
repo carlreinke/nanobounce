@@ -30,10 +30,10 @@ void Loop::loop( SDL_Surface *surface )
 			case SDL_KEYDOWN:
 				switch (e.key.keysym.sym)
 				{
-				case Controller::vol_up_key:
+				case Controller::VOLUME_UP_KEY:
 					trigger_volume_change(make_frac<Fixed>(1, 100));
 					break;
-				case Controller::vol_down_key:
+				case Controller::VOLUME_DOWN_KEY:
 					trigger_volume_change(make_frac<Fixed>(-1, 100));
 					break;
 					

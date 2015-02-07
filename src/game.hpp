@@ -12,8 +12,8 @@
 class Game : public Loop
 {
 public:
-	Game( Controller::Set = controllers );
-	Game( const Level &, Controller::Set = controllers );
+	Game( Controllers = controllers );
+	Game( const Level &, Controllers = controllers );
 	
 	void handle_event( SDL_Event & );
 	void update( void );
@@ -73,7 +73,7 @@ private:
 	
 	void menu( void );
 	
-	Controller::Set play_controllers;
+	Controllers play_controllers;
 	
 public:
 	static bool play( SDL_Surface *surface, std::pair< std::vector<Level>::iterator, std::vector<Level>::iterator > levels );

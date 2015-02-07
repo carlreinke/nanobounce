@@ -33,54 +33,56 @@ public:
 	
 	virtual bool is_keyboard( void ) { return false; }
 	
-	typedef std::vector< std::shared_ptr<Controller> > Set;
-	
 	enum Control
 	{
-		up = 0,
-		right,
-		down,
-		left,
+		UP = 0,
+		RIGHT,
+		DOWN,
+		LEFT,
 		
-		left_shoulder,
-		right_shoulder,
+		LEFT_SHOULDER,
+		RIGHT_SHOULDER,
 		
-		select,
-		back,
+		SELECT,
+		BACK,
 		
-		start,
-		quit,
+		START,
+		QUIT,
 		
-		vol_down,
-		vol_up,
+		VOLUME_DOWN,
+		VOLUME_UP,
 		
-		control_count
-	};
-	enum Keys
-	{
-		up_key             = SDLK_UP,
-		right_key          = SDLK_RIGHT,
-		down_key           = SDLK_DOWN,
-		left_key           = SDLK_LEFT,
-		
-		left_shoulder_key  = SDLK_LEFTBRACKET,
-		right_shoulder_key = SDLK_RIGHTBRACKET,
-		
-		select_key         = SDLK_SPACE,
-		back_key           = SDLK_BACKSPACE,
-		
-		start_key          = SDLK_RETURN,
-		quit_key           = SDLK_ESCAPE,
-		
-		vol_down_key       = SDLK_MINUS,
-		vol_up_key         = SDLK_PLUS
+		Control_COUNT
 	};
 	
-	std::bitset<control_count> is_down, was_down, is_triggered;
+	enum Key
+	{
+		UP_KEY             = SDLK_UP,
+		RIGHT_KEY          = SDLK_RIGHT,
+		DOWN_KEY           = SDLK_DOWN,
+		LEFT_KEY           = SDLK_LEFT,
+		
+		LEFT_SHOULDER_KEY  = SDLK_LEFTBRACKET,
+		RIGHT_SHOULDER_KEY = SDLK_RIGHTBRACKET,
+		
+		SELECT_KEY         = SDLK_SPACE,
+		BACK_KEY           = SDLK_BACKSPACE,
+		
+		START_KEY          = SDLK_RETURN,
+		QUIT_KEY           = SDLK_ESCAPE,
+		
+		VOLUME_DOWN_KEY    = SDLK_MINUS,
+		VOLUME_UP_KEY      = SDLK_PLUS
+	};
+	
+	std::bitset<Control_COUNT> is_down;
+	std::bitset<Control_COUNT> was_down;
+	std::bitset<Control_COUNT> is_triggered;
 	
 	static bool push_events;
 	
-	static Uint32 repeat_delay, repeat_interval;
+	static Uint32 repeat_delay;
+	static Uint32 repeat_interval;
 	
 protected:
 	virtual void update_down( void ) = 0;
@@ -91,9 +93,9 @@ protected:
 	void push_control_event( Control ) const;
 	
 private:
-	static const boost::array<SDLKey, control_count> push_as_key;
+	static const boost::array<SDLKey, Control_COUNT> push_as_key;
 	
-	boost::array<Uint32, control_count> repeat_tick;
+	boost::array<Uint32, Control_COUNT> repeat_tick;
 };
 
 class ConfigurableController : public Controller
@@ -113,7 +115,7 @@ protected:
 	
 	typedef std::vector<std::unique_ptr<Input>> CoincidentInputs;
 	typedef std::vector<CoincidentInputs> ControlMapping;
-	boost::array<ControlMapping, control_count> controls_mapping;
+	boost::array<ControlMapping, Control_COUNT> controls_mapping;
 	
 	virtual const Json::Value &get_config( const Json::Value & ) const = 0;
 	virtual std::unique_ptr<Input> parse_input( const Json::Value & ) const = 0;
@@ -121,6 +123,9 @@ protected:
 	void load_controls_mapping( const std::string & = "controller.conf" );
 };
 
-extern Controller::Set controllers, disabled_controllers;
+typedef std::vector< std::shared_ptr<Controller> > Controllers;
+
+extern Controllers controllers;
+extern Controllers disabled_controllers;
 
 #endif // CONTROLLER_CONTROLLER_HPP

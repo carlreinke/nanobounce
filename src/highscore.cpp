@@ -110,7 +110,7 @@ Replay::Replay( const Highscore &score )
 
 void Replay::tick_update( void )
 {
-	is_down[quit] = ticks > (highscore.ticks + highscore.ticks_per_second);
+	is_down[QUIT] = ticks > (highscore.ticks + highscore.ticks_per_second);
 	
 	if (ball_control_index < highscore.ball_control_history.size() &&
 	    highscore.ball_control_history[ball_control_index].tick == ticks)
@@ -118,16 +118,16 @@ void Replay::tick_update( void )
 		switch (highscore.ball_control_history[ball_control_index].x_direction)
 		{
 		case -1:
-			is_down[left] = true;
-			is_down[right] = false;
+			is_down[LEFT] = true;
+			is_down[RIGHT] = false;
 			break;
 		case 0:
-			is_down[left] = false;
-			is_down[right] = false;
+			is_down[LEFT] = false;
+			is_down[RIGHT] = false;
 			break;
 		case 1:
-			is_down[left] = false;
-			is_down[right] = true;
+			is_down[LEFT] = false;
+			is_down[RIGHT] = true;
 			break;
 		default:
 			break;
