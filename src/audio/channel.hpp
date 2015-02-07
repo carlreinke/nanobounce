@@ -18,7 +18,8 @@
 #define AUDIO_CHANNEL_HPP
 
 #include "fixed.hpp"
-#include "SDL.h"
+
+#include <SDL.h>
 
 extern bool reverse_stereo;
 

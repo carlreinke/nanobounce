@@ -2,7 +2,8 @@
 #define MENU_HPP
 
 #include "loop.hpp"
-#include "SDL.h"
+
+#include <SDL.h>
 
 class SimpleMenu : public Loop
 {

@@ -2,7 +2,8 @@
 #define BLOCK_HPP
 
 #include "video/sprite.hpp"
-#include "SDL.h"
+
+#include <SDL.h>
 
 class Block
 {

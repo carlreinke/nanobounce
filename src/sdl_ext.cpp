@@ -1,4 +1,4 @@
-#include "SDL.h"
+#include "sdl_ext.hpp"
 
 template <typename T>
 inline Uint32 get_pixel( const void *pixels )

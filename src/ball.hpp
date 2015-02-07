@@ -3,7 +3,8 @@
 
 #include "fixed.hpp"
 #include "video/sprite.hpp"
-#include "SDL.h"
+
+#include <SDL.h>
 
 class Ball
 {

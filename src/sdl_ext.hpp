@@ -2,7 +2,8 @@
 #define SDL_EXT_HPP
 
 #include "video/video.hpp"
-#include "SDL.h"
+
+#include <SDL.h>
 
 inline SDL_Rect SDL_RectXYWH( Sint16 x, Sint16 y, Uint16 w, Uint16 h )
 {
@@ -44,7 +45,7 @@ inline int SDL_FillRect( SDL_Surface *dst, SDL_Rect *dstrect, const SDL_Color &c
 	return SDL_FillRect(dst, dstrect, SDL_MapRGB(dst->format, color));
 }
 
-void SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, Uint32 pixel, Uint8 alpha );
+extern int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, Uint32 pixel, Uint8 alpha );
 
 inline int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, const SDL_Color &color, Uint8 alpha )
 {
@@ -54,7 +55,7 @@ inline int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, const SDL_Color &
 
 // pixel
 
-void SDL_SetPixel( SDL_Surface *dst, int x, int y, Uint32 pixel );
+extern void SDL_SetPixel( SDL_Surface *dst, int x, int y, Uint32 pixel );
 
 inline void SDL_SetPixel( SDL_Surface *dst, int x, int y, const SDL_Color &color )
 {

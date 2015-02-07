@@ -3,7 +3,8 @@
 
 #include "fader.hpp"
 #include "misc.hpp"
-#include "SDL.h"
+
+#include <SDL.h>
 
 static const uint update_per_sec = 125, msec_per_update = 1000 / update_per_sec;
 

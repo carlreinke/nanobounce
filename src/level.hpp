@@ -3,7 +3,8 @@
 
 #include "ball.hpp"
 #include "block.hpp"
-#include "SDL.h"
+
+#include <SDL.h>
 
 class Level
 {

@@ -18,7 +18,8 @@
 #define SPRITE_HPP
 
 #include "misc.hpp"
-#include "SDL.h"
+
+#include <SDL.h>
 
 class Sprite
 {

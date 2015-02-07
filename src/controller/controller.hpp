@@ -19,7 +19,8 @@
 
 #include "misc.hpp"
 #include "json/json.h"
-#include "SDL.h"
+
+#include <SDL.h>
 
 class Controller
 {

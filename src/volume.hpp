@@ -2,7 +2,8 @@
 #define VOLUME_HPP
 
 #include "fixed.hpp"
-#include "SDL.h"
+
+#include <SDL.h>
 
 void trigger_volume_change( Fixed delta );
 void update_volume_notification( void );
