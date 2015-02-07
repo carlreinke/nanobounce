@@ -2,7 +2,6 @@
 #include <bitset>
 #include <cassert>
 #include <cmath>
-#include <deque>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -19,5 +18,6 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/bimap.hpp>
+#include <boost/circular_buffer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/smart_ptr/shared_array.hpp>

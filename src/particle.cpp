@@ -17,6 +17,7 @@ Particle::Particle( Fixed x, Fixed y, uint ticks_to_live, const SDL_Color &color
   term_vel(usual_term_vel),
   ticks_to_live(ticks_to_live),
   alpha(SDL_ALPHA_OPAQUE), alpha_per_tick(0),
+  trail(trail_max),
   color(color)
 {
 	/* nothing to do */
@@ -27,7 +28,7 @@ void Particle::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alp
 	alpha = static_cast<int>(this->alpha) * alpha / 256;
 	Uint8 alpha_trail = alpha / trail.size();
 	
-	for (auto coord = trail.crbegin(); coord != trail.crend(); ++coord)
+	for (auto coord = trail.rbegin(); coord != trail.rend(); ++coord)
 	{
 		SDL_SetPixelA(surface, x_offset + coord->x, y_offset + coord->y, color, alpha);
 		alpha -= alpha_trail;
@@ -50,9 +51,7 @@ void Particle::tick( void )
 	
 	alpha = min(max(Fixed(SDL_ALPHA_TRANSPARENT), alpha + alpha_per_tick), Fixed(SDL_ALPHA_OPAQUE));
 	
-	if (trail.size() == trail_max)
-		trail.pop_front();
-	trail.emplace_back(x, y);
+	trail.push_back(Coord(x, y));
 }
 
 void Particle::tick_all( std::list<Particle> &particles )

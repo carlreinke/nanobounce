@@ -40,14 +40,16 @@ Ball::Ball( Fixed x, Fixed y )
   // unboost
   can_unboost(false),
   ticks_until_unboost(0),
-  x_vel_unboost(0), y_vel_unboost(0)
+  x_vel_unboost(0), y_vel_unboost(0),
+  
+  trail(trail_max)
 {
 	// build sprites
 	if (sprites.empty())
 	{
 		for (uint i = 0; i < trail_max; ++i)
 		{
-			int temp = 255 - i * (256 / trail_max);
+			int temp = 255 - i * 255 / trail_max;
 			sprites.emplace_back(width, height, SDL_Color_RGBA(temp, temp, temp));
 		}
 	}
@@ -55,8 +57,8 @@ Ball::Ball( Fixed x, Fixed y )
 
 void Ball::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
 {
-	for (auto coord = trail.cbegin(); coord != trail.cend(); ++coord)
-		sprites[trail.cend() - coord - 1].blit(surface, x_offset + coord->x, y_offset + coord->y, alpha);
+	for (auto coord = trail.begin(); coord != trail.end(); ++coord)
+		sprites[trail.end() - coord - 1].blit(surface, x_offset + coord->x, y_offset + coord->y, alpha);
 }
 
 void Ball::tick( int x_push_direction )
@@ -82,9 +84,7 @@ void Ball::tick( int x_push_direction )
 		y += y_vel;
 	}
 	
-	if (trail.size() == trail_max)
-		trail.pop_front();
-	trail.emplace_back(x + make_frac<Fixed>(1, 2), y + make_frac<Fixed>(1, 2));
+	trail.push_back(Coord(x + make_frac<Fixed>(1, 2), y + make_frac<Fixed>(1, 2)));
 }
 
 void Ball::x_boost( Fixed x_boost )
@@ -102,9 +102,7 @@ void Ball::x_boost( Fixed x_boost )
 	ticks_until_unboost = 0;
 	
 	// because ball gets relocated before boost
-	if (trail.size() == trail_max)
-		trail.pop_front();
-	trail.emplace_back(x, y);
+	trail.push_back(Coord(x, y));
 }
 
 void Ball::y_boost( Fixed y_boost )

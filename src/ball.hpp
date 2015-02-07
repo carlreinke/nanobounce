@@ -56,7 +56,7 @@ private:
 	};
 	
 	static const uint trail_max = 40;
-	std::deque<Coord> trail;
+	boost::circular_buffer<Coord> trail;
 	
 	static std::vector<Sprite> sprites;
 	
