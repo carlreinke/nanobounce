@@ -29,10 +29,10 @@ public:
 private:
 	Uint8 *key_state;
 	
-	const Json::Value &assignment_root( const Json::Value & ) const;
-	std::shared_ptr<Assignment> parse_assignment( const Json::Value & ) const;
+	const Json::Value &get_config( const Json::Value & ) const;
+	std::unique_ptr<Input> parse_input( const Json::Value & ) const;
 	
-	class Key : public Assignment
+	class Key : public Input
 	{
 	public:
 		bool digital( const Controller & ) const;

@@ -30,10 +30,10 @@ public:
 private:
 	SDL_Joystick *joystick;
 	
-	const Json::Value &assignment_root( const Json::Value & ) const;
-	std::shared_ptr<Assignment> parse_assignment( const Json::Value & ) const;
+	const Json::Value &get_config( const Json::Value & ) const;
+	std::unique_ptr<Input> parse_input( const Json::Value & ) const;
 	
-	class Button : public Assignment
+	class Button : public Input
 	{
 	public:
 		bool digital( const Controller & ) const;
@@ -44,7 +44,7 @@ private:
 		uint num;
 	};
 	
-	class Axis : public Assignment
+	class Axis : public Input
 	{
 	public:
 		int analog( const Controller & ) const;
@@ -56,7 +56,7 @@ private:
 		bool positive_direction;
 	};
 	
-	class Hat : public Assignment
+	class Hat : public Input
 	{
 	public:
 		bool digital( const Controller & ) const;

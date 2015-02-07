@@ -18,7 +18,7 @@
 
 bool Controller::push_events = true;
 
-const boost::array<SDLKey, Controller::functions_count> Controller::push_as_key = 
+const boost::array<SDLKey, Controller::control_count> Controller::push_as_key = 
 {{
 	static_cast<SDLKey>(up_key),
 	static_cast<SDLKey>(right_key),
@@ -89,7 +89,7 @@ void Controller::update( void )
 	
 	const Uint32 tick = SDL_GetTicks();
 	
-	for (int i = 0; i < functions_count; ++i)
+	for (int i = 0; i < control_count; ++i)
 	{
 		if (is_down[i])
 		{
@@ -107,25 +107,25 @@ void Controller::update( void )
 			if (is_triggered[i])
 			{
 				if (push_events)
-					push_function_event(Functions(i));  // key down event
+					push_control_event(Control(i));  // key down event
 			}
 		}
 		else if (was_down[i])
 		{
 			if (push_events)
-				push_function_event(Functions(i));  // key up event
+				push_control_event(Control(i));  // key up event
 		}
 	}
 }
 
-void Controller::push_function_event( Functions function ) const
+void Controller::push_control_event( Control control ) const
 {
 	SDL_Event event;
-	event.type = is_down[function] ? SDL_KEYDOWN : SDL_KEYUP;
+	event.type = is_down[control] ? SDL_KEYDOWN : SDL_KEYUP;
 	event.key.type = event.type;
-	event.key.state = is_down[function] ? SDL_PRESSED : SDL_RELEASED;
+	event.key.state = is_down[control] ? SDL_PRESSED : SDL_RELEASED;
 	event.key.keysym.scancode = 0;
-	event.key.keysym.sym = push_as_key[function];
+	event.key.keysym.sym = push_as_key[control];
 	event.key.keysym.mod = KMOD_NONE;
 	event.key.keysym.unicode = 0;
 	
@@ -134,24 +134,24 @@ void Controller::push_function_event( Functions function ) const
 
 void ConfigurableController::update_down( void )
 {
-	for (uint i = 0; i < assignments.size(); ++i)
+	for (uint i = 0; i < controls_mapping.size(); ++i)
 	{
 		is_down[i] = false;
 		
-		Assignments &function = assignments[i];
+		const ControlMapping &control_mapping = controls_mapping[i];
 		
-		for (uint j = 0; j < function.size(); ++j)
+		for (uint j = 0; j < control_mapping.size(); ++j)
 		{
-			Assignment::Set &function_assignments = function[j];
+			const CoincidentInputs &coincident_inputs = control_mapping[j];
 			
-			if (function_assignments.size() > 0)
+			if (coincident_inputs.size() > 0)
 			{
-				bool temp = true;
+				bool coincident_inputs_down = true;
 				
-				for (const std::shared_ptr<Assignment> &function_assignment : function_assignments)
-					temp &= function_assignment->digital(*this);
+				for (const std::unique_ptr<Input> &input : coincident_inputs)
+					coincident_inputs_down &= input->digital(*this);
 				
-				if (temp)
+				if (coincident_inputs_down)
 					is_down[i] = true;
 			}
 		}
@@ -159,18 +159,18 @@ void ConfigurableController::update_down( void )
 }
 
 
-int ConfigurableController::Assignment::analog( const Controller &controller ) const
+int ConfigurableController::Input::analog( const Controller &controller ) const
 {
 	return (digital(controller) ? std::numeric_limits<Sint16>::max() : 0);
 }
 
-bool ConfigurableController::Assignment::digital( const Controller &controller ) const
+bool ConfigurableController::Input::digital( const Controller &controller ) const
 {
 	return (analog(controller) > std::numeric_limits<Sint16>::max() / 3);
 }
 
 
-void ConfigurableController::load_assignments( const std::string &conf_path )
+void ConfigurableController::load_controls_mapping( const std::string &conf_path )
 {
 	Json::Value root;
 	Json::Reader reader;
@@ -183,25 +183,25 @@ void ConfigurableController::load_assignments( const std::string &conf_path )
 	}
 	else
 	{
-		const Json::Value &controller_root = assignment_root(root);
+		const Json::Value &config = get_config(root);
 		
-		for (uint i = 0; i < assignments.size(); ++i)
+		for (uint i = 0; i < controls_mapping.size(); ++i)
 		{
-			Assignments &function = assignments[i];
-			const Json::Value &function_config = controller_root[i];
+			ControlMapping &control_mapping = controls_mapping[i];
+			const Json::Value &control_mapping_config = config[i];
 			
-			function.resize(function_config.size());
+			control_mapping.resize(control_mapping_config.size());
 			
-			for (uint i = 0; i < function_config.size(); ++i)
+			for (uint i = 0; i < control_mapping_config.size(); ++i)
 			{
-				Assignment::Set &function_assignments = function[i];
-				const Json::Value &function_assignments_config = function_config[i];
+				CoincidentInputs &coincident_inputs = control_mapping[i];
+				const Json::Value &coincident_inputs_config = control_mapping_config[i];
 				
-				for (uint i = 0; i < function_assignments_config.size(); ++i)
+				for (uint i = 0; i < coincident_inputs_config.size(); ++i)
 				{
-					std::shared_ptr<Assignment> temp = parse_assignment(function_assignments_config[i]);
-					if (temp.get() != NULL)
-						function_assignments.insert(temp);
+					std::unique_ptr<Input> input = parse_input(coincident_inputs_config[i]);
+					if (input.get() != NULL)
+						coincident_inputs.push_back(std::move(input));
 				}
 			}
 		}

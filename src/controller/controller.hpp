@@ -35,7 +35,7 @@ public:
 	
 	typedef std::vector< std::shared_ptr<Controller> > Set;
 	
-	enum Functions
+	enum Control
 	{
 		up = 0,
 		right,
@@ -54,7 +54,7 @@ public:
 		vol_down,
 		vol_up,
 		
-		functions_count
+		control_count
 	};
 	enum Keys
 	{
@@ -76,7 +76,7 @@ public:
 		vol_up_key         = SDLK_PLUS
 	};
 	
-	std::bitset<functions_count> is_down, was_down, is_triggered;
+	std::bitset<control_count> is_down, was_down, is_triggered;
 	
 	static bool push_events;
 	
@@ -88,12 +88,12 @@ protected:
 	static bool drop_input_enabled;
 	static int drop_input( const SDL_Event *event );
 	
-	void push_function_event( Functions ) const;
+	void push_control_event( Control ) const;
 	
 private:
-	static const boost::array<SDLKey, functions_count> push_as_key;
+	static const boost::array<SDLKey, control_count> push_as_key;
 	
-	boost::array<Uint32, functions_count> repeat_tick;
+	boost::array<Uint32, control_count> repeat_tick;
 };
 
 class ConfigurableController : public Controller
@@ -101,7 +101,7 @@ class ConfigurableController : public Controller
 protected:
 	void update_down( void );
 	
-	class Assignment
+	class Input
 	{
 	public:
 		virtual int analog( const Controller & ) const;
@@ -109,29 +109,16 @@ protected:
 		
 		virtual Json::Value serialize( void ) const = 0;
 		virtual bool unserialize( const Json::Value & ) = 0;
-		
-		struct Cmp
-		{
-			bool operator()( const Assignment &lhs, const Assignment &rhs )
-			{
-				return (lhs.serialize() < rhs.serialize());
-			}
-			bool operator()( const std::shared_ptr<Assignment> lhs, const std::shared_ptr<Assignment> rhs )
-			{
-				return operator()(*lhs, *rhs);
-			}
-		};
-		
-		typedef std::set<std::shared_ptr<Assignment>, Cmp> Set;
 	};
 	
-	typedef std::vector<Assignment::Set> Assignments;
-	boost::array<Assignments, functions_count> assignments;
+	typedef std::vector<std::unique_ptr<Input>> CoincidentInputs;
+	typedef std::vector<CoincidentInputs> ControlMapping;
+	boost::array<ControlMapping, control_count> controls_mapping;
 	
-	virtual const Json::Value &assignment_root( const Json::Value & ) const = 0;
-	virtual std::shared_ptr<Assignment> parse_assignment( const Json::Value & ) const = 0;
+	virtual const Json::Value &get_config( const Json::Value & ) const = 0;
+	virtual std::unique_ptr<Input> parse_input( const Json::Value & ) const = 0;
 	
-	void load_assignments( const std::string & = "controller.conf" );
+	void load_controls_mapping( const std::string & = "controller.conf" );
 };
 
 extern Controller::Set controllers, disabled_controllers;

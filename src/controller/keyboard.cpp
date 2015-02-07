@@ -20,25 +20,25 @@ Keyboard::Keyboard( void )
 {
 	key_state = SDL_GetKeyState(NULL);
 	
-	load_assignments();
+	load_controls_mapping();
 }
 
-const Json::Value &Keyboard::assignment_root( const Json::Value &root ) const
+const Json::Value &Keyboard::get_config( const Json::Value &root ) const
 {
 	return root["keyboard"];
 }
 
-std::shared_ptr<Keyboard::Assignment> Keyboard::parse_assignment( const Json::Value &serialized ) const
+std::unique_ptr<Keyboard::Input> Keyboard::parse_input( const Json::Value &serialized ) const
 {
-	std::shared_ptr<Assignment> temp;
+	std::unique_ptr<Input> input;
 	
 	if (serialized.isMember("key"))
 	{
-		temp = std::make_shared<Key>();
-		temp->unserialize(serialized);
+		input = std::make_unique<Key>();
+		input->unserialize(serialized);
 	}
 	
-	return temp;
+	return input;
 }
 
 

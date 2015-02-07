@@ -42,7 +42,7 @@ Joystick::Joystick( int j )
 	          << SDL_JoystickNumButtons(joystick) << " buttons, "
 	          << SDL_JoystickNumHats(joystick) << " hats)" << std::endl;
 	
-	load_assignments();
+	load_controls_mapping();
 }
 
 Joystick::~Joystick( void )
@@ -54,34 +54,34 @@ Joystick::~Joystick( void )
 	}
 }
 
-const Json::Value &Joystick::assignment_root( const Json::Value &root ) const
+const Json::Value &Joystick::get_config( const Json::Value &root ) const
 {
 	const char *name = SDL_JoystickName(SDL_JoystickIndex(joystick));
 	
 	return root["joystick"][root["joystick"].isMember(name) ? name : "defaults"];
 }
 
-std::shared_ptr<Joystick::Assignment> Joystick::parse_assignment( const Json::Value &serialized ) const
+std::unique_ptr<Joystick::Input> Joystick::parse_input( const Json::Value &serialized ) const
 {
-	std::shared_ptr<Assignment> temp;
+	std::unique_ptr<Input> input;
 	
 	if (serialized.isMember("button"))
 	{
-		temp = std::make_shared<Button>();
-		temp->unserialize(serialized);
+		input = std::make_unique<Button>();
+		input->unserialize(serialized);
 	}
 	else if (serialized.isMember("axis"))
 	{
-		temp = std::make_shared<Axis>();
-		temp->unserialize(serialized);
+		input = std::make_unique<Axis>();
+		input->unserialize(serialized);
 	}
 	else if (serialized.isMember("hat"))
 	{
-		temp = std::make_shared<Hat>();
-		temp->unserialize(serialized);
+		input = std::make_unique<Hat>();
+		input->unserialize(serialized);
 	}
 	
-	return temp;
+	return input;
 }
 
 
