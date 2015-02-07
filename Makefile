@@ -1,6 +1,6 @@
 CXX := g++
 STRIP := strip
-SDL_CONFIG := sdl-config
+PKG_CONFIG := pkg-config
 
 TARGET := nanobounce
 
@@ -42,11 +42,13 @@ else
     EXTRA_CXXFLAGS += -Werror
 endif
 
-SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags)
-SDL_LDLIBS := $(shell $(SDL_CONFIG) --libs)
+EXTRA_LDFLAGS += -Wl,-rpath=.
 
-VORBIS_CFLAGS ?= 
-VORBIS_LDLIBS ?= -lvorbisfile
+SDL_CFLAGS := $(shell $(PKG_CONFIG) --cflags sdl)
+SDL_LDLIBS := $(shell $(PKG_CONFIG) --libs sdl)
+
+VORBIS_CFLAGS ?= $(shell $(PKG_CONFIG) --cflags vorbisfile)
+VORBIS_LDLIBS ?= $(shell $(PKG_CONFIG) --libs vorbisfile)
 
 ALL_CXXFLAGS := -std=c++14 \
                 -I./src \
@@ -54,7 +56,8 @@ ALL_CXXFLAGS := -std=c++14 \
                 $(SDL_CFLAGS) \
                 $(VORBIS_CFLAGS) \
                 $(CXXFLAGS)
-ALL_LDFLAGS := $(LDFLAGS)
+ALL_LDFLAGS := $(EXTRA_LDFLAGS) \
+               $(LDFLAGS)
 LDLIBS += $(SDL_LDLIBS) \
           $(VORBIS_LDLIBS)
 
