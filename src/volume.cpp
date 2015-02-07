@@ -48,5 +48,5 @@ void update_volume_notification( void )
 void draw_volume_notification( SDL_Surface *surface )
 {
 	if (show_volume_ticks > 0)
-		font.blit(surface, 0, surface->h - font.height(font_sprites[3]), volume_text.str(), font_sprites[3], Font::left, 128);
+		font.blit(surface, 0, surface->h - font.height(font_sprites[3]), volume_text.str(), font_sprites[3], Font::LEFT, 128);
 }

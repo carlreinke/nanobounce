@@ -18,7 +18,9 @@
 
 using std::min;
 
-int screen_width = 320, screen_height = 240, screen_bpp = 32;
+int screen_width = 320;
+int screen_height = 240;
+int screen_bpp = 32;
 const Uint32 surface_flags = SDL_HWSURFACE;
 
 #if defined(HAS_320x240_VIDEO)

@@ -28,22 +28,22 @@ public:
 	void load_pgm( std::istream &pgm );
 	void load_char_widths( std::istream & );
 	
-	enum justifications
+	enum Justification
 	{
-		left,
-		center,
-		right
+		LEFT,
+		CENTER,
+		RIGHT
 	};
 	
-	enum styles
+	enum Style
 	{
-		normal,
-		majuscule,
-		minuscule
+		NORMAL,
+		MAJUSCULE,
+		MINUSCULE
 	};
 	
-	void blit( SDL_Surface *, int x, int y, const std::string &, const Sprite &, justifications = left, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
-	void blit( SDL_Surface *, int x, int y, std::string, const Sprite &, styles, justifications = left, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	void blit( SDL_Surface *, int x, int y, const std::string &, const Sprite &, Justification = LEFT, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	void blit( SDL_Surface *, int x, int y, std::string, const Sprite &, Style, Justification = LEFT, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 	uint height( const Sprite &sprite ) const { return graymap.size() * sprite.height(); };
 	uint width( const std::string &, const Sprite & ) const;
@@ -54,7 +54,8 @@ private:
 	typedef std::vector< std::vector<unsigned char> > Graymap;
 	
 	Graymap graymap;
-	std::vector<uint> char_positions, char_widths;
+	std::vector<uint> char_positions;
+	std::vector<uint> char_widths;
 };
 
 extern Font font;

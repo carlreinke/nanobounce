@@ -20,13 +20,15 @@
 #include "video/video.hpp"
 
 Sprite::Sprite( void )
-: surface(NULL), w(0), h(0)
+: surface(NULL),
+  w(0), h(0)
 {
 	// good to go
 }
 
 Sprite::Sprite( uint width, uint height, const SDL_Color &color )
-: surface(NULL), color(color), w(width), h(height)
+: surface(NULL),
+  color(color), w(width), h(height)
 {
 	assert(width > 0 && height > 0);
 }
@@ -90,7 +92,8 @@ void Sprite::load_ppm( std::istream &ppm )
 	
 	surface = SDL_CreateRGBSurface(surface_flags, w, h, screen_bpp, 0, 0, 0, 0);
 	
-	uint x = 0, y = 0;
+	uint x = 0;
+	uint y = 0;
 	
 	while (ppm.good() && y < h)
 	{

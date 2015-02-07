@@ -51,7 +51,8 @@ protected:
 	SDL_Surface *surface;
 	
 	SDL_Color color;
-	uint w, h;
+	uint w;
+	uint h;
 };
 
 #endif // SPRITE_HPP

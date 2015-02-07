@@ -87,17 +87,17 @@ void Font::load_char_widths( std::istream &is )
 	assert(x == graymap[0].size());
 }
 
-void Font::blit( SDL_Surface *surface, int x, int y, const std::string &text, const Sprite &sprite, justifications justify, Uint8 alpha ) const
+void Font::blit( SDL_Surface *surface, int x, int y, const std::string &text, const Sprite &sprite, Justification justify, Uint8 alpha ) const
 {
 	switch (justify)
 	{
-	case center:
+	case CENTER:
 		x -= (width(text, sprite)) / 2;
 		break;
-	case right:
+	case RIGHT:
 		x -= width(text, sprite);
 		break;
-	case left:
+	case LEFT:
 		break;
 	}
 	
@@ -123,19 +123,19 @@ void Font::blit( SDL_Surface *surface, int x, int y, const std::string &text, co
 	}
 }
 
-void Font::blit( SDL_Surface *surface, int x, int y, std::string text, const Sprite &sprite, styles style, justifications justify, Uint8 alpha ) const
+void Font::blit( SDL_Surface *surface, int x, int y, std::string text, const Sprite &sprite, Style style, Justification justify, Uint8 alpha ) const
 {
 	switch (style)
 	{
-	case majuscule:
+	case MAJUSCULE:
 		for (char &c : text)
 			c = toupper(static_cast<unsigned char>(c));
 		break;
-	case minuscule:
+	case MINUSCULE:
 		for (char &c : text)
 			c = tolower(static_cast<unsigned char>(c));
 		break;
-	case normal:
+	case NORMAL:
 	default:
 		break;
 	}

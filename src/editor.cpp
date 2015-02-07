@@ -403,7 +403,7 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 		
 		std::ostringstream buffer;
 		buffer << (cursor_x / Block::width) << ", " << (cursor_y / Block::height);
-		font.blit(surface, x, y, buffer.str(), sprite, Font::majuscule, Font::left, alpha);
+		font.blit(surface, x, y, buffer.str(), sprite, Font::MAJUSCULE, Font::LEFT, alpha);
 	}
 }
 

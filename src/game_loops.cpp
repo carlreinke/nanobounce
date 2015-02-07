@@ -97,9 +97,9 @@ void LevelSetCongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	for (const Particle &particle : particles)
 		particle.draw(surface, 0, 0, alpha);
 	
-	font.blit(surface, surface->w / 2, surface->h / 4, "Congratulations!", font_sprites[3], Font::majuscule, Font::center, alpha);
-	font.blit(surface, surface->w / 2, surface->h / 2, set_name, font_sprites[4], Font::center, alpha);
-	font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), "completed!", font_sprites[3], Font::majuscule, Font::center, alpha);
+	font.blit(surface, surface->w / 2, surface->h / 4, "Congratulations!", font_sprites[3], Font::MAJUSCULE, Font::CENTER, alpha);
+	font.blit(surface, surface->w / 2, surface->h / 2, set_name, font_sprites[4], Font::CENTER, alpha);
+	font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), "completed!", font_sprites[3], Font::MAJUSCULE, Font::CENTER, alpha);
 }
 
 FireworkParticle::FireworkParticle( Fixed x, Fixed y, const SDL_Color &color )
@@ -165,7 +165,7 @@ void LevelIntroLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	int x = surface->w / 2,
 	    y = surface->h / 2 - font.height(font_sprites[4]) / 2;
 	
-	font.blit(surface, x, y, level_name, font_sprites[4], Font::center, alpha);
+	font.blit(surface, x, y, level_name, font_sprites[4], Font::CENTER, alpha);
 }
 
 LevelWonLoop::LevelWonLoop( const Level &level, const Highscore &score, const Highscore &new_score )
@@ -187,27 +187,27 @@ void LevelWonLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	const int x = surface->w / 2;
 	int y = surface->h * 1 / 5 - font.height(font_sprites[4]) / 2;
 	
-	font.blit(surface, x, y, level_name, font_sprites[4], Font::center, alpha);
+	font.blit(surface, x, y, level_name, font_sprites[4], Font::CENTER, alpha);
 	
 	y = surface->h * 2 / 5 - font.height(font_sprites[3]);
-	font.blit(surface, x, y, "Best Time:", font_sprites[1], Font::majuscule, Font::center, alpha);
+	font.blit(surface, x, y, "Best Time:", font_sprites[1], Font::MAJUSCULE, Font::CENTER, alpha);
 	y += font.height(font_sprites[1]);
-	font.blit(surface, x, y, score.name, font_sprites[3], Font::center, alpha);
+	font.blit(surface, x, y, score.name, font_sprites[3], Font::CENTER, alpha);
 	y += font.height(font_sprites[3]);
-	font.blit(surface, x, y, score.time(), font_sprites[3], Font::center, alpha);
+	font.blit(surface, x, y, score.time(), font_sprites[3], Font::CENTER, alpha);
 	
 	y = surface->h * 3 / 5 - font.height(font_sprites[3]) / 2;
-	font.blit(surface, x, y, "Your Time:", font_sprites[1], Font::majuscule, Font::center, alpha);
+	font.blit(surface, x, y, "Your Time:", font_sprites[1], Font::MAJUSCULE, Font::CENTER, alpha);
 	y += font.height(font_sprites[1]);
-	font.blit(surface, x, y, new_score.time(), font_sprites[3], Font::center, alpha);
+	font.blit(surface, x, y, new_score.time(), font_sprites[3], Font::CENTER, alpha);
 	y += font.height(font_sprites[3]);
-	font.blit(surface, x, y, "(+" + Highscore::time(new_score.ms() - score.ms()) + ")", font_sprites[1], Font::center, alpha);
+	font.blit(surface, x, y, "(+" + Highscore::time(new_score.ms() - score.ms()) + ")", font_sprites[1], Font::CENTER, alpha);
 	
 	y = surface->h * 4 / 5;
 	for (uint i = 0; i < entry_count(); ++i)
 	{
 		int x = surface->w * (i + 1) / (entry_count() + 1);
-		font.blit(surface, x, y, entries[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? alpha : alpha / 2);
+		font.blit(surface, x, y, entries[i], font_sprites[3], Font::MAJUSCULE, Font::CENTER, (i == selection) ? alpha : alpha / 2);
 	}
 }
 
@@ -238,9 +238,9 @@ void LevelWonBestTimeLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	int x = surface->w / 2,
 	    y = surface->h * 3 / 4 - font.height(font_sprites[4]);
 	
-	font.blit(surface, x, y, level_name, font_sprites[4], Font::center, alpha);
+	font.blit(surface, x, y, level_name, font_sprites[4], Font::CENTER, alpha);
 	y += font.height(font_sprites[4]);
-	font.blit(surface, x, y, score.time(), font_sprites[3], Font::center, alpha);
+	font.blit(surface, x, y, score.time(), font_sprites[3], Font::CENTER, alpha);
 }
 
 WooshParticle::WooshParticle( Fixed x, Fixed y, const SDL_Color &color )

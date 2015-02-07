@@ -19,8 +19,11 @@
 
 #include <SDL.h>
 
-extern int screen_width, screen_height, screen_bpp;
+extern int screen_width;
+extern int screen_height;
+extern int screen_bpp;
 extern const Uint32 surface_flags;
+
 extern int video_scale;
 
 SDL_Surface *init_video( bool fullscreen );

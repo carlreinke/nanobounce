@@ -44,35 +44,35 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	int x = surface->w / 2,
 	    y = surface->h / 2 - font.height(font_sprites[4]) * 3 / 2;
 	
-	font.blit(surface, x, y, "Nanobounce", font_sprites[4], Font::majuscule, Font::center, alpha);
+	font.blit(surface, x, y, "Nanobounce", font_sprites[4], Font::MAJUSCULE, Font::CENTER, alpha);
 	y += font.height(font_sprites[4]) * 3;
 	
 	for (uint i = 0; i < entry_count(); ++i)
 	{
 		x = surface->w * (i + 1) / (entry_count() + 1);
-		font.blit(surface, x, y, entries[i], font_sprites[3], Font::majuscule, Font::center, (i == selection) ? alpha : alpha / 2);
+		font.blit(surface, x, y, entries[i], font_sprites[3], Font::MAJUSCULE, Font::CENTER, (i == selection) ? alpha : alpha / 2);
 	}
 	
-	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.3e", font_sprites[1], Font::majuscule, Font::left, alpha);
+	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.3e", font_sprites[1], Font::MAJUSCULE, Font::LEFT, alpha);
 	
 	x = surface->w - 1;
 	y = surface->h - font.height(font_sprites[1]) * 3;
 	
-	font.blit(surface, x, y, "programming, sprites, and effects:", font_sprites[1], Font::majuscule, Font::right, alpha);
+	font.blit(surface, x, y, "programming, sprites, and effects:", font_sprites[1], Font::MAJUSCULE, Font::RIGHT, alpha);
 	y += font.height(font_sprites[1]);
-	font.blit(surface, x, y, "Carl \"Mindless\" Reinke", font_sprites[1], Font::majuscule, Font::right, alpha);
+	font.blit(surface, x, y, "Carl \"Mindless\" Reinke", font_sprites[1], Font::MAJUSCULE, Font::RIGHT, alpha);
 	y += font.height(font_sprites[1]);
-	font.blit(surface, x, y, "music: Jakob Svanholm, Seth Peelle", font_sprites[1], Font::majuscule, Font::right, alpha);
+	font.blit(surface, x, y, "music: Jakob Svanholm, Seth Peelle", font_sprites[1], Font::MAJUSCULE, Font::RIGHT, alpha);
 	
 #ifdef HAS_SHOULDER_BUTTONS
 	x = surface->w / 2;
 	y = surface->h / 2;
 	
-	font.blit(surface, x, y, "Tip: This game is least frustrating", font_sprites[1], Font::majuscule, Font::center, alpha);
+	font.blit(surface, x, y, "Tip: This game is least frustrating", font_sprites[1], Font::MAJUSCULE, Font::CENTER, alpha);
 	y += font.height(font_sprites[1]);
-	font.blit(surface, x, y, "when played using the shoulder buttons.", font_sprites[1], Font::majuscule, Font::center, alpha);
+	font.blit(surface, x, y, "when played using the shoulder buttons.", font_sprites[1], Font::MAJUSCULE, Font::CENTER, alpha);
 	y += font.height(font_sprites[1]);
-	font.blit(surface, x, y, "Enjoy!", font_sprites[1], Font::majuscule, Font::center, alpha);
+	font.blit(surface, x, y, "Enjoy!", font_sprites[1], Font::MAJUSCULE, Font::CENTER, alpha);
 #endif
 }
 
@@ -111,9 +111,9 @@ void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 		if (i == selection)
 		{
 			y += font.height(font_sprites[4]) / 3;
-			font.blit(surface, x, y, entries[i].name, font_sprites[4], Font::center, alpha);
+			font.blit(surface, x, y, entries[i].name, font_sprites[4], Font::CENTER, alpha);
 			y += font.height(font_sprites[4]);
-			font.blit(surface, x, y, entries[i].author, font_sprites[1], Font::center, alpha);
+			font.blit(surface, x, y, entries[i].author, font_sprites[1], Font::CENTER, alpha);
 			y += font.height(font_sprites[1]);
 			y += font.height(font_sprites[4]) / 3;
 		}
@@ -122,7 +122,7 @@ void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 			if (y > surface->h)
 				break;
 			else if (y > -static_cast<int>(font.height(font_sprites[3])))
-				font.blit(surface, x, y, entries[i].name, font_sprites[3], Font::center, alpha / 2);
+				font.blit(surface, x, y, entries[i].name, font_sprites[3], Font::CENTER, alpha / 2);
 			y += font.height(font_sprites[3]);
 		}
 	}
@@ -182,7 +182,7 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	    y = static_cast<int>(this->y) + (surface->h - font.height(font_sprites[4]) - font.height(font_sprites[4]) / 3) / 2;
 	
 	if (entry_count() == 0)
-		font.blit(surface, x, surface->h / 2, "(EMPTY)", font_sprites[3], Font::center, alpha / 2);
+		font.blit(surface, x, surface->h / 2, "(EMPTY)", font_sprites[3], Font::CENTER, alpha / 2);
 	
 	for (uint i = 0; i < entry_count(); ++i)
 	{
@@ -193,9 +193,9 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 			std::string subtext = (!entry.score_name.empty() ? entry.score_name + ": " : "") + entry.score_time;
 			
 			y += font.height(font_sprites[4]) / 3;
-			font.blit(surface, x, y, entry.name, font_sprites[4], Font::center, alpha);
+			font.blit(surface, x, y, entry.name, font_sprites[4], Font::CENTER, alpha);
 			y += font.height(font_sprites[4]);
-			font.blit(surface, x_right, y, subtext, font_sprites[1], Font::right, alpha);
+			font.blit(surface, x_right, y, subtext, font_sprites[1], Font::RIGHT, alpha);
 			y += font.height(font_sprites[4]) / 3;
 		}
 		else
@@ -204,8 +204,8 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 				break;
 			else if (y > -static_cast<int>(font.height(font_sprites[3])))
 			{
-				font.blit(surface, x_right, y + font.height(font_sprites[3]) - font.height(font_sprites[1]), entry.score_time, font_sprites[1], Font::right, alpha);
-				font.blit(surface, x, y, entry.name, font_sprites[3], Font::center, alpha / 2);
+				font.blit(surface, x_right, y + font.height(font_sprites[3]) - font.height(font_sprites[1]), entry.score_time, font_sprites[1], Font::RIGHT, alpha);
+				font.blit(surface, x, y, entry.name, font_sprites[3], Font::CENTER, alpha / 2);
 			}
 			y += font.height(font_sprites[3]);
 		}
@@ -308,7 +308,7 @@ void TextEntryMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	int x = surface->w / 2,
 	    y = (surface->h - font.height(font_sprites[4])) / 2;
 	
-	font.blit(surface, x, y, text, font_sprites[4], Font::center, alpha);
+	font.blit(surface, x, y, text, font_sprites[4], Font::CENTER, alpha);
 	
 	x += font.width(text, font_sprites[4]) / 2;
 	y += static_cast<int>(this->y);
@@ -318,9 +318,9 @@ void TextEntryMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 		if (i == selection)
 		{
 			if (entries[i].length() > 1) // "end"
-				font.blit(surface, x, y + font.height(font_sprites[4]) / 2, entries[i], font_sprites[1], Font::left, alpha);
+				font.blit(surface, x, y + font.height(font_sprites[4]) / 2, entries[i], font_sprites[1], Font::LEFT, alpha);
 			else
-				font.blit(surface, x, y, entries[i], font_sprites[4], Font::left, alpha);
+				font.blit(surface, x, y, entries[i], font_sprites[4], Font::LEFT, alpha);
 			y += font.height(font_sprites[4]);
 		}
 		else
@@ -328,7 +328,7 @@ void TextEntryMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 			if (y > surface->h)
 				break;
 			else if (y > -static_cast<int>(font.height(font_sprites[3])))
-				font.blit(surface, x, y, entries[i], font_sprites[1], Font::left, alpha / 2);
+				font.blit(surface, x, y, entries[i], font_sprites[1], Font::LEFT, alpha / 2);
 			y += entry_height;
 		}
 	}
@@ -336,5 +336,5 @@ void TextEntryMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	x = surface->w / 2;
 	y = (surface->h - font.height(font_sprites[3])) / 4;
 	
-	font.blit(surface, x, y, title, font_sprites[3], Font::majuscule, Font::center, alpha);
+	font.blit(surface, x, y, title, font_sprites[3], Font::MAJUSCULE, Font::CENTER, alpha);
 }
