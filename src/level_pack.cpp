@@ -1,8 +1,8 @@
 #include "file_system.hpp"
-#include "level_set.hpp"
+#include "level_pack.hpp"
 #include "main.hpp"
 
-LevelSet::LevelSet( void )
+LevelPack::LevelPack( void )
 : valid(false)
 {
 	int i = 0;
@@ -11,7 +11,7 @@ LevelSet::LevelSet( void )
 	while (path_exists(directory));
 }
 
-LevelSet::LevelSet( const std::string &directory )
+LevelPack::LevelPack( const std::string &directory )
 : valid(false), directory(directory)
 {
 	std::ifstream meta((directory + "/meta").c_str());
@@ -21,7 +21,7 @@ LevelSet::LevelSet( const std::string &directory )
 	valid = meta.good();
 }
 
-void LevelSet::load_levels( void )
+void LevelPack::load_levels( void )
 {
 	if (invalid())
 		return;
@@ -46,7 +46,7 @@ void LevelSet::load_levels( void )
 	}
 }
 
-void LevelSet::save_meta( void )
+void LevelPack::save_meta( void )
 {
 	if (!path_exists(directory))
 #if defined(_WIN32)
@@ -65,7 +65,7 @@ void LevelSet::save_meta( void )
 	valid = meta.good();
 }
 
-void LevelSet::append_level( Level &level )
+void LevelPack::append_level( Level &level )
 {
 	if (!level.path.empty())
 	{

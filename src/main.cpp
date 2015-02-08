@@ -154,23 +154,23 @@ int main( int argc, char *argv[] )
 			switch (menu.selection)
 			{
 			case 0:  // Play
-				for (LevelSetMenu set_menu; !global_quit; )  // choose a level set
+				for (LevelPackMenu set_menu; !global_quit; )  // choose a level pack
 				{
 					set_menu.loop(surface);
 					if (set_menu.no_selection)
 						break;  // back to title menu
 					
-					LevelSet &level_set = set_menu.entries[set_menu.selection];
-					level_set.load_levels();
+					LevelPack &level_pack = set_menu.entries[set_menu.selection];
+					level_pack.load_levels();
 					
-					ScoredLevelMenu level_menu(level_set);
+					ScoredLevelMenu level_menu(level_pack);
 					level_menu.loop(surface);
 					if (level_menu.no_selection)
-						continue;  // back to level set menu
+						continue;  // back to level pack menu
 					
-					if (Game::play(surface, std::make_pair(level_set.levels.begin() + level_menu.selection, level_set.levels.end())))
+					if (Game::play(surface, std::make_pair(level_pack.levels.begin() + level_menu.selection, level_pack.levels.end())))
 					{
-						LevelSetCongratsLoop congrats(level_set);
+						LevelPackCongratsLoop congrats(level_pack);
 						congrats.loop(surface);
 					}
 					
@@ -197,22 +197,22 @@ int main( int argc, char *argv[] )
 					switch (more_menu.selection)
 					{
 					case 0:
-						for (LevelSetMenu set_menu; !global_quit; )  // choose a level set
+						for (LevelPackMenu set_menu; !global_quit; )  // choose a level pack
 						{
 							set_menu.loop(surface);
 							if (set_menu.no_selection)
 								break;  // back to title menu
 							
-							LevelSet &level_set = set_menu.entries[set_menu.selection];
-							level_set.load_levels();
+							LevelPack &level_pack = set_menu.entries[set_menu.selection];
+							level_pack.load_levels();
 							
-							for (ScoredLevelMenu level_menu(level_set, false, false); !global_quit; )  // choose a level
+							for (ScoredLevelMenu level_menu(level_pack, false, false); !global_quit; )  // choose a level
 							{
 								level_menu.loop(surface);
 								if (level_menu.no_selection)
-									break;  // back to level set menu
+									break;  // back to level pack menu
 								
-								Level &level = level_set.levels[level_menu.selection];
+								Level &level = level_pack.levels[level_menu.selection];
 								
 								bool restart = true;
 								while (restart)

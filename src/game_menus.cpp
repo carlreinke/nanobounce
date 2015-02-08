@@ -76,14 +76,14 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 #endif
 }
 
-LevelSetMenu::LevelSetMenu( bool allow_new )
+LevelPackMenu::LevelPackMenu( bool allow_new )
 {
 	std::vector<std::string> dir_entries = read_directory_listing(level_directory);
 	
-	// populate the level set list
+	// populate the level pack list
 	for (const std::string &dir_entry : dir_entries)
 	{
-		LevelSet entry(level_directory + dir_entry);
+		LevelPack entry(level_directory + dir_entry);
 		if (!entry.invalid())
 			entries.push_back(entry);
 	}
@@ -92,14 +92,14 @@ LevelSetMenu::LevelSetMenu( bool allow_new )
 	
 	if (allow_new)
 	{
-		LevelSet new_level_set;
-		new_level_set.name = "New Level Set...";
-		boost::to_upper(new_level_set.name);
-		entries.push_back(new_level_set);
+		LevelPack new_level_pack;
+		new_level_pack.name = "New Level Pack...";
+		boost::to_upper(new_level_pack.name);
+		entries.push_back(new_level_pack);
 	}
 }
 
-void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
+void LevelPackMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
@@ -128,14 +128,14 @@ void LevelSetMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 	}
 }
 
-uint LevelSetMenu::entry_count( void ) const
+uint LevelPackMenu::entry_count( void ) const
 {
 	return entries.size();
 }
 
-LevelMenu::LevelMenu( const LevelSet &level_set, bool allow_new )
+LevelMenu::LevelMenu( const LevelPack &level_pack, bool allow_new )
 {
-	for (const Level &level : level_set.levels)
+	for (const Level &level : level_pack.levels)
 		entries.push_back(level.get_name());
 	
 	if (allow_new)
@@ -146,10 +146,10 @@ LevelMenu::LevelMenu( const LevelSet &level_set, bool allow_new )
 	}
 }
 
-ScoredLevelMenu::ScoredLevelMenu( const LevelSet &level_set, bool show_one_incomplete, bool auto_select_single_entry )
+ScoredLevelMenu::ScoredLevelMenu( const LevelPack &level_pack, bool show_one_incomplete, bool auto_select_single_entry )
 : auto_select_single_entry(auto_select_single_entry)
 {
-	for (const Level &level : level_set.levels)
+	for (const Level &level : level_pack.levels)
 	{
 		if (path_exists(level.get_score_path()))
 		{

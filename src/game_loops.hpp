@@ -4,21 +4,21 @@
 #include "game_menus.hpp"
 #include "highscore.hpp"
 #include "level.hpp"
-#include "level_set.hpp"
+#include "level_pack.hpp"
 #include "loop.hpp"
 #include "particle.hpp"
 
-class LevelSetCongratsLoop : public Loop
+class LevelPackCongratsLoop : public Loop
 {
 public:
-	LevelSetCongratsLoop( const LevelSet & );
+	LevelPackCongratsLoop( const LevelPack & );
 	
 	void handle_event( SDL_Event & );
 	void update( void );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 private:
-	const std::string set_name;
+	const std::string pack_name;
 	
 	std::list<Particle> particles;
 };
@@ -47,26 +47,27 @@ private:
 class LevelWonLoop : public SimpleMenu
 {
 public:
-	LevelWonLoop( const Level &, const Highscore &, const Highscore & );
+	LevelWonLoop( const Level &level, const Highscore &best_score, const Highscore &new_score );
 	
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 private:
 	const std::string level_name;
-	const Highscore score, new_score;
+	const Highscore best_score;
+	const Highscore new_score;
 };
 
 class LevelWonBestTimeLoop : public TextEntryMenu
 {
 public:
-	LevelWonBestTimeLoop( const Level &, const Highscore & );
+	LevelWonBestTimeLoop( const Level &level, const Highscore &new_score );
 	
 	void update( void );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 private:
 	const std::string level_name;
-	const Highscore score;
+	const Highscore new_score;
 	
 	std::list<Particle> particles;
 	

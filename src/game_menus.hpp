@@ -1,7 +1,7 @@
 #ifndef GAME_MENUS_HPP
 #define GAME_MENUS_HPP
 
-#include "level_set.hpp"
+#include "level_pack.hpp"
 #include "menu.hpp"
 
 class GameMenu : public SimpleMenu
@@ -16,27 +16,27 @@ private:
 	Ball ball;
 };
 
-class LevelSetMenu : public SmoothMenu
+class LevelPackMenu : public SmoothMenu
 {
 public:
-	LevelSetMenu( bool allow_new = false );
+	LevelPackMenu( bool allow_new = false );
 	
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
-	std::vector<LevelSet> entries;
+	std::vector<LevelPack> entries;
 	uint entry_count( void ) const;
 };
 
 class LevelMenu : public SmoothMenu
 {
 public:
-	LevelMenu( const LevelSet &, bool allow_new = false );
+	LevelMenu( const LevelPack &, bool allow_new = false );
 };
 
 class ScoredLevelMenu : public SmoothMenu
 {
 public:
-	ScoredLevelMenu( const LevelSet &, bool show_one_incomplete = true, bool auto_select_single_entry = true );
+	ScoredLevelMenu( const LevelPack &, bool show_one_incomplete = true, bool auto_select_single_entry = true );
 	
 	void loop( SDL_Surface * );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;

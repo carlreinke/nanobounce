@@ -3,14 +3,14 @@
 
 #include "level.hpp"
 
-class LevelSet
+class LevelPack
 {
 public:
-	LevelSet( void );
-	LevelSet( const std::string &directory );
+	LevelPack( void );
+	LevelPack( const std::string &directory );
 	bool invalid( void ) const { return !valid; }
 	
-	bool operator<( const LevelSet &that ) const { return this->name < that.name; }
+	bool operator<( const LevelPack &that ) const { return this->name < that.name; }
 	
 	void load_levels( void );
 	void save_meta( void );
@@ -27,8 +27,8 @@ private:
 	friend class Editor;
 	friend class LevelMenu;
 	friend class ScoredLevelMenu;
-	friend class LevelSetCongratsLoop;
-	friend class LevelSetMenu;
+	friend class LevelPackCongratsLoop;
+	friend class LevelPackMenu;
 };
 
 #endif // LEVEL_SET_HPP

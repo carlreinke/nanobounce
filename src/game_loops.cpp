@@ -5,13 +5,13 @@
 #include "main.hpp"
 #include "video/font.hpp"
 
-LevelSetCongratsLoop::LevelSetCongratsLoop( const LevelSet &level_set )
-: set_name(level_set.name)
+LevelPackCongratsLoop::LevelPackCongratsLoop( const LevelPack &level_pack )
+: pack_name(level_pack.name)
 {
 	play_music(music_directory + "special/Vulpine Skyflight.ogg");
 }
 
-void LevelSetCongratsLoop::handle_event( SDL_Event &e )
+void LevelPackCongratsLoop::handle_event( SDL_Event &e )
 {
 	switch (e.type)
 	{
@@ -34,7 +34,7 @@ void LevelSetCongratsLoop::handle_event( SDL_Event &e )
 	}
 }
 
-void LevelSetCongratsLoop::update( void )
+void LevelPackCongratsLoop::update( void )
 {
 	for (std::shared_ptr<Controller> controller : controllers)
 		controller->update();
@@ -90,7 +90,7 @@ void LevelSetCongratsLoop::update( void )
 	Particle::tick_all(particles);
 }
 
-void LevelSetCongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
+void LevelPackCongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
@@ -98,7 +98,7 @@ void LevelSetCongratsLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 		particle.draw(surface, 0, 0, alpha);
 	
 	font.blit(surface, surface->w / 2, surface->h / 4, "Congratulations!", font_sprites[3], Font::MAJUSCULE, Font::CENTER, alpha);
-	font.blit(surface, surface->w / 2, surface->h / 2, set_name, font_sprites[4], Font::CENTER, alpha);
+	font.blit(surface, surface->w / 2, surface->h / 2, pack_name, font_sprites[4], Font::CENTER, alpha);
 	font.blit(surface, surface->w / 2, surface->h / 2 + font.height(font_sprites[4]), "completed!", font_sprites[3], Font::MAJUSCULE, Font::CENTER, alpha);
 }
 
@@ -168,8 +168,8 @@ void LevelIntroLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	font.blit(surface, x, y, level_name, font_sprites[4], Font::CENTER, alpha);
 }
 
-LevelWonLoop::LevelWonLoop( const Level &level, const Highscore &score, const Highscore &new_score )
-: level_name(level.get_name()), score(score), new_score(new_score)
+LevelWonLoop::LevelWonLoop( const Level &level, const Highscore &best_score, const Highscore &new_score )
+: level_name(level.get_name()), best_score(best_score), new_score(new_score)
 {
 	const std::string menu_items[] =
 	{
@@ -192,16 +192,16 @@ void LevelWonLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	y = surface->h * 2 / 5 - font.height(font_sprites[3]);
 	font.blit(surface, x, y, "Best Time:", font_sprites[1], Font::MAJUSCULE, Font::CENTER, alpha);
 	y += font.height(font_sprites[1]);
-	font.blit(surface, x, y, score.name, font_sprites[3], Font::CENTER, alpha);
+	font.blit(surface, x, y, best_score.name, font_sprites[3], Font::CENTER, alpha);
 	y += font.height(font_sprites[3]);
-	font.blit(surface, x, y, score.time(), font_sprites[3], Font::CENTER, alpha);
+	font.blit(surface, x, y, best_score.time(), font_sprites[3], Font::CENTER, alpha);
 	
 	y = surface->h * 3 / 5 - font.height(font_sprites[3]) / 2;
 	font.blit(surface, x, y, "Your Time:", font_sprites[1], Font::MAJUSCULE, Font::CENTER, alpha);
 	y += font.height(font_sprites[1]);
 	font.blit(surface, x, y, new_score.time(), font_sprites[3], Font::CENTER, alpha);
 	y += font.height(font_sprites[3]);
-	font.blit(surface, x, y, "(+" + Highscore::time(new_score.ms() - score.ms()) + ")", font_sprites[1], Font::CENTER, alpha);
+	font.blit(surface, x, y, "(+" + Highscore::time(new_score.ms() - best_score.ms()) + ")", font_sprites[1], Font::CENTER, alpha);
 	
 	y = surface->h * 4 / 5;
 	for (uint i = 0; i < entry_count(); ++i)
@@ -211,9 +211,9 @@ void LevelWonLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	}
 }
 
-LevelWonBestTimeLoop::LevelWonBestTimeLoop( const Level &level, const Highscore &score )
-: TextEntryMenu("New Best Time!", score.name),
-  level_name(level.get_name()), score(score),
+LevelWonBestTimeLoop::LevelWonBestTimeLoop( const Level &level, const Highscore &new_score )
+: TextEntryMenu("New Best Time!", new_score.name),
+  level_name(level.get_name()), new_score(new_score),
   ticks(0)
 {
 	// nothing to do
@@ -240,7 +240,7 @@ void LevelWonBestTimeLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	font.blit(surface, x, y, level_name, font_sprites[4], Font::CENTER, alpha);
 	y += font.height(font_sprites[4]);
-	font.blit(surface, x, y, score.time(), font_sprites[3], Font::CENTER, alpha);
+	font.blit(surface, x, y, new_score.time(), font_sprites[3], Font::CENTER, alpha);
 }
 
 WooshParticle::WooshParticle( Fixed x, Fixed y, const SDL_Color &color )

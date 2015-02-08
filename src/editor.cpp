@@ -223,35 +223,35 @@ void Editor::menu( void )
 			if (!save(level.path))
 			{
 		case 2:  // Save As
-				LevelSetMenu level_set_menu(true);
-				level_set_menu.loop(surface);
-				if (level_set_menu.no_selection)
+				LevelPackMenu level_pack_menu(true);
+				level_pack_menu.loop(surface);
+				if (level_pack_menu.no_selection)
 					break;  // cancel save
 				
-				LevelSet &level_set = level_set_menu.entries[level_set_menu.selection];
-				if (level_set.invalid())
+				LevelPack &level_pack = level_pack_menu.entries[level_pack_menu.selection];
+				if (level_pack.invalid())
 				{
-					level_set.name = "UNNAMED";
-					level_set.author = player_name;
+					level_pack.name = "UNNAMED";
+					level_pack.author = player_name;
 					
-					TextEntryMenu text_entry_menu("New Set:", level_set.name);
+					TextEntryMenu text_entry_menu("New Level Pack:", level_pack.name);
 					text_entry_menu.loop(surface);
 					if (text_entry_menu.no_selection)
 						break;  // cancel save
 					
-					level_set.name = text_entry_menu.text;
+					level_pack.name = text_entry_menu.text;
 				}
 				else
-					level_set.load_levels();
+					level_pack.load_levels();
 				
-				LevelMenu level_menu(level_set, true);
+				LevelMenu level_menu(level_pack, true);
 				level_menu.loop(surface);
 				if (level_menu.no_selection)
 					break;  // cancel save
 				
-				if (level_menu.selection < level_set.levels.size())
+				if (level_menu.selection < level_pack.levels.size())
 				{
-					level.path = level_set.levels[level_menu.selection].path;
+					level.path = level_pack.levels[level_menu.selection].path;
 				}
 				else  // save as new level
 				{
@@ -264,8 +264,8 @@ void Editor::menu( void )
 					
 					level.name = text_entry_menu.text;
 					
-					level_set.append_level(level);
-					level_set.save_meta();
+					level_pack.append_level(level);
+					level_pack.save_meta();
 				}
 				level.validate();
 				save(level.path);
@@ -273,21 +273,21 @@ void Editor::menu( void )
 			break;
 			
 		case 3:  // Load
-			for (LevelSetMenu level_set_menu(false); ; )  // choose a level set
+			for (LevelPackMenu level_pack_menu(false); ; )  // choose a level pack
 			{
-				level_set_menu.loop(surface);
-				if (level_set_menu.no_selection)
+				level_pack_menu.loop(surface);
+				if (level_pack_menu.no_selection)
 					break;  // back to editor
 				
-				LevelSet &level_set = level_set_menu.entries[level_set_menu.selection];
-				level_set.load_levels();
+				LevelPack &level_pack = level_pack_menu.entries[level_pack_menu.selection];
+				level_pack.load_levels();
 				
-				LevelMenu level_menu(level_set, false);
+				LevelMenu level_menu(level_pack, false);
 				level_menu.loop(surface);
 				if (level_menu.no_selection)
-					continue;  // back to level set menu
+					continue;  // back to level pack menu
 				
-				load(level_set.levels[level_menu.selection].path);
+				load(level_pack.levels[level_menu.selection].path);
 				
 				break;  // back to editor
 			}
