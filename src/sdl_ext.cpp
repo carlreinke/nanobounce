@@ -1,12 +1,12 @@
 #include "sdl_ext.hpp"
 
 template <typename T>
-inline Uint32 get_pixel( const void *pixels )
+static inline Uint32 get_pixel( const void *pixels )
 {
 	return *reinterpret_cast<const T *>(pixels);
 }
 
-inline Uint32 get_pixel24( const void *pixels )
+static inline Uint32 get_pixel24( const void *pixels )
 {
 	const Uint8 *pixels8 = reinterpret_cast<const Uint8 *>(pixels);
 	
@@ -18,12 +18,12 @@ inline Uint32 get_pixel24( const void *pixels )
 }
 
 template <typename T>
-inline void set_pixel( void *pixels, Uint32 pixel )
+static inline void set_pixel( void *pixels, Uint32 pixel )
 {
 	*reinterpret_cast<T *>(pixels) = pixel;
 }
 
-inline void set_pixel24( void *pixels, Uint32 pixel )
+static inline void set_pixel24( void *pixels, Uint32 pixel )
 {
 	Uint8 *pixels8 = reinterpret_cast<Uint8 *>(pixels);
 	
@@ -32,8 +32,7 @@ inline void set_pixel24( void *pixels, Uint32 pixel )
 	*(++pixels8) = pixel;
 }
 
-
-inline void crop_rect( const SDL_Surface *surface, SDL_Rect *rect )
+static inline void crop_rect_to_surface( const SDL_Surface *surface, SDL_Rect *rect )
 {
 	if (rect->x > surface->w || rect->y > surface->h)
 	{
@@ -80,22 +79,24 @@ int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, Uint32 pixel, Uint8 alph
 	
 	if (dstrect == NULL)
 	{
-		static SDL_Rect rect = { 0, 0, 0, 0 };
-		rect.w = rect.h = -1;
+		static SDL_Rect rect = { 0, 0, UINT16_MAX, UINT16_MAX };
 		dstrect = &rect;
 	}
-	crop_rect(dst, dstrect);
+	crop_rect_to_surface(dst, dstrect);
 	
 	if (SDL_MUSTLOCK(dst))
 		SDL_LockSurface(dst);
 	
-	const Uint32 Rmask = dst->format->Rmask, Rshift = dst->format->Rshift,
-	             Gmask = dst->format->Gmask, Gshift = dst->format->Gshift,
-	             Bmask = dst->format->Bmask, Bshift = dst->format->Bshift,
-	             Amask = dst->format->Amask;
-	const Uint32 dR = (pixel & Rmask) >> Rshift,
-	             dG = (pixel & Gmask) >> Gshift,
-	             dB = (pixel & Bmask) >> Bshift;
+	const Uint32 Rmask = dst->format->Rmask;
+	const Uint8 Rshift = dst->format->Rshift;
+	const Uint32 Gmask = dst->format->Gmask;
+	const Uint8 Gshift = dst->format->Gshift;
+	const Uint32 Bmask = dst->format->Bmask;
+	const Uint8 Bshift = dst->format->Bshift;
+	const Uint32 Amask = dst->format->Amask;
+	const Uint32 dR = (pixel & Rmask) >> Rshift;
+	const Uint32 dG = (pixel & Gmask) >> Gshift;
+	const Uint32 dB = (pixel & Bmask) >> Bshift;
 	
 	Uint8 *pixels_row = reinterpret_cast<Uint8 *>(dst->pixels) + dst->pitch * dstrect->y + dst->format->BytesPerPixel * dstrect->x;
 	
@@ -110,7 +111,10 @@ int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, Uint32 pixel, Uint8 alph
 			for (Uint16 width = dstrect->w; width > 0; --width)
 			{
 				const Uint32 s = get_pixel<Uint32>(pixels);
-				Uint32 sR = s & Rmask, sG = s & Gmask, sB = s & Bmask, sA = s & Amask;
+				Uint32 sR = s & Rmask;
+				Uint32 sG = s & Gmask;
+				Uint32 sB = s & Bmask;
+				const Uint32 sA = s & Amask;
 				sR = (sR + ((((dR - (sR >> Rshift)) * alpha) >> 8) << Rshift)) & Rmask;
 				sG = (sG + ((((dG - (sG >> Gshift)) * alpha) >> 8) << Gshift)) & Gmask;
 				sB = (sB + ((((dB - (sB >> Bshift)) * alpha) >> 8) << Bshift)) & Bmask;
@@ -130,7 +134,10 @@ int SDL_FillRectA( SDL_Surface *dst, SDL_Rect *dstrect, Uint32 pixel, Uint8 alph
 			for (Uint16 width = dstrect->w; width > 0; --width)
 			{
 				const Uint32 s = get_pixel<Uint16>(pixels);
-				Uint32 sR = s & Rmask, sG = s & Gmask, sB = s & Bmask, sA = s & Amask;
+				Uint32 sR = s & Rmask;
+				Uint32 sG = s & Gmask;
+				Uint32 sB = s & Bmask;
+				const Uint32 sA = s & Amask;
 				sR = (sR + ((((dR - (sR >> Rshift)) * alpha) >> 8) << Rshift)) & Rmask;
 				sG = (sG + ((((dG - (sG >> Gshift)) * alpha) >> 8) << Gshift)) & Gmask;
 				sB = (sB + ((((dB - (sB >> Bshift)) * alpha) >> 8) << Bshift)) & Bmask;
@@ -192,13 +199,16 @@ void SDL_SetPixelA( SDL_Surface *dst, int x, int y, Uint32 pixel, Uint8 alpha )
 	if (SDL_MUSTLOCK(dst))
 		SDL_LockSurface(dst);
 	
-	const Uint32 Rmask = dst->format->Rmask, Rshift = dst->format->Rshift,
-	             Gmask = dst->format->Gmask, Gshift = dst->format->Gshift,
-	             Bmask = dst->format->Bmask, Bshift = dst->format->Bshift,
-	             Amask = dst->format->Amask;
-	const Uint32 dR = (pixel & Rmask) >> Rshift,
-	             dG = (pixel & Gmask) >> Gshift,
-	             dB = (pixel & Bmask) >> Bshift;
+	const Uint32 Rmask = dst->format->Rmask;
+	const Uint8 Rshift = dst->format->Rshift;
+	const Uint32 Gmask = dst->format->Gmask;
+	const Uint8 Gshift = dst->format->Gshift;
+	const Uint32 Bmask = dst->format->Bmask;
+	const Uint8 Bshift = dst->format->Bshift;
+	const Uint32 Amask = dst->format->Amask;
+	const Uint32 dR = (pixel & Rmask) >> Rshift;
+	const Uint32 dG = (pixel & Gmask) >> Gshift;
+	const Uint32 dB = (pixel & Bmask) >> Bshift;
 	
 	Uint8 *pixels = reinterpret_cast<Uint8 *>(dst->pixels) + dst->pitch * y + dst->format->BytesPerPixel * x;
 	
@@ -219,7 +229,10 @@ void SDL_SetPixelA( SDL_Surface *dst, int x, int y, Uint32 pixel, Uint8 alpha )
 		break;
 	}
 	
-	Uint32 sR = s & Rmask, sG = s & Gmask, sB = s & Bmask, sA = s & Amask;
+	Uint32 sR = s & Rmask;
+	Uint32 sG = s & Gmask;
+	Uint32 sB = s & Bmask;
+	const Uint32 sA = s & Amask;
 	sR = (sR + ((((dR - (sR >> Rshift)) * alpha) >> 8) << Rshift)) & Rmask;
 	sG = (sG + ((((dG - (sG >> Gshift)) * alpha) >> 8) << Gshift)) & Gmask;
 	sB = (sB + ((((dB - (sB >> Bshift)) * alpha) >> 8) << Bshift)) & Bmask;
