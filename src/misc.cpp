@@ -3,6 +3,6 @@
 void getline( std::istream &is, std::istringstream &iss )
 {
 	std::string temp;
-	getline(is, temp);
+	std::getline(is, temp);
 	iss.str(temp);
 }

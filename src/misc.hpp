@@ -27,7 +27,7 @@ T get_no_comments( std::istream &is )
 	while (is.peek() == '#' && is.good())
 	{
 		std::string dummy;
-		getline(is, dummy);
+		std::getline(is, dummy);
 	}
 	
 	is >> temp;

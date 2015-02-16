@@ -2,36 +2,43 @@
 #define HIGHSCORE_HPP
 
 #include "controller/controller.hpp"
+#include "hash/sha256.h"
 
 class Highscore
 {
 public:
-	Highscore( void ) { reset(); }
-	explicit Highscore( const std::string &score_path ) { load(score_path); }
-	bool invalid( void ) const { return ms() == 0; }
+	Highscore( void );
+	explicit Highscore( const boost::filesystem::path & );
 	
-	bool load( const std::string &path );
+	bool invalid( void ) const { return !valid; }
+	
+	bool load( const boost::filesystem::path & );
 	bool load( std::istream & );
 	
-	bool save( void ) const { return save(level_path + ".score"); };
-	bool save( const std::string &path ) const;
+	bool save( const boost::filesystem::path & ) const;
 	bool save( std::ostream & ) const;
-	
-	void reset( void );
 	
 	void push_back_tick( int x_direction );
 	
-	int ms( void ) const { return ticks * 1000 / ticks_per_second; }
-	std::string time( void ) const { return time(ms()); }
+	sha256 get_level_hash( void ) const { return level_hash; }
 	
-	std::string name;
-	std::string level_path;
+	const std::string & get_player_name( void ) const { return player_name; }
 	
-	static std::string time( int ms );
+	int get_time_ms( void ) const { return ticks * 1000 / ticks_per_second; }
+	std::string get_time( void ) const { return format_time(get_time_ms()); }
+	
+	void set_player_name( const std::string &name ) { if (player_name.empty()) player_name = name; }
+	
+	static std::string format_time( int ms );
 	
 private:
-	int ticks_per_second;
+	bool valid;
 	
+	std::string player_name;
+	
+	sha256 level_hash;
+	
+	int ticks_per_second;
 	int ticks;
 	
 	struct BallControlEntry
@@ -58,7 +65,7 @@ private:
 	void update_down( void );
 	
 	const Highscore highscore;
-        
+	
 	int ticks;
 	
 	std::vector<Highscore::BallControlEntry>::size_type ball_control_index;

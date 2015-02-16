@@ -10,18 +10,22 @@ using std::min;
 
 Game::Samples Game::samples;
 
-Game::Game( Controllers controllers )
+Game::Game( const Level &level, Controllers controllers )
 : state(NONE),
+  width(level.get_width()), height(level.get_height()),
   play_controllers(controllers)
 {
-	// good to go
+	for (const LevelBlock &block : level.get_blocks())
+		blocks.push_back(GameBlock(block));
+	
+	reset();
 }
 
-Game::Game( const Level &level, Controllers controllers )
-: play_controllers(controllers)
+void Game::loop( SDL_Surface *surface )
 {
-	this->level = level;
 	reset();
+
+	Loop::loop(surface);
 }
 
 void Game::handle_event( SDL_Event &e )
@@ -72,7 +76,8 @@ void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	level.draw(surface, x_offset, y_offset, alpha);
+	for (const GameBlock &block : blocks)
+		block.draw(surface, x_offset, y_offset, alpha);
 	
 	for (const Ball &ball : balls)
 		ball.draw(surface, x_offset, y_offset, alpha);
@@ -81,30 +86,22 @@ void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
 		particle.draw(surface, x_offset, y_offset, alpha);
 }
 
-bool Game::load( const std::string &level_data_path )
-{
-	bool temp = level.load(level_data_path);
-	reset();
-	
-	return temp;
-}
-
 void Game::reset( void )
 {
-	level.reset();
+	highscore = Highscore();
 	
-	highscore.reset();
-	highscore.level_path = level.path;
+	for (GameBlock &block : blocks)
+		block.ingame_reset();
 	
 	int ball_x = 0, ball_y = 0;
 	
 	balls.clear();
-	for (const Block &block : level.blocks)
+	for (GameBlock &block : blocks)
 	{
-		if (block.type == Block::BALL)
+		if (block.ingame_type == GameBlock::BALL)
 		{
-			balls.push_back(Ball(block.x + (Block::width - Ball::width) / 2,
-			                     block.y + (Block::height - Ball::height) / 2));
+			balls.push_back(Ball(block.x + (GameBlock::width - Ball::width) / 2,
+			                     block.y + (GameBlock::height - Ball::height) / 2));
 			
 			ball_x += balls.back().x;
 			ball_y += balls.back().y;
@@ -114,8 +111,8 @@ void Game::reset( void )
 	state = NONE;
 	
 	// initial pan
-	x_offset = -(level.width - screen_width) / 2;
-	y_offset = -(level.height - screen_height) / 2;
+	x_offset = -(width - screen_width) / 2;
+	y_offset = -(height - screen_height) / 2;
 	
 	// adjust pan so that ball is on screen
 	if (balls.size() > 0)
@@ -136,8 +133,8 @@ void Game::tick( void )
 	
 	for (std::shared_ptr<Controller> &c : play_controllers)
 	{
-		const bool left = c->is_down[Controller::LEFT] || c->is_down[Controller::LEFT_SHOULDER],
-		           right = c->is_down[Controller::RIGHT] || c->is_down[Controller::RIGHT_SHOULDER];
+		const bool left = c->is_down[Controller::LEFT] || c->is_down[Controller::LEFT_SHOULDER];
+		const bool right = c->is_down[Controller::RIGHT] || c->is_down[Controller::RIGHT_SHOULDER];
 		
 		x_direction += (left ? -1 : 0) + (right ? 1 : 0);
 		
@@ -175,20 +172,20 @@ void Game::tick( void )
 		}
 		else  // level view panning
 		{
-			if (level.width > screen_width)
+			if (width > screen_width)
 			{
 				if (ball.x + x_offset < screen_width / 4)  // ball in pan-left zone
 					x_offset = min(static_cast<int>(x_offset + ceilf(ball.x_term_vel)), 0);
 				else if (ball.x + x_offset > screen_width - screen_width / 4)  // ball in pan-right zone
-					x_offset = max(screen_width - level.width, static_cast<int>(x_offset - ceilf(ball.x_term_vel)));
+					x_offset = max(screen_width - width, static_cast<int>(x_offset - ceilf(ball.x_term_vel)));
 			}
 			
-			if (level.height > screen_height)
+			if (height > screen_height)
 			{
 				if (ball.y + y_offset < screen_height / 4)  // ball in pan-up zone
 					y_offset = min(static_cast<int>(y_offset + ceilf(ball.y_term_vel)), 0);
 				else if (ball.y + y_offset > screen_height - screen_height / 4)  // ball in pan-down zone
-					y_offset = max(screen_height - level.height, static_cast<int>(y_offset - ceilf(ball.y_term_vel)));
+					y_offset = max(screen_height - height, static_cast<int>(y_offset - ceilf(ball.y_term_vel)));
 			}
 		}
 	}
@@ -223,7 +220,7 @@ void Game::load_resources( void )
 
 bool Game::check_collide( Ball &ball, int recursion_depth )
 {
-	Block *block_hit = NULL;
+	GameBlock *block_hit = NULL;
 	Fixed order = 0;
 	Fixed revert_x, revert_y;
 	bool hit_x, hit_y;
@@ -247,9 +244,9 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 #endif
 	
 	// check each block for collision
-	for (Block &block : level.blocks)
+	for (GameBlock &block : blocks)
 	{
-		if (block.property == Block::COLLIDABLE)
+		if (block.ingame_property == GameBlock::COLLIDABLE)
 		{
 			Fixed revert_x_temp, revert_y_temp;
 			bool hit_x_temp, hit_y_temp;
@@ -343,9 +340,9 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 	else  // no collisions left
 	{
 		// check triggerable blocks
-		for (Block &block : level.blocks)
+		for (const GameBlock &block : blocks)
 		{
-			if (block.property == Block::TRIGGERABLE && ball_half_inside_block(ball, block))
+			if (block.ingame_property == GameBlock::TRIGGERABLE && ball_half_inside_block(ball, block))
 			{
 				handle_noncollidable_block(ball, block);
 			}
@@ -365,23 +362,23 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 	return (order > 0);
 }
 
-inline Fixed Game::collision_depth_fraction( const Ball &ball, const Block &block, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y, Fixed &edge_dist_x, Fixed &edge_dist_y ) const
+inline Fixed Game::collision_depth_fraction( const Ball &ball, const GameBlock &block, Fixed &revert_x, Fixed &revert_y, bool &hit_x, bool &hit_y, Fixed &edge_dist_x, Fixed &edge_dist_y ) const
 {
-	const Fixed past_left   = ball.x + Fixed(ball.width)   - block.x,
-	            past_right  = ball.x - Fixed(block.width)  - block.x,
-	            past_top    = ball.y + Fixed(ball.height)  - block.y,
-	            past_bottom = ball.y - Fixed(block.height) - block.y;
+	const Fixed past_left   = ball.x + Fixed(ball.width)   - block.x;
+	const Fixed past_right  = ball.x - Fixed(block.width)  - block.x;
+	const Fixed past_top    = ball.y + Fixed(ball.height)  - block.y;
+	const Fixed past_bottom = ball.y - Fixed(block.height) - block.y;
 	
-	const bool in_x = past_left > 0 && past_right < 0,
-	           in_y = past_top > 0 && past_bottom < 0;
+	const bool in_x = past_left > 0 && past_right < 0;
+	const bool in_y = past_top > 0 && past_bottom < 0;
 	
 	if (in_x && in_y)
 	{
-		const Fixed &past_x = ball.is_moving_right() ? past_left : past_right,
-		            &past_y = ball.is_moving_down() ? past_top : past_bottom;
+		const Fixed &past_x = ball.is_moving_right() ? past_left : past_right;
+		const Fixed &past_y = ball.is_moving_down() ? past_top : past_bottom;
 		
-		const Fixed frac_past_x = ball.x_vel == 0 ? Fixed(0) : past_x / ball.x_vel,
-		            frac_past_y = ball.y_vel == 0 ? Fixed(0) : past_y / ball.y_vel;
+		const Fixed frac_past_x = ball.x_vel == 0 ? Fixed(0) : past_x / ball.x_vel;
+		const Fixed frac_past_y = ball.y_vel == 0 ? Fixed(0) : past_y / ball.y_vel;
 		
 		if (frac_past_x > 1 && frac_past_y > 1)  // both invalid
 		{
@@ -421,8 +418,8 @@ inline void Game::handle_block_x_collision( Ball &ball )
 {
 	Sample *sample = NULL;
 	
-	const bool hit_left  = ball.is_moving_right(),
-	           hit_right = ball.is_moving_left();
+	const bool hit_left  = ball.is_moving_right();
+	const bool hit_right = ball.is_moving_left();
 	
 	if (ball.can_unboost)
 	{
@@ -461,7 +458,7 @@ inline void Game::handle_block_x_collision( Ball &ball )
 		play_sample(*sample, 1, sample_pan(ball.x));
 }
 
-inline void Game::handle_block_y_collision( Ball &ball, Block &block )
+inline void Game::handle_block_y_collision( Ball &ball, GameBlock &block )
 {
 	// play no more than one sample per tick, otherwise both "bounce" and "nuke" might happen in the same tick, for example
 	Sample *sample = NULL;
@@ -477,11 +474,11 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 	
 	if (hit_top)
 	{
-		switch (block.type)
+		switch (block.ingame_type)
 		{
 			int temp;
 			
-		case Block::NUKE:
+		case GameBlock::NUKE:
 			if (state == NONE)
 			{
 				state = LOST;
@@ -503,8 +500,8 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			sample = &samples.nuke;
 			break;
 			
-		case Block::RECYCLE:
-			block.property = Block::HIDDEN;
+		case GameBlock::RECYCLE:
+			block.ingame_property = GameBlock::HIDDEN;
 			
 			for (int y = 0; y < block.height; y += 3)
 				for (int x = 0; x < block.width; x += 3)
@@ -513,17 +510,17 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			sample = &samples.recycle;
 			break;
 			
-		case Block::TOGGLE_0_STAR:
+		case GameBlock::TOGGLE_0_STAR:
 			temp = 0;
 			
-			for (Block &block : level.blocks)
+			for (GameBlock &block : blocks)
 			{
-				const bool is_toggle_0 = block.type == Block::TOGGLE_0_0;
+				const bool is_toggle_0 = block.ingame_type == GameBlock::TOGGLE_0_0;
 				
 				if (is_toggle_0 && !ball_overlaps_block(ball, block))
 				{
-					block.type = Block::TOGGLE_0_1;
-					block.property = Block::COLLIDABLE;
+					block.ingame_type = GameBlock::TOGGLE_0_1;
+					block.ingame_property = GameBlock::COLLIDABLE;
 					
 					for (int y = 0; y < block.height; y += 5)
 						for (int x = 0; x < block.width; x += 5)
@@ -537,15 +534,15 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 				sample = &samples.toggle;
 			break;
 			
-		case Block::TOGGLE_1_STAR:
-			for (Block &block : level.blocks)
+		case GameBlock::TOGGLE_1_STAR:
+			for (GameBlock &block : blocks)
 			{
-				const bool is_toggle_1 = block.type == Block::TOGGLE_1_1 || block.type == Block::TOGGLE_1_STAR;
+				const bool is_toggle_1 = block.ingame_type == GameBlock::TOGGLE_1_1 || block.ingame_type == GameBlock::TOGGLE_1_STAR;
 				
 				if (is_toggle_1)
 				{
-					block.type = Block::TOGGLE_1_0;
-					block.property = Block::IGNORED;
+					block.ingame_type = GameBlock::TOGGLE_1_0;
+					block.ingame_property = GameBlock::IGNORED;
 					
 					for (int y = 0; y < block.height; y += 5)
 						for (int x = 0; x < block.width; x += 5)
@@ -556,7 +553,7 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			sample = &samples.toggle;
 			break;
 			
-		case Block::BOOST_UP:
+		case GameBlock::BOOST_UP:
 			ball.y_boost(-ball.y_boost_block);
 			
 			for (int i = 0; i < 10; ++i)
@@ -565,7 +562,7 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			sample = &samples.boost;
 			break;
 			
-		case Block::BOOST_LEFT:
+		case GameBlock::BOOST_LEFT:
 			{
 				Ball temp(block.x - ball.width, block.y);
 				
@@ -583,7 +580,7 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 			}
 			break;
 			
-		case Block::BOOST_RIGHT:
+		case GameBlock::BOOST_RIGHT:
 			{
 				Ball temp(block.x + block.width, block.y);
 				
@@ -612,11 +609,11 @@ inline void Game::handle_block_y_collision( Ball &ball, Block &block )
 }
 
 // handle ball interaction with non-collidable blocks
-inline void Game::handle_noncollidable_block( Ball &ball, Block &block )
+inline void Game::handle_noncollidable_block( Ball &ball, const GameBlock &block )
 {
-	switch (block.type)
+	switch (block.ingame_type)
 	{
-	case Block::EXIT:
+	case GameBlock::EXIT:
 		if (state == NONE)
 		{
 			state = WON;
@@ -629,21 +626,21 @@ inline void Game::handle_noncollidable_block( Ball &ball, Block &block )
 		}
 		break;
 		
-	case Block::PUSH_UP:
+	case GameBlock::PUSH_UP:
 		ball.y_vel -= ball.y_accel * 3 / 2;
 		
 		if (SDL_GetTicks() % 2 == 0)
 			particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(192, 192, 255) : SDL_Color_RGBA(0, 0, 255)));
 		
 		break;
-	case Block::PUSH_LEFT:
+	case GameBlock::PUSH_LEFT:
 		ball.x_vel -= ball.y_accel / 2;
 		
 		if (SDL_GetTicks() % 2 == 0)
 			particles.push_back(SparkParticle(ball.x, ball.y, -ball.x_vel, -ball.y_vel, (SDL_GetTicks() % 10 == 0) ?  SDL_Color_RGBA(192, 192, 255) : SDL_Color_RGBA(0, 0, 255)));
 		
 		break;
-	case Block::PUSH_RIGHT:
+	case GameBlock::PUSH_RIGHT:
 		ball.x_vel += ball.y_accel / 2;
 		
 		if (SDL_GetTicks() % 2 == 0)
@@ -689,17 +686,17 @@ inline bool Game::ball_overlaps_rect( const Ball &ball, int x, int y, int w, int
 // check if ball is at least partially within level boundaries
 inline bool Game::ball_overlaps_level( const Ball &ball ) const
 {
-	return ball_overlaps_rect(ball, 0, 0, level.width, level.height);
+	return ball_overlaps_rect(ball, 0, 0, width, height);
 }
 
 // check if ball is in collision with a block
-inline bool Game::ball_overlaps_block( const Ball &ball, const Block &block )
+inline bool Game::ball_overlaps_block( const Ball &ball, const GameBlock &block )
 {
 	return ball_overlaps_rect(ball, block.x, block.y, block.width, block.height);
 }
 
 // check if ball is at least half inside a block
-inline bool Game::ball_half_inside_block( const Ball &ball, const Block &block )
+inline bool Game::ball_half_inside_block( const Ball &ball, const GameBlock &block )
 {
 	const bool x_half_in = ball.x + Fixed(ball.width) / 2 >= block.x &&
 	                       ball.x + Fixed(ball.width) / 2 < block.x + block.width;
@@ -709,12 +706,12 @@ inline bool Game::ball_half_inside_block( const Ball &ball, const Block &block )
 	return (x_half_in && y_half_in);
 }
 
-// check if ball is in collision with any collideable block
+// check if ball is in collision with any collidable block
 bool Game::ball_overlaps_any_block( const Ball &ball ) const
 {
-	for (const Block &block : level.blocks)
+	for (const GameBlock &block : blocks)
 	{
-		if (block.property == Block::COLLIDABLE)
+		if (block.ingame_property == GameBlock::COLLIDABLE)
 			if (ball_overlaps_block(ball, block))
 				return true;
 	}
@@ -750,75 +747,4 @@ void Game::menu( void )
 			break;
 		}
 	}
-}
-
-bool Game::play( SDL_Surface *surface, std::pair< std::vector<Level>::iterator, std::vector<Level>::iterator > levels )
-{
-	Game game;
-	
-	std::vector<Level>::iterator level = levels.first;
-	
-	std::string highscore_path;
-	Highscore highscore;
-	
-	bool persistent_restart_selection = false;
-	
-	while (game.state != Game::QUIT && level != levels.second && !global_quit)
-	{
-		if (game.state == Game::LOST || game.state == Game::RESTART)
-		{
-			// retry level
-			game.reset();
-		}
-		else
-		{
-			game = Game(*level);
-			persistent_restart_selection = false;
-			
-			LevelIntroLoop level_intro(*level);
-			level_intro.loop(surface);
-		}
-		
-		game.loop(surface);
-		
-		if (game.state == Game::WON)
-		{
-			highscore.load(level->get_score_path());
-			
-			if (game.highscore.ms() < highscore.ms() || highscore.invalid())
-			{
-				game.highscore.name = player_name;
-				
-				LevelWonBestTimeLoop menu(*level, game.highscore);
-				menu.loop(surface);
-				
-				if (!menu.no_selection)
-					game.highscore.name = player_name = menu.text;
-				
-				game.highscore.save();
-			}
-			else
-			{
-				LevelWonLoop menu(*level, highscore, game.highscore);
-				if (persistent_restart_selection)
-					menu.selection = 1;
-				menu.loop(surface);
-				if (menu.no_selection)
-					menu.selection = 0;  // no retry
-				
-				switch (menu.selection)
-				{
-				case 1: // Retry
-					game.state = Game::RESTART;
-					persistent_restart_selection = true;
-					break;
-				}
-			}
-		}
-		
-		if (game.state == Game::WON || game.state == Game::CHEAT_WON)
-			++level;
-	}
-	
-	return (level == levels.second);
 }

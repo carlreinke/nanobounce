@@ -8,26 +8,27 @@
 using std::max;
 using std::min;
 
-const int Ball::width = 2, Ball::height = 2;
+const int Ball::width = 2;
+const int Ball::height = 2;
 
 const Fixed Ball::constant = make_frac<Fixed>(5, 4);
 
 // terminal velocity and acceleration
 const Fixed Ball::y_term_vel = constant;
-const Fixed Ball::y_accel    = sqr(-y_term_vel) / (2 * (1.5f * Block::height));
+const Fixed Ball::y_accel    = sqr(-y_term_vel) / (2 * (1.5f * LevelBlock::height));
 
-const Fixed Ball::x_term_vel   = (3.0f * Block::width) / ((2 * y_term_vel) / y_accel);
-const Fixed Ball::push_x_accel = sqr(x_term_vel) / (2.0f * Block::width);
+const Fixed Ball::x_term_vel   = (3.0f * LevelBlock::width) / ((2 * y_term_vel) / y_accel);
+const Fixed Ball::push_x_accel = sqr(x_term_vel) / (2.0f * LevelBlock::width);
 
 // boost block presets
 const Fixed Ball::x_boost_block = constant;
-const Fixed Ball::y_boost_block = sqrtf(2 * y_accel * ((4.0f * Block::height) - height));
+const Fixed Ball::y_boost_block = sqrtf(2 * y_accel * ((4.0f * LevelBlock::height) - height));
 
 // wall jump presets
 const Fixed Ball::wall_jump_x_vel = constant;
 const Fixed Ball::wall_jump_y_vel = wall_jump_x_vel * 0.5f;
-const Fixed Ball::wall_jump_y_vel_reset = (-1.0f * Block::width * y_accel) / (2 * x_term_vel);
-const int Ball::wall_jump_ticks = (2.0f * Block::width) / wall_jump_x_vel;
+const Fixed Ball::wall_jump_y_vel_reset = (-1.0f * LevelBlock::width * y_accel) / (2 * x_term_vel);
+const int Ball::wall_jump_ticks = (2.0f * LevelBlock::width) / wall_jump_x_vel;
 
 std::vector<Sprite> Ball::sprites;
 

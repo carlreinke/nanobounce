@@ -13,7 +13,9 @@ class LevelPackCongratsLoop : public Loop
 public:
 	LevelPackCongratsLoop( const LevelPack & );
 	
+protected:
 	void handle_event( SDL_Event & );
+	
 	void update( void );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
@@ -34,7 +36,9 @@ class LevelIntroLoop : public Loop
 public:
 	LevelIntroLoop( const Level & );
 	
+protected:
 	void handle_event( SDL_Event & );
+	
 	void update( void );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
@@ -49,6 +53,7 @@ class LevelWonLoop : public SimpleMenu
 public:
 	LevelWonLoop( const Level &level, const Highscore &best_score, const Highscore &new_score );
 	
+protected:
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	
 private:
@@ -62,6 +67,7 @@ class LevelWonBestTimeLoop : public TextEntryMenu
 public:
 	LevelWonBestTimeLoop( const Level &level, const Highscore &new_score );
 	
+protected:
 	void update( void );
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 	

@@ -3,29 +3,26 @@
 #include "level.hpp"
 #include "misc.hpp"
 
-boost::bimap<Block::Type, std::string> Level::block_names;
+boost::bimap<LevelBlock::Type, std::string> Level::block_names;
 
 Level::Level( void )
-: valid(false),
+: valid(true),
   width(0), height(0)
 {
 	load_resources();
 }
 
-Level::Level( std::string name, int width, int height )
-: valid(true),
-  name(name),
-  width(width), height(height)
+Level::Level( const boost::filesystem::path &path )
 {
 	load_resources();
+	
+	load(path);
 }
 
-bool Level::load( const std::string &data_path )
+bool Level::load( const boost::filesystem::path &path )
 {
-	path = data_path;
-	
-	std::ifstream data(path.c_str());
-	bool success = load(data);
+	std::ifstream stream(path.c_str());
+	bool success = load(stream);
 	
 	if (success)
 		std::cout << "loaded level '" << name << "' from '" << path << "'" << std::endl;
@@ -35,94 +32,95 @@ bool Level::load( const std::string &data_path )
 	return success;
 }
 
-bool Level::load( std::istream &data )
+bool Level::load( std::istream &stream )
 {
-	getline(data, name);
+	std::getline(stream, name);
+	boost::trim_right_if(name, boost::is_any_of("\r"));
 	
-	data >> width >> height;
+	stream >> width >> height;
 	
-	width *= Block::width;
-	height *= Block::height;
+	valid = stream.good();
 	
-	valid = data.good();
+	width *= LevelBlock::width;
+	height *= LevelBlock::height;
 	
 	blocks.clear();
-	
-	int x, y;
-	std::string block_name;
-	
-	while (data >> x >> y >> block_name)
+	for (; ; )
 	{
+		int x, y;
+		std::string block_name;
+		
+		stream >> x >> y >> block_name;
+		
+		if (!stream.good())
+			break;
+		
 		try
 		{
-			x *= Block::width;
-			y *= Block::height;
-			Block::Type type = block_names.right.at(block_name);
+			x *= LevelBlock::width;
+			y *= LevelBlock::height;
+			LevelBlock::Type type = block_names.right.at(block_name);
 			
-			blocks.push_back(Block(x, y, type));
+			blocks.push_back(LevelBlock(x, y, type));
 		}
 		catch (std::out_of_range &e) { assert(false); }
 	}
 	
-	return valid;
+	return valid &= stream.eof();
 }
 
-bool Level::save( const std::string &data_path ) const
+bool Level::save( const boost::filesystem::path &path ) const
 {
-	path = data_path;
-	
 	std::ofstream data(path.c_str());
 	bool success = save(data);
 	
 	std::cout << (success ? "saved" : "warning: failed to save") << " level"
-	          << " '" << name << "' to '" << data_path << "'" << std::endl;
+	          << " '" << name << "' to '" << path << "'" << std::endl;
 	
 	return success;
 }
 
-bool Level::save( std::ostream &data ) const
+bool Level::save( std::ostream &stream ) const
 {
-	if (invalid())
+	if (!valid)
 		return false;
 	
-	data << name << std::endl;
+	stream << name << std::endl;
 	
-	data << (width / Block::width) << " "
-	     << (height / Block::height) << std::endl;
+	stream << (width / LevelBlock::width) << " "
+	       << (height / LevelBlock::height) << std::endl;
 	
-	for (const Block &block : blocks)
+	for (const LevelBlock &block : blocks)
 	{
-		data << (block.x / block.width) << " "
-		     << (block.y / block.height) << " "
-		     << block_names.left.at(block.type) << std::endl;
+		stream << (block.get_x() / block.width) << " "
+		       << (block.get_y() / block.height) << " "
+		       << block_names.left.at(block.get_type()) << std::endl;
 	}
 	
-	return data.good();
+	return stream.good();
 }
 
-void Level::validate( void )
+void Level::normalize( void )
 {
 	// remove blocks outside boundaries
 	blocks.erase(std::remove_if(blocks.begin(), blocks.end(),
-		[this]( const Block &block ) { return block.x < 0 ||
-		                                      block.y < 0 ||
-		                                      block.x >= width ||
-		                                      block.y >= height; }));
+		[this]( const LevelBlock &block )
+		{
+			return block.get_x() < 0 ||
+			       block.get_y() < 0 ||
+			       block.get_x() >= width ||
+			       block.get_y() >= height; }), blocks.end());
 	
-	stable_sort(blocks.begin(), blocks.end());
-}
-
-void Level::reset( void )
-{
-	for (Block &block : blocks)
-		block.reset();
+	std::sort(blocks.begin(), blocks.end());
+	
+	blocks.erase(std::unique(blocks.begin(), blocks.end()), blocks.end());
 }
 
 void Level::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	for (const Block &block : blocks)
+	for (const LevelBlock &block : blocks)
 		block.draw(surface, x_offset, y_offset, alpha);
 }
 
@@ -130,29 +128,29 @@ void Level::load_resources( void )
 {
 	if (block_names.empty())
 	{
-		boost::array<std::pair<Block::Type, std::string>, Block::Type_COUNT> temp_block_names =
+		boost::array<std::pair<LevelBlock::Type, std::string>, LevelBlock::Type_COUNT> temp_block_names =
 		{{
-			std::make_pair(Block::BALL,    "ball"),
-			std::make_pair(Block::EXIT,    "exit"),
-			std::make_pair(Block::NORMAL,  "block"),
-			std::make_pair(Block::NUKE,    "nuke"),
-			std::make_pair(Block::RECYCLE, "recycle"),
+			std::make_pair(LevelBlock::BALL,    "ball"),
+			std::make_pair(LevelBlock::EXIT,    "exit"),
+			std::make_pair(LevelBlock::NORMAL,  "block"),
+			std::make_pair(LevelBlock::NUKE,    "nuke"),
+			std::make_pair(LevelBlock::RECYCLE, "recycle"),
 			
-			std::make_pair(Block::TOGGLE_0_0,    "toggle_0"),
-			std::make_pair(Block::TOGGLE_0_STAR, "toggle_0_star"),
-			std::make_pair(Block::TOGGLE_1_1,    "toggle_1"),
-			std::make_pair(Block::TOGGLE_1_STAR, "toggle_1_star"),
+			std::make_pair(LevelBlock::TOGGLE_0_0,    "toggle_0"),
+			std::make_pair(LevelBlock::TOGGLE_0_STAR, "toggle_0_star"),
+			std::make_pair(LevelBlock::TOGGLE_1_1,    "toggle_1"),
+			std::make_pair(LevelBlock::TOGGLE_1_STAR, "toggle_1_star"),
 			
-			std::make_pair(Block::BOOST_UP,    "boost_up"),
-			std::make_pair(Block::BOOST_LEFT,  "boost_left"),
-			std::make_pair(Block::BOOST_RIGHT, "boost_right"),
+			std::make_pair(LevelBlock::BOOST_UP,    "boost_up"),
+			std::make_pair(LevelBlock::BOOST_LEFT,  "boost_left"),
+			std::make_pair(LevelBlock::BOOST_RIGHT, "boost_right"),
 			
-			std::make_pair(Block::PUSH_UP,    "push_up"),
-			std::make_pair(Block::PUSH_LEFT,  "push_left"),
-			std::make_pair(Block::PUSH_RIGHT, "push_right"),
+			std::make_pair(LevelBlock::PUSH_UP,    "push_up"),
+			std::make_pair(LevelBlock::PUSH_LEFT,  "push_left"),
+			std::make_pair(LevelBlock::PUSH_RIGHT, "push_right"),
 		}};
 		
-		typedef std::pair<Block::Type, std::string> BlockPair;
+		typedef std::pair<LevelBlock::Type, std::string> BlockPair;
 		for (const BlockPair &i : temp_block_names)
 			block_names.insert(make_bipair(i.first, i.second));
 	}

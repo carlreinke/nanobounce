@@ -24,15 +24,16 @@ const std::string font_directory = sprite_directory + "fonts/";
 
 std::string player_name = "NOBODY";
 
+static void title( SDL_Surface *surface );
+
 int main( int argc, char *argv[] )
 {
+	bool fullscreen = false;
 	bool editor = false;
-	bool replay = false;
 	std::string level_path;
-	std::shared_ptr<Controller> replay_controller;
 	
 	int opt;
-	while ((opt = getopt(argc, argv, "ae:mr:sv:")) != -1)
+	while ((opt = getopt(argc, argv, "ae:fmr:sv:")) != -1)
 	{
 		switch (opt)
 		{
@@ -48,18 +49,12 @@ int main( int argc, char *argv[] )
 			level_path = optarg;
 			break;
 			
-		case 'm':
-			audio_mode = NO_MUSIC;
+		case 'f':
+			fullscreen = true;
 			break;
 			
-		case 'r':
-			replay = true;
-			
-			{
-				const Highscore score(optarg);
-				level_path = score.level_path;
-				replay_controller = std::make_shared<Replay>(score);
-			}
+		case 'm':
+			audio_mode = NO_MUSIC;
 			break;
 			
 		case 's':
@@ -80,7 +75,7 @@ int main( int argc, char *argv[] )
 	} 
 	
 	{
-		std::vector<std::string> music_filenames = read_directory_listing(music_directory);
+		auto music_filenames = list_files(music_directory);
 		for (const std::string &filename : music_filenames)
 			music_paths.push_back(music_directory + filename);
 	}
@@ -95,13 +90,15 @@ int main( int argc, char *argv[] )
 		std::cerr << SDL_GetError() << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	SDL_Surface *surface = init_video(false);
+	
+	SDL_Surface *surface = init_video(fullscreen);
+	
 	init_audio();
 	
 	// read player name
 	{
 		std::ifstream name_file("player");
-		getline(name_file, player_name);
+		std::getline(name_file, player_name);
 	}
 	
 	Game::load_resources();
@@ -131,115 +128,9 @@ int main( int argc, char *argv[] )
 		
 		editor.loop(surface);
 	}
-	else if (replay)
-	{
-		Game game(Controllers(1, replay_controller));
-		game.load(level_path);
-		
-		game.loop(surface);
-	}
 	else
 	{
-		while (!global_quit)
-		{
-			GameMenu menu;
-			menu.loop(surface);
-			
-			// at this point, ticks should be a decent seed
-			srand(SDL_GetTicks());
-			
-			if (menu.no_selection)
-				menu.selection = 2; // choose quit
-			
-			switch (menu.selection)
-			{
-			case 0:  // Play
-				for (LevelPackMenu set_menu; !global_quit; )  // choose a level pack
-				{
-					set_menu.loop(surface);
-					if (set_menu.no_selection)
-						break;  // back to title menu
-					
-					LevelPack &level_pack = set_menu.entries[set_menu.selection];
-					level_pack.load_levels();
-					
-					ScoredLevelMenu level_menu(level_pack);
-					level_menu.loop(surface);
-					if (level_menu.no_selection)
-						continue;  // back to level pack menu
-					
-					if (Game::play(surface, std::make_pair(level_pack.levels.begin() + level_menu.selection, level_pack.levels.end())))
-					{
-						LevelPackCongratsLoop congrats(level_pack);
-						congrats.loop(surface);
-					}
-					
-					break;  // back to title menu
-				}
-				break;
-				
-			case 1:  // More
-				{
-					SimpleMenu more_menu;
-					const std::string menu_items[] =
-					{
-						"View Replays",
-						"Make Levels",
-						"Back"
-					};
-					for (uint i = 0; i < COUNTOF(menu_items); ++i)
-						more_menu.entries.push_back(menu_items[i]);
-					
-					more_menu.loop(surface);
-					if (more_menu.no_selection)
-						break;  // back to title menu
-					
-					switch (more_menu.selection)
-					{
-					case 0:
-						for (LevelPackMenu set_menu; !global_quit; )  // choose a level pack
-						{
-							set_menu.loop(surface);
-							if (set_menu.no_selection)
-								break;  // back to title menu
-							
-							LevelPack &level_pack = set_menu.entries[set_menu.selection];
-							level_pack.load_levels();
-							
-							for (ScoredLevelMenu level_menu(level_pack, false, false); !global_quit; )  // choose a level
-							{
-								level_menu.loop(surface);
-								if (level_menu.no_selection)
-									break;  // back to level pack menu
-								
-								Level &level = level_pack.levels[level_menu.selection];
-								
-								bool restart = true;
-								while (restart)
-								{
-									Game game(level, Controllers(1, std::make_shared<Replay>(Highscore(level.get_score_path()))));
-									game.loop(surface);
-									
-									restart = (game.state == Game::RESTART);
-								}
-							}
-						}
-						break;
-					case 1:
-						{
-							Editor editor;
-							editor.loop(surface);
-						}
-						break;
-					}
-				}
-				break;
-				
-			case 2:  // Quit
-				global_quit = true;
-				break;
-			}
-		}
+		title(surface);
 	}
 	
 	// save player name
@@ -254,11 +145,347 @@ int main( int argc, char *argv[] )
 	// freeing surfaces after SDL_Quit() is disastrous on some platforms, so we free them here
 	font_sprites.clear();
 	Ball::static_destruction_clean_up();
-	Block::static_destruction_clean_up();
+	LevelBlock::static_destruction_clean_up();
 	Editor::static_destruction_clean_up();
 	
 	deinit_audio();
+	
 	SDL_Quit();
 	
 	return EXIT_SUCCESS;
+}
+
+enum MenuResult
+{
+	QUIT,
+	BACK,
+	DONE,
+};
+
+static MenuResult play( SDL_Surface *surface );
+
+static MenuResult more( SDL_Surface *surface );
+
+static void title( SDL_Surface *surface )
+{
+	// at this point, ticks should be a decent seed
+	srand(SDL_GetTicks());
+
+	while (!global_quit)
+	{
+		GameMenu menu;
+		menu.loop(surface);
+
+		if (menu.no_selection)
+			menu.selection = 2; // choose quit
+
+		switch (menu.selection)
+		{
+		case 0:  // Play
+			play(surface);
+			break;
+
+		case 1:  // More
+			more(surface);
+			break;
+
+		case 2:  // Quit
+			global_quit = true;
+			break;
+		}
+	}
+}
+
+static MenuResult play( SDL_Surface *surface, LevelPack &level_pack );
+
+static MenuResult play( SDL_Surface *surface )
+{
+	LevelPackMenu pack_selector;
+	
+again:
+	if (global_quit)
+		return QUIT;
+	
+	pack_selector.loop(surface);
+	if (pack_selector.no_selection)
+		return BACK;
+	
+	LevelPack &level_pack = pack_selector.entries[pack_selector.selection].level_pack;
+	
+	switch (play(surface, level_pack))
+	{
+		case QUIT:
+			return QUIT;
+		case BACK:
+			goto again;
+		case DONE:
+			return DONE;
+	}
+	
+	assert(false);
+	return DONE;
+}
+
+static MenuResult play( SDL_Surface *surface, LevelPack &level_pack, uint i );
+
+static MenuResult play( SDL_Surface *surface, LevelPack &level_pack )
+{
+	ScoredLevelMenu level_selector(level_pack);
+	
+again:
+	if (global_quit)
+		return QUIT;
+	
+	level_selector.loop(surface);
+	if (level_selector.no_selection)
+		return BACK;
+	
+	for (uint i = level_selector.selection; i < level_pack.get_levels_count(); ++i)
+	{
+		if (global_quit)
+			return QUIT;
+
+		switch (play(surface, level_pack, i))
+		{
+			case QUIT:
+				return QUIT;
+			case BACK:
+				goto again;
+			case DONE:
+				break;
+		}
+	}
+	
+	LevelPackCongratsLoop congrats(level_pack);
+	congrats.loop(surface);
+
+	return BACK;
+}
+
+static MenuResult play( SDL_Surface *surface, LevelPack &level_pack, uint i )
+{
+	Level level;
+
+	auto level_path = level_pack.get_level_path(i);
+	auto score_path = level_pack.get_score_path(i);
+
+	if (!level.load(level_path))
+		return DONE;
+
+	LevelIntroLoop level_intro(level);
+	level_intro.loop(surface);
+
+	bool persistent_restart_selection = false;
+
+	Game game(level);
+	
+again:
+	if (global_quit)
+		return QUIT;
+
+	game.loop(surface);
+
+	switch (game.state)
+	{
+		case Game::NONE:
+			goto again;
+		
+		case Game::WON:
+		{
+			Highscore best_highscore;
+
+			best_highscore.load(score_path);
+
+			if (game.highscore.get_time_ms() < best_highscore.get_time_ms() || best_highscore.invalid())
+			{
+				game.highscore.set_player_name(player_name);
+
+				LevelWonBestTimeLoop menu(level, game.highscore);
+				menu.loop(surface);
+
+				if (!menu.no_selection)
+					game.highscore.set_player_name(player_name = menu.text);
+
+				game.highscore.save(score_path);
+			}
+			else
+			{
+				LevelWonLoop menu(level, best_highscore, game.highscore);
+				if (persistent_restart_selection)
+					menu.selection = 1;
+				menu.loop(surface);
+				if (menu.no_selection)
+					menu.selection = 0;  // no retry
+
+				switch (menu.selection)
+				{
+					case 0: // Next
+						break;
+					case 1: // Retry
+						persistent_restart_selection = true;
+						goto again;
+				}
+			}
+			
+			return DONE;
+		}
+		
+		case Game::CHEAT_WON:
+			return DONE;
+
+		case Game::LOST:
+			goto again;
+			
+		case Game::RESTART:
+			goto again;
+			
+		case Game::QUIT:
+			return QUIT;
+	}
+	
+	assert(false);
+	return DONE;
+}
+
+static MenuResult watch_replays( SDL_Surface *surface );
+
+static MenuResult more( SDL_Surface *surface )
+{
+	SimpleMenu more_menu;
+	const std::string menu_items[] =
+	{
+		"Watch Replays",
+		"Make Levels",
+		"Back"
+	};
+	for (uint i = 0; i < COUNTOF(menu_items); ++i)
+		more_menu.entries.push_back(menu_items[i]);
+
+	more_menu.loop(surface);
+	if (more_menu.no_selection)
+		return BACK;
+
+	switch (more_menu.selection)
+	{
+	case 0:  // Watch Replays
+		return watch_replays(surface);
+		
+	case 1:  // Make Levels
+		{
+			Editor editor;
+			editor.loop(surface);
+		}
+		return QUIT;
+		
+	case 2:  // Back
+		return BACK;
+	}
+	
+	assert(false);
+	return DONE;
+}
+
+static MenuResult watch_replays( SDL_Surface *surface, LevelPack &level_pack );
+
+static MenuResult watch_replays( SDL_Surface *surface )
+{
+	LevelPackMenu pack_selector;
+	
+again:
+	if (global_quit)
+		return QUIT;
+	
+	pack_selector.loop(surface);
+	if (pack_selector.no_selection)
+		return BACK;
+
+	LevelPack &level_pack = pack_selector.entries[pack_selector.selection].level_pack;
+	
+	switch (watch_replays(surface, level_pack))
+	{
+		case QUIT:
+			return QUIT;
+		case BACK:
+			goto again;
+		case DONE:
+			return DONE;
+	}
+	
+	assert(false);
+	return DONE;
+}
+
+static MenuResult watch_replays( SDL_Surface *surface, LevelPack &level_pack, uint i );
+
+static MenuResult watch_replays( SDL_Surface *surface, LevelPack &level_pack )
+{
+	ScoredLevelMenu level_selector(level_pack, false, false);
+
+again:	
+	if (global_quit)
+		return QUIT;
+	
+	level_selector.loop(surface);
+	if (level_selector.no_selection)
+		return BACK;
+
+	switch (watch_replays(surface, level_pack, level_selector.selection))
+	{
+		case QUIT:
+			goto again;
+		case BACK:
+			goto again;
+		case DONE:
+			goto again;
+	}
+
+	assert(false);
+	return DONE;	
+}
+
+static MenuResult watch_replays( SDL_Surface *surface, LevelPack &level_pack, uint i )
+{
+	Level level;
+	Highscore score;
+
+	auto level_path = level_pack.get_level_path(i);
+	auto score_path = level_pack.get_score_path(i);
+
+	if (!level.load(level_path))
+		return DONE;
+
+	if (!score.load(score_path))
+		return DONE;
+	
+again:
+	if (global_quit)
+		return QUIT;
+	
+	Game game(level, Controllers(1, std::make_shared<Replay>(score)));
+	game.loop(surface);
+
+	switch (game.state)
+	{
+		case Game::NONE:
+			assert(false);
+			return BACK;
+			
+		case Game::WON:
+			return DONE;
+			
+		case Game::CHEAT_WON:
+			return DONE;
+			
+		case Game::LOST:
+			return DONE;
+			
+		case Game::RESTART:
+			goto again;
+			
+		case Game::QUIT:
+			return QUIT;
+	}
+	
+	assert(false);
+	return DONE;
 }

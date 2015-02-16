@@ -59,7 +59,8 @@ ALL_CXXFLAGS := -std=c++14 \
 ALL_LDFLAGS := $(EXTRA_LDFLAGS) \
                $(LDFLAGS)
 LDLIBS += $(SDL_LDLIBS) \
-          $(VORBIS_LDLIBS)
+          $(VORBIS_LDLIBS) \
+          -lboost_system -lboost_filesystem
 
 ###
 

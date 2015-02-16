@@ -8,6 +8,8 @@
 #include "video/video.hpp"
 #include "video/font.hpp"
 
+using namespace std::string_literals;
+
 GameMenu::GameMenu( void )
 : ball(screen_width / 2, screen_height)
 {
@@ -78,24 +80,25 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 
 LevelPackMenu::LevelPackMenu( bool allow_new )
 {
-	std::vector<std::string> dir_entries = read_directory_listing(level_directory);
+	std::vector<std::string> level_pack_directories = list_directories(level_directory);
 	
 	// populate the level pack list
-	for (const std::string &dir_entry : dir_entries)
+	for (const std::string &level_pack_directory : level_pack_directories)
 	{
-		LevelPack entry(level_directory + dir_entry);
-		if (!entry.invalid())
+		LevelPack level_pack(level_directory + level_pack_directory);
+		if (!level_pack.invalid())
+		{
+			Entry entry = { false, level_pack };
 			entries.push_back(entry);
+		}
 	}
 	
-	std::sort(entries.begin(), entries.end());
+	std::stable_sort(entries.begin(), entries.end());
 	
 	if (allow_new)
 	{
-		LevelPack new_level_pack;
-		new_level_pack.name = "New Level Pack...";
-		boost::to_upper(new_level_pack.name);
-		entries.push_back(new_level_pack);
+		Entry entry = { false, LevelPack("NEW..."s, ""s) };
+		entries.push_back(entry);
 	}
 }
 
@@ -111,9 +114,9 @@ void LevelPackMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 		if (i == selection)
 		{
 			y += font.height(font_sprites[4]) / 3;
-			font.blit(surface, x, y, entries[i].name, font_sprites[4], Font::CENTER, alpha);
+			font.blit(surface, x, y, entries[i].level_pack.get_name(), font_sprites[4], Font::CENTER, alpha);
 			y += font.height(font_sprites[4]);
-			font.blit(surface, x, y, entries[i].author, font_sprites[1], Font::CENTER, alpha);
+			font.blit(surface, x, y, entries[i].level_pack.get_author(), font_sprites[1], Font::CENTER, alpha);
 			y += font.height(font_sprites[1]);
 			y += font.height(font_sprites[4]) / 3;
 		}
@@ -122,7 +125,7 @@ void LevelPackMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 			if (y > surface->h)
 				break;
 			else if (y > -static_cast<int>(font.height(font_sprites[3])))
-				font.blit(surface, x, y, entries[i].name, font_sprites[3], Font::CENTER, alpha / 2);
+				font.blit(surface, x, y, entries[i].level_pack.get_name(), font_sprites[3], Font::CENTER, alpha / 2);
 			y += font.height(font_sprites[3]);
 		}
 	}
@@ -135,31 +138,38 @@ uint LevelPackMenu::entry_count( void ) const
 
 LevelMenu::LevelMenu( const LevelPack &level_pack, bool allow_new )
 {
-	for (const Level &level : level_pack.levels)
+	const auto levels = level_pack.load_levels();
+	
+	for (const auto &level : levels)
 		entries.push_back(level.get_name());
 	
 	if (allow_new)
 	{
-		static std::string new_level = "New Level...";
-		boost::to_upper(new_level);
-		entries.push_back(new_level);
+		entries.push_back("NEW...");
 	}
 }
 
 ScoredLevelMenu::ScoredLevelMenu( const LevelPack &level_pack, bool show_one_incomplete, bool auto_select_single_entry )
 : auto_select_single_entry(auto_select_single_entry)
 {
-	for (const Level &level : level_pack.levels)
+	const auto levels = level_pack.load_levels();
+	
+	for (auto level_iter = levels.cbegin(); level_iter != levels.cend(); ++level_iter)
 	{
-		if (path_exists(level.get_score_path()))
+		auto i = level_iter - levels.cbegin();
+		auto &level = *level_iter;
+		
+		auto score_path = level_pack.get_score_path(i);
+		
+		if (boost::filesystem::exists(score_path))
 		{
-			Highscore score(level.get_score_path());
-			Entry entry = { level.get_name(), level.get_path(), score.name, score.time() };
+			Highscore score(score_path);
+			Entry entry = { level.get_name(), score.get_player_name(), score.get_time() };
 			entries.push_back(entry);
 		}
 		else if (show_one_incomplete)
 		{
-			Entry entry = { level.get_name(), level.get_path(), "", "UNCOMPLETED" };
+			Entry entry = { level.get_name(), "", "UNCOMPLETED" };
 			entries.push_back(entry);
 			break;
 		}
@@ -193,7 +203,7 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 			std::string subtext = (!entry.score_name.empty() ? entry.score_name + ": " : "") + entry.score_time;
 			
 			y += font.height(font_sprites[4]) / 3;
-			font.blit(surface, x, y, entry.name, font_sprites[4], Font::CENTER, alpha);
+			font.blit(surface, x, y, entry.level_name, font_sprites[4], Font::CENTER, alpha);
 			y += font.height(font_sprites[4]);
 			font.blit(surface, x_right, y, subtext, font_sprites[1], Font::RIGHT, alpha);
 			y += font.height(font_sprites[4]) / 3;
@@ -205,7 +215,7 @@ void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 			else if (y > -static_cast<int>(font.height(font_sprites[3])))
 			{
 				font.blit(surface, x_right, y + font.height(font_sprites[3]) - font.height(font_sprites[1]), entry.score_time, font_sprites[1], Font::RIGHT, alpha);
-				font.blit(surface, x, y, entry.name, font_sprites[3], Font::CENTER, alpha / 2);
+				font.blit(surface, x, y, entry.level_name, font_sprites[3], Font::CENTER, alpha / 2);
 			}
 			y += font.height(font_sprites[3]);
 		}

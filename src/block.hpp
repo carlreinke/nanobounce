@@ -5,37 +5,77 @@
 
 #include <SDL.h>
 
-class Block
+class LevelBlock
 {
 public:
 	enum Type
 	{
-		NONE,
-		BALL,
-		EXIT,
+		NONE = 0,
+		BALL = 1,
+		EXIT = 2,
 		
-		NORMAL,
-		NUKE,
-		RECYCLE,
+		NORMAL  = 3,
+		NUKE    = 4,
+		RECYCLE = 5,
 		
-		TOGGLE_0_0,
-		TOGGLE_0_1,
-		TOGGLE_0_STAR,
+		TOGGLE_0_0    = 6,
+		TOGGLE_0_1    = 7,
+		TOGGLE_0_STAR = 8,
 		
-		TOGGLE_1_0,
-		TOGGLE_1_1,
-		TOGGLE_1_STAR,
+		TOGGLE_1_0    = 9,
+		TOGGLE_1_1    = 10,
+		TOGGLE_1_STAR = 11,
 		
-		BOOST_UP,
-		BOOST_LEFT,
-		BOOST_RIGHT,
+		BOOST_UP    = 12,
+		BOOST_LEFT  = 13,
+		BOOST_RIGHT = 14,
 		
-		PUSH_UP,
-		PUSH_LEFT,
-		PUSH_RIGHT,
+		PUSH_UP    = 15,
+		PUSH_LEFT  = 16,
+		PUSH_RIGHT = 17,
 		
 		Type_COUNT
 	};
+	
+	LevelBlock( int x, int y, Type type );
+	
+	bool operator==( const LevelBlock &that ) const { return y == that.y &&
+	                                                         x == that.x &&
+	                                                         type == that.type; }
+	bool operator<( const LevelBlock &that ) const { return y != that.y ? y < that.y :
+	                                                        x != that.x ? x < that.x :
+	                                                                      type < that.type; }
+	
+	static void static_destruction_clean_up( void ) { sprites.clear(); }
+	
+	int get_x( void ) const { return x; }
+	int get_y( void ) const { return y; }
+
+	Type get_type( void ) const { return type; }
+	
+	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
+	
+	static const int width, height;
+	
+protected:
+	int x, y;
+	
+	Type type;
+	
+	static std::vector<Sprite> sprites;
+	
+	friend class Editor;
+	friend class GameBlock;
+};
+
+class GameBlock : public LevelBlock
+{
+public:
+	GameBlock( const LevelBlock &block ) : LevelBlock(block.x, block.y, block.type) { ingame_reset(); }
+
+	void ingame_reset( void );
+		
+	Type ingame_type;  // intrusive member used in-game
 	
 	enum Property
 	{
@@ -45,29 +85,11 @@ public:
 		TRIGGERABLE
 	};
 	
-	Block( int x, int y, Type type );
-	bool operator<( const Block &that ) const { return (y == that.y ? x < that.x : y < that.y); }
-	
-	static void static_destruction_clean_up( void ) { sprites.clear(); }
-	
-	void reset( void );
+	Property ingame_property;  // intrusive member used in-game
 	
 	void draw( SDL_Surface *, int x_offset, int y_offset, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
-	
-private:
-	int x, y;
-	static const int height, width;
-	
-	Type type, initial_type;
-	Property property;
-	
-	static std::vector<Sprite> sprites;
-	
-	friend class Ball;
-	friend class Editor;
+
 	friend class Game;
-	friend class Level;
-	friend class Particle;
 };
 
 #endif // BLOCK_HPP

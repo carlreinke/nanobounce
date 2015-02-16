@@ -13,23 +13,27 @@ using std::max;
 using std::min;
 
 std::vector<Sprite> Editor::block_sprites;
-std::bitset<Block::Type_COUNT> Editor::block_type_unusable;
+std::bitset<LevelBlock::Type_COUNT> Editor::block_type_unusable;
 
 Editor::Editor( void )
-: cursor_block(Block::NONE),
-  level("UNNAMED", align(screen_width, Block::width), align(screen_height, Block::height))
+: cursor_block(LevelBlock::NONE),
+  level()
 {
+	level.name = "UNNAMED";
+	level.width = align(screen_width, LevelBlock::width);
+	level.height = align(screen_height, LevelBlock::height);
+	
 	if (block_sprites.empty())
 	{
-		block_sprites = Block(0, 0, Block::NONE).sprites;
-		block_sprites[Block::NONE] = Sprite(Block::width, Block::height, SDL_Color_RGBA(0, 0, 0));
-		block_sprites[Block::BALL] = Sprite(sprite_directory + "editor/ball.ppm");
-		block_sprites[Block::EXIT] = Sprite(sprite_directory + "editor/exit.ppm");
+		block_sprites = LevelBlock(0, 0, LevelBlock::NONE).sprites;
+		block_sprites[LevelBlock::NONE] = Sprite(LevelBlock::width, LevelBlock::height, SDL_Color_RGBA(0, 0, 0));
+		block_sprites[LevelBlock::BALL] = Sprite(sprite_directory + "editor/ball.ppm");
+		block_sprites[LevelBlock::EXIT] = Sprite(sprite_directory + "editor/exit.ppm");
 	}
 	if (block_type_unusable.none())
 	{
-		block_type_unusable.set(Block::TOGGLE_0_1);
-		block_type_unusable.set(Block::TOGGLE_1_0);
+		block_type_unusable.set(LevelBlock::TOGGLE_0_1);
+		block_type_unusable.set(LevelBlock::TOGGLE_1_0);
 	}
 	
 	reset();
@@ -65,43 +69,43 @@ void Editor::handle_event( SDL_Event &e )
 			break;
 			
 		case Controller::RIGHT_KEY:
-			cursor_x += Block::width;
+			cursor_x += LevelBlock::width;
 			if (cursor_x < level.width)
 			{
-				x_offset = min(x_offset, screen_width - cursor_x - Block::width);
+				x_offset = min(x_offset, screen_width - cursor_x - LevelBlock::width);
 				break;
 			}
 			// if cursor outside level, undo movement
 		case Controller::LEFT_KEY:
 			if (cursor_x > 0)
 			{
-				cursor_x -= Block::width;
+				cursor_x -= LevelBlock::width;
 				x_offset = max(x_offset, -cursor_x);
 			}
 			break;
 		case Controller::DOWN_KEY:
-			cursor_y += Block::height;
+			cursor_y += LevelBlock::height;
 			if (cursor_y < level.height)
 			{
-				y_offset = min(y_offset, screen_height - cursor_y - Block::height);
+				y_offset = min(y_offset, screen_height - cursor_y - LevelBlock::height);
 				break;
 			}
 			// if cursor outside level, undo movement
 		case Controller::UP_KEY:
 			if (cursor_y > 0)
 			{
-				cursor_y -= Block::height;
+				cursor_y -= LevelBlock::height;
 				y_offset = max(y_offset, -cursor_y);
 			}
 			break;
 			
 		case Controller::SELECT_KEY:
-			set_block_at_position(cursor_x, cursor_y, static_cast<Block::Type>(cursor_block));
+			set_block_at_position(cursor_x, cursor_y, static_cast<LevelBlock::Type>(cursor_block));
 			break;
 		case Controller::BACK_KEY:
 			{
-				std::vector<Block>::iterator block = block_at_position(cursor_x, cursor_y);
-				cursor_block = (block == level.blocks.end()) ? Block::NONE : block->type;
+				std::vector<LevelBlock>::iterator block = block_at_position(cursor_x, cursor_y);
+				cursor_block = (block == level.blocks.end()) ? LevelBlock::NONE : block->type;
 			}
 			break;
 			
@@ -109,7 +113,7 @@ void Editor::handle_event( SDL_Event &e )
 			do
 			{
 				if (cursor_block == 0)
-					cursor_block = Block::Type_COUNT;
+					cursor_block = LevelBlock::Type_COUNT;
 				--cursor_block;
 			}
 			while (block_type_unusable[cursor_block]);
@@ -117,7 +121,7 @@ void Editor::handle_event( SDL_Event &e )
 		case Controller::RIGHT_SHOULDER_KEY:
 			do
 			{
-				++cursor_block %= Block::Type_COUNT;
+				++cursor_block %= LevelBlock::Type_COUNT;
 			}
 			while (block_type_unusable[cursor_block]);
 			break;
@@ -131,8 +135,8 @@ void Editor::handle_event( SDL_Event &e )
 		e.motion.y /= video_scale;
 		e.motion.x /= video_scale;
 		
-		cursor_x = -x_offset + align(e.motion.x, Block::width);
-		cursor_y = -y_offset + align(e.motion.y, Block::height);
+		cursor_x = -x_offset + align(e.motion.x, LevelBlock::width);
+		cursor_y = -y_offset + align(e.motion.y, LevelBlock::height);
 		break;
 	case SDL_MOUSEBUTTONDOWN:
 		e.button.y /= video_scale;
@@ -141,12 +145,12 @@ void Editor::handle_event( SDL_Event &e )
 		switch (e.button.button)
 		{
 		case SDL_BUTTON_LEFT:
-			set_block_at_position(-x_offset + e.button.x, -y_offset + e.button.y, static_cast<Block::Type>(cursor_block));
+			set_block_at_position(-x_offset + e.button.x, -y_offset + e.button.y, static_cast<LevelBlock::Type>(cursor_block));
 			break;
 		case SDL_BUTTON_RIGHT:
 			{
-				std::vector<Block>::iterator block = block_at_position(-x_offset + e.button.x, -y_offset + e.button.y);
-				cursor_block = (block == level.blocks.end()) ? Block::NONE : block->type;
+				std::vector<LevelBlock>::iterator block = block_at_position(-x_offset + e.button.x, -y_offset + e.button.y);
+				cursor_block = (block == level.blocks.end()) ? LevelBlock::NONE : block->type;
 			}
 			break;
 			
@@ -154,7 +158,7 @@ void Editor::handle_event( SDL_Event &e )
 			do
 			{
 				if (cursor_block == 0)
-					cursor_block = Block::Type_COUNT;
+					cursor_block = LevelBlock::Type_COUNT;
 				--cursor_block;
 			}
 			while (block_type_unusable[cursor_block]);
@@ -163,7 +167,7 @@ void Editor::handle_event( SDL_Event &e )
 		case SDL_BUTTON_WHEELDOWN:
 			do
 			{
-				++cursor_block %= Block::Type_COUNT;
+				++cursor_block %= LevelBlock::Type_COUNT;
 			}
 			while (block_type_unusable[cursor_block]);
 			break;
@@ -208,95 +212,94 @@ void Editor::menu( void )
 				save_last();
 				
 				Game game(level);
-				
-				do
-				{
-					game.reset();
-					game.loop(surface);
-				}
-				while (game.state == Game::LOST || game.state == Game::RESTART);
+				game.loop(surface);
 			}
 			break;
 			
 		case 1:  // Save
-			level.validate();
-			if (!save(level.path))
+			level.normalize();
+			
+			if (!save(level_path))
 			{
 		case 2:  // Save As
 				LevelPackMenu level_pack_menu(true);
+save_as_choose_level_pack:
 				level_pack_menu.loop(surface);
 				if (level_pack_menu.no_selection)
 					break;  // cancel save
-				
-				LevelPack &level_pack = level_pack_menu.entries[level_pack_menu.selection];
-				if (level_pack.invalid())
+
+				LevelPack &level_pack = level_pack_menu.entries[level_pack_menu.selection].level_pack;
+				if (level_pack_menu.selection == level_pack_menu.entry_count() - 1)  // new level pack
 				{
 					level_pack.name = "UNNAMED";
 					level_pack.author = player_name;
-					
+
 					TextEntryMenu text_entry_menu("New Level Pack:", level_pack.name);
 					text_entry_menu.loop(surface);
 					if (text_entry_menu.no_selection)
 						break;  // cancel save
-					
+
 					level_pack.name = text_entry_menu.text;
 				}
-				else
-					level_pack.load_levels();
-				
+
 				LevelMenu level_menu(level_pack, true);
+save_as_choose_level:
 				level_menu.loop(surface);
 				if (level_menu.no_selection)
-					break;  // cancel save
-				
-				if (level_menu.selection < level_pack.levels.size())
+					goto save_as_choose_level_pack;
+
+				if (level_menu.selection < level_pack.get_levels_count())
 				{
-					level.path = level_pack.levels[level_menu.selection].path;
+					level.name = level_menu.entries[level_menu.selection];
 				}
 				else  // save as new level
 				{
 					level.name = "UNNAMED";
-					
+
 					TextEntryMenu text_entry_menu("New Level:", level.name);
 					text_entry_menu.loop(surface);
 					if (text_entry_menu.no_selection)
-						break;  // cancel save
-					
+						goto save_as_choose_level;
+
 					level.name = text_entry_menu.text;
-					
-					level_pack.append_level(level);
+
+					auto level_filename = level_pack.generate_level_filename(level);
+					level_pack.level_filenames.push_back(level_filename);
 					level_pack.save_meta();
 				}
-				level.validate();
-				save(level.path);
+
+				level_path = level_pack.get_level_path(level_menu.selection);
+
+				level.normalize();
+
+				save(level_path);
 			}
 			break;
 			
 		case 3:  // Load
-			for (LevelPackMenu level_pack_menu(false); ; )  // choose a level pack
 			{
+				LevelPackMenu level_pack_menu(false);
+load_choose_level_pack:
 				level_pack_menu.loop(surface);
 				if (level_pack_menu.no_selection)
 					break;  // back to editor
-				
-				LevelPack &level_pack = level_pack_menu.entries[level_pack_menu.selection];
-				level_pack.load_levels();
-				
+
+				LevelPack &level_pack = level_pack_menu.entries[level_pack_menu.selection].level_pack;
+
 				LevelMenu level_menu(level_pack, false);
 				level_menu.loop(surface);
 				if (level_menu.no_selection)
-					continue;  // back to level pack menu
-				
-				load(level_pack.levels[level_menu.selection].path);
-				
-				break;  // back to editor
+					goto load_choose_level_pack;
+
+				load(level_pack.get_level_path(level_menu.selection));
 			}
 			break;
 			
 		case 4:  // Clear
-			level.blocks.clear();
+			level_path.clear();
+			
 			level.name = "UNNAMED";
-			level.path.clear();
+			level.blocks.clear();
 			break;
 			
 		case 5:  // Quit
@@ -306,21 +309,30 @@ void Editor::menu( void )
 	}
 }
 
-bool Editor::load( const std::string &level_data_path )
+bool Editor::load( const boost::filesystem::path &level_path )
 {
-	bool temp = level.load(level_data_path);
+	bool success = level.load(level_path);
+	
+	if (success)
+		this->level_path = level_path;
+	
 	reset();
 	
-	return temp;
+	return success;
 }
 
-bool Editor::save( const std::string &level_data_path ) const
+bool Editor::save( const boost::filesystem::path &level_path )
 {
-	bool success = level.save(level_data_path);
+	bool success = level.save(level_path);
+	
+	if (success)
+		this->level_path = level_path;
 	
 	// remove highscore replay because it is probably no longer valid
+#if TODO
 	if (success)
 		unlink(level.get_score_path().c_str());
+#endif
 	
 	return success;
 }
@@ -363,7 +375,7 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 {
 	SDL_FillRect(surface, NULL, 0);
 	
-	for (const Block &block : level.blocks)
+	for (const LevelBlock &block : level.blocks)
 		block_sprites[block.type].blit(surface, x_offset + block.x, y_offset + block.y, alpha);
 	
 	// cursor
@@ -376,19 +388,19 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 	for (unsigned int i = 0; i < COUNTOF(sprite); ++i)
 	{
 		sprite[i].blit(surface, x_offset + cursor_x - 1, y_offset + cursor_y - 1, alpha);
-		sprite[i].blit(surface, x_offset + cursor_x - 1, y_offset + cursor_y + Block::height + 1 - sprite[i].height(), alpha);
-		sprite[i].blit(surface, x_offset + cursor_x + Block::width + 1 - sprite[i].width(), y_offset + cursor_y - 1, alpha);
-		sprite[i].blit(surface, x_offset + cursor_x + Block::width + 1 - sprite[i].width(), y_offset + cursor_y + Block::height + 1 - sprite[i].height(), alpha);
+		sprite[i].blit(surface, x_offset + cursor_x - 1, y_offset + cursor_y + LevelBlock::height + 1 - sprite[i].height(), alpha);
+		sprite[i].blit(surface, x_offset + cursor_x + LevelBlock::width + 1 - sprite[i].width(), y_offset + cursor_y - 1, alpha);
+		sprite[i].blit(surface, x_offset + cursor_x + LevelBlock::width + 1 - sprite[i].width(), y_offset + cursor_y + LevelBlock::height + 1 - sprite[i].height(), alpha);
 	}
 	
 	// currently held block preview
 	{
-		const int x = surface->w - (Block::width * 3) / 2,
+		const int x = surface->w - (LevelBlock::width * 3) / 2,
 		          y = (y_offset + cursor_y < screen_height * 3 / 4)  // if cursor on upper section of screen
-		            ? (surface->h - (Block::height * 3) / 2)
-		            : (Block::height / 2);
+		            ? (surface->h - (LevelBlock::height * 3) / 2)
+		            : (LevelBlock::height / 2);
 		
-		Sprite(Block::width + 2, Block::width + 2, SDL_Color_RGBA(255, 255, 255)).blit(surface, x - 1, y - 1, alpha);
+		Sprite(LevelBlock::width + 2, LevelBlock::width + 2, SDL_Color_RGBA(255, 255, 255)).blit(surface, x - 1, y - 1, alpha);
 		block_sprites[cursor_block].blit(surface, x, y, alpha);
 	}
 	
@@ -402,15 +414,15 @@ void Editor::draw( SDL_Surface *surface, Uint8 alpha ) const
 		            : (font.height(sprite) / 2);
 		
 		std::ostringstream buffer;
-		buffer << (cursor_x / Block::width) << ", " << (cursor_y / Block::height);
+		buffer << (cursor_x / LevelBlock::width) << ", " << (cursor_y / LevelBlock::height);
 		font.blit(surface, x, y, buffer.str(), sprite, Font::MAJUSCULE, Font::LEFT, alpha);
 	}
 }
 
-std::vector<Block>::iterator Editor::block_at_position( int x, int y )
+std::vector<LevelBlock>::iterator Editor::block_at_position( int x, int y )
 {
-	x -= x % Block::width;
-	y -= y % Block::height;
+	x -= x % LevelBlock::width;
+	y -= y % LevelBlock::height;
 	
 	for (auto block = level.blocks.rbegin(); block != level.blocks.rend(); ++block)
 		if (block->x == x && block->y == y)
@@ -419,14 +431,14 @@ std::vector<Block>::iterator Editor::block_at_position( int x, int y )
 	return level.blocks.end();
 }
 
-void Editor::set_block_at_position( int x, int y, Block::Type type )
+void Editor::set_block_at_position( int x, int y, LevelBlock::Type type )
 {
-	x -= x % Block::width;
-	y -= y % Block::height;
+	x -= x % LevelBlock::width;
+	y -= y % LevelBlock::height;
 	
-	std::vector<Block>::iterator block = block_at_position(x, y);
+	std::vector<LevelBlock>::iterator block = block_at_position(x, y);
 	
-	if (type == Block::NONE)
+	if (type == LevelBlock::NONE)
 	{
 		if (block != level.blocks.end())
 			level.blocks.erase(block);
@@ -434,8 +446,8 @@ void Editor::set_block_at_position( int x, int y, Block::Type type )
 	else
 	{
 		if (block != level.blocks.end())
-			*block = Block(x, y, type);
+			*block = LevelBlock(x, y, type);
 		else
-			level.blocks.push_back(Block(x, y, type));
+			level.blocks.push_back(LevelBlock(x, y, type));
 	}
 }

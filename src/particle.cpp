@@ -8,7 +8,7 @@ const Fixed Particle::constant = 1;
 
 // terminal velocity and acceleration
 const Fixed Particle::usual_term_vel = constant;
-const Fixed Particle::usual_y_accel  = sqr(-usual_term_vel) / (2 * (1.5f * Block::height));
+const Fixed Particle::usual_y_accel  = sqr(-usual_term_vel) / (2 * (1.5f * LevelBlock::height));
 
 Particle::Particle( Fixed x, Fixed y, uint ticks_to_live, const SDL_Color &color )
 : x(x), y(y),

@@ -3,14 +3,16 @@
 #include "sdl_ext.hpp"
 #include "video/sprite.hpp"
 
-const int Block::width = 16, Block::height = 16;
+const int LevelBlock::width = 16;
+const int LevelBlock::height = 16;
 
-std::vector<Sprite> Block::sprites;
+std::vector<Sprite> LevelBlock::sprites;
 
-struct SpriteName { Block::Type type; std::string name; uint offset; };
+struct SpriteName { LevelBlock::Type type; std::string name; uint offset; };
 
-Block::Block( int x, int y, Type type )
-: x(x), y(y), type(type), initial_type(type)
+LevelBlock::LevelBlock( int x, int y, Type type )
+: x(x), y(y),
+  type(type)
 {
 	if (sprites.empty())
 	{
@@ -45,37 +47,42 @@ Block::Block( int x, int y, Type type )
 	}
 }
 
-void Block::reset( void )
+void LevelBlock::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
 {
-	type = initial_type;
+	sprites[type].blit(surface, x_offset + x, y_offset + y, alpha);
+}
+
+void GameBlock::ingame_reset( void )
+{
+	ingame_type = type;
 	
-	switch (type)
+	switch (ingame_type)
 	{
 	case NONE:
 	case BALL:
-		property = HIDDEN;
+		ingame_property = HIDDEN;
 		break;
 		
 	case TOGGLE_0_0:
 	case TOGGLE_1_0:
-		property = IGNORED;
+		ingame_property = IGNORED;
 		break;
 		
 	case EXIT:
 	case PUSH_UP:
 	case PUSH_LEFT:
 	case PUSH_RIGHT:
-		property = TRIGGERABLE;
+		ingame_property = TRIGGERABLE;
 		break;
 		
 	default:
-		property = COLLIDABLE;
+		ingame_property = COLLIDABLE;
 		break;
 	}
 }
 
-void Block::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
+void GameBlock::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha ) const
 {
-	if (property != HIDDEN)
-		sprites[type].blit(surface, x_offset + x, y_offset + y, alpha);
+	if (ingame_property != HIDDEN)
+		sprites[ingame_type].blit(surface, x_offset + x, y_offset + y, alpha);
 }

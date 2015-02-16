@@ -1,5 +1,5 @@
-#ifndef LEVEL_SET_HPP
-#define LEVEL_SET_HPP
+#ifndef LEVEL_PACK_HPP
+#define LEVEL_PACK_HPP
 
 #include "level.hpp"
 
@@ -7,28 +7,41 @@ class LevelPack
 {
 public:
 	LevelPack( void );
-	LevelPack( const std::string &directory );
+	LevelPack( const std::string &name, const std::string &author );
+	
+	LevelPack( const boost::filesystem::path &directory );
+	LevelPack( const boost::filesystem::path &level_directory, const boost::filesystem::path &score_directory );
+	
 	bool invalid( void ) const { return !valid; }
 	
-	bool operator<( const LevelPack &that ) const { return this->name < that.name; }
+	bool load_meta( void );
+	bool save_meta( void );
 	
-	void load_levels( void );
-	void save_meta( void );
-	void append_level( Level &level );
+	const std::string & get_name( void ) const { return name; }
+	const std::string & get_author( void ) const { return author; }
 	
+	const std::vector<boost::filesystem::path> & get_level_filenames( void ) const { return level_filenames; }
+	
+	uint get_levels_count( void ) const { return level_filenames.size(); }
+	boost::filesystem::path get_level_path( uint i ) const;
+	boost::filesystem::path get_score_path( uint i ) const;
+	
+	std::vector<Level> load_levels( void ) const;
+	
+	boost::filesystem::path generate_level_filename( Level &level ) const;
+
 private:
 	bool valid;
-	std::string directory;
 	
-	std::string name, author;
-	std::vector<Level> levels;
+	boost::filesystem::path level_directory;
+	boost::filesystem::path score_directory;
 	
-	friend int main(int, char **);
+	std::string name;
+	std::string author;
+		
+	std::vector<boost::filesystem::path> level_filenames;
+	
 	friend class Editor;
-	friend class LevelMenu;
-	friend class ScoredLevelMenu;
-	friend class LevelPackCongratsLoop;
-	friend class LevelPackMenu;
 };
 
-#endif // LEVEL_SET_HPP
+#endif // LEVEL_PACK_HPP

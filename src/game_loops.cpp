@@ -6,7 +6,7 @@
 #include "video/font.hpp"
 
 LevelPackCongratsLoop::LevelPackCongratsLoop( const LevelPack &level_pack )
-: pack_name(level_pack.name)
+: pack_name(level_pack.get_name())
 {
 	play_music(music_directory + "special/Vulpine Skyflight.ogg");
 }
@@ -192,16 +192,16 @@ void LevelWonLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	y = surface->h * 2 / 5 - font.height(font_sprites[3]);
 	font.blit(surface, x, y, "Best Time:", font_sprites[1], Font::MAJUSCULE, Font::CENTER, alpha);
 	y += font.height(font_sprites[1]);
-	font.blit(surface, x, y, best_score.name, font_sprites[3], Font::CENTER, alpha);
+	font.blit(surface, x, y, best_score.get_player_name(), font_sprites[3], Font::CENTER, alpha);
 	y += font.height(font_sprites[3]);
-	font.blit(surface, x, y, best_score.time(), font_sprites[3], Font::CENTER, alpha);
+	font.blit(surface, x, y, best_score.get_time(), font_sprites[3], Font::CENTER, alpha);
 	
 	y = surface->h * 3 / 5 - font.height(font_sprites[3]) / 2;
 	font.blit(surface, x, y, "Your Time:", font_sprites[1], Font::MAJUSCULE, Font::CENTER, alpha);
 	y += font.height(font_sprites[1]);
-	font.blit(surface, x, y, new_score.time(), font_sprites[3], Font::CENTER, alpha);
+	font.blit(surface, x, y, new_score.get_time(), font_sprites[3], Font::CENTER, alpha);
 	y += font.height(font_sprites[3]);
-	font.blit(surface, x, y, "(+" + Highscore::time(new_score.ms() - best_score.ms()) + ")", font_sprites[1], Font::CENTER, alpha);
+	font.blit(surface, x, y, "(+" + Highscore::format_time(new_score.get_time_ms() - best_score.get_time_ms()) + ")", font_sprites[1], Font::CENTER, alpha);
 	
 	y = surface->h * 4 / 5;
 	for (uint i = 0; i < entry_count(); ++i)
@@ -212,7 +212,7 @@ void LevelWonLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 }
 
 LevelWonBestTimeLoop::LevelWonBestTimeLoop( const Level &level, const Highscore &new_score )
-: TextEntryMenu("New Best Time!", new_score.name),
+: TextEntryMenu("New Best Time!", new_score.get_player_name()),
   level_name(level.get_name()), new_score(new_score),
   ticks(0)
 {
@@ -240,7 +240,7 @@ void LevelWonBestTimeLoop::draw( SDL_Surface *surface, Uint8 alpha ) const
 	
 	font.blit(surface, x, y, level_name, font_sprites[4], Font::CENTER, alpha);
 	y += font.height(font_sprites[4]);
-	font.blit(surface, x, y, new_score.time(), font_sprites[3], Font::CENTER, alpha);
+	font.blit(surface, x, y, new_score.get_time(), font_sprites[3], Font::CENTER, alpha);
 }
 
 WooshParticle::WooshParticle( Fixed x, Fixed y, const SDL_Color &color )

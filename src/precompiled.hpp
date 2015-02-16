@@ -11,12 +11,9 @@
 #include <sstream>
 #include <vector>
 
-#include <dirent.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include <boost/algorithm/string.hpp>
 #include <boost/bimap.hpp>
 #include <boost/circular_buffer.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/smart_ptr/shared_array.hpp>
