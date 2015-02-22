@@ -6,7 +6,7 @@
 #include "volume.hpp"
 
 SimpleMenu::SimpleMenu( SDL_Surface *background )
-: selection(0), no_selection(false),
+: selection(0), no_selection(true),
   background(NULL)
 {
 	if (background != NULL)
@@ -26,14 +26,6 @@ void SimpleMenu::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case Controller::BACK_KEY:
-		case Controller::QUIT_KEY:
-			no_selection = true;
-		case Controller::SELECT_KEY:
-		case Controller::START_KEY:
-			loop_quit = true;
-			break;
-			
 		case Controller::LEFT_SHOULDER_KEY:
 		case Controller::LEFT_KEY:
 		case Controller::UP_KEY:
@@ -48,6 +40,18 @@ void SimpleMenu::handle_event( SDL_Event &e )
 			++selection;
 			if (selection == entry_count())
 				selection = 0;
+			break;
+			
+		case Controller::SELECT_KEY:
+		case Controller::START_KEY:
+			no_selection = false;
+			loop_quit = true;
+			break;
+			
+		case Controller::BACK_KEY:
+		case Controller::QUIT_KEY:
+			no_selection = true;
+			loop_quit = true;
 			break;
 			
 		default:
@@ -94,7 +98,7 @@ uint SimpleMenu::entry_count( void ) const
 }
 
 SmoothMenu::SmoothMenu( void )
-: selection(0), no_selection(false),
+: selection(0), no_selection(true),
   y(0), y_vel(0), y_accel(Fixed(8) / static_cast<int>(ms_to_updates(500))),
   entry_height(font.height(font_sprites[3]))
 {
@@ -108,12 +112,6 @@ void SmoothMenu::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case Controller::BACK_KEY:
-		case Controller::QUIT_KEY:
-			no_selection = true;
-			loop_quit = true;
-			break;
-			
 		case Controller::UP_KEY:
 		case Controller::LEFT_KEY:
 		case Controller::LEFT_SHOULDER_KEY:
@@ -132,6 +130,12 @@ void SmoothMenu::handle_event( SDL_Event &e )
 		case Controller::SELECT_KEY:
 		case Controller::START_KEY:
 			no_selection = (entry_count() == 0);
+			loop_quit = true;
+			break;
+			
+		case Controller::BACK_KEY:
+		case Controller::QUIT_KEY:
+			no_selection = true;
 			loop_quit = true;
 			break;
 			

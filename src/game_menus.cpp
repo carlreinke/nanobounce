@@ -210,8 +210,14 @@ ScoredLevelMenu::ScoredLevelMenu( const LevelPack &level_pack, bool show_one_inc
 
 void ScoredLevelMenu::loop( SDL_Surface *surface )
 {
-	if (!(auto_select_single_entry && entry_count() == 1))
-		SmoothMenu::loop(surface);
+	if (auto_select_single_entry && entry_count() == 1)
+	{
+		selection = 0;
+		no_selection = false;
+		return;
+	}
+	
+	SmoothMenu::loop(surface);
 }
 
 void ScoredLevelMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
@@ -295,26 +301,6 @@ void TextEntryMenu::handle_event( SDL_Event &e )
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case Controller::BACK_KEY:
-			if (text.size() == 0)
-				goto made_no_selection;
-			text.resize(text.size() - 1);
-			break;
-			
-		case Controller::SELECT_KEY:
-			if (entries[selection].size() > 1) // selected "end"
-				goto made_selection;
-			text += entries[selection];
-			break;
-			
-		case Controller::QUIT_KEY:
-made_no_selection:
-			no_selection = true;
-		case Controller::START_KEY:
-made_selection:
-			loop_quit = true;
-			break;
-			
 		case Controller::LEFT_SHOULDER_KEY:
 		case Controller::LEFT_KEY:
 		case Controller::UP_KEY:
@@ -331,6 +317,30 @@ made_selection:
 				selection = 0;
 			break;
 			
+		case Controller::SELECT_KEY:
+			if (entries[selection].size() > 1) // selected "end"
+				goto made_selection;
+			text += entries[selection];
+			break;
+		case Controller::START_KEY:
+			if (entries[selection].size() == 1) // not selected "end"
+				text += entries[selection];
+made_selection:
+			no_selection = false;
+			loop_quit = true;
+			break;
+			
+		case Controller::BACK_KEY:
+			if (text.size() == 0)
+				goto made_no_selection;
+			text.resize(text.size() - 1);
+			break;
+		case Controller::QUIT_KEY:
+made_no_selection:
+			no_selection = true;
+			loop_quit = true;
+			break;
+						
 		default:
 			break;
 		}
