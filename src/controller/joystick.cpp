@@ -21,8 +21,6 @@ using std::max;
 Joystick::Joystick( int j )
 : joystick(NULL)
 {
-	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-	
 	if (j >= SDL_NumJoysticks())
 	{
 		std::cerr << "error: joystick " << j << " does not exist" << std::endl;

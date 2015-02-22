@@ -122,6 +122,9 @@ int main( int argc, char *argv[] )
 #if defined(HAS_KEYBOARD)
 	controllers.push_back(std::make_shared<Keyboard>());
 #endif
+	
+	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+	
 	for (int i = 0; i < SDL_NumJoysticks(); ++i)
 		controllers.push_back(std::make_shared<Joystick>(i));
 	
