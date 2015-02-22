@@ -2,6 +2,7 @@
 #define EDITOR_HPP
 
 #include "level.hpp"
+#include "level_pack.hpp"
 #include "loop.hpp"
 
 class Editor : public Loop
@@ -46,6 +47,19 @@ private:
 	static std::bitset<LevelBlock::Type_COUNT> block_type_unusable;
 	
 	void menu( void );
+	
+	enum MenuResult
+	{
+		QUIT,
+		BACK,
+		DONE,
+	};
+	
+	MenuResult menu_save( void );
+	MenuResult menu_save( LevelPack & );
+	
+	MenuResult menu_load( void );
+	MenuResult menu_load( LevelPack & );
 };
 
 #endif // EDITOR_HPP

@@ -24,7 +24,7 @@ const boost::filesystem::path font_directory = sprite_directory / "fonts";
 
 std::string player_name = "NAMELESS";
 
-static void title( SDL_Surface *surface );
+static void menu_title( SDL_Surface *surface );
 
 int main( int argc, char *argv[] )
 {
@@ -117,7 +117,7 @@ int main( int argc, char *argv[] )
 	const auto controller_path = user_data_directory / "controller.conf";
 	
 	if (!boost::filesystem::exists(controller_path))
-		boost::filesystem::copy_file("controller.conf", controller_path);
+		boost::filesystem::copy("controller.conf", controller_path);
 	
 #if defined(HAS_KEYBOARD)
 	controllers.push_back(std::make_shared<Keyboard>());
@@ -145,7 +145,7 @@ int main( int argc, char *argv[] )
 	}
 	else
 	{
-		title(surface);
+		menu_title(surface);
 	}
 	
 	// save player name
@@ -177,11 +177,11 @@ enum MenuResult
 	DONE,
 };
 
-static MenuResult play( SDL_Surface *surface );
+static MenuResult menu_play( SDL_Surface *surface );
 
-static MenuResult more( SDL_Surface *surface );
+static MenuResult menu_more( SDL_Surface *surface );
 
-static void title( SDL_Surface *surface )
+static void menu_title( SDL_Surface *surface )
 {
 	// at this point, ticks should be a decent seed
 	srand(SDL_GetTicks());
@@ -197,11 +197,11 @@ static void title( SDL_Surface *surface )
 		switch (menu.selection)
 		{
 		case 0:  // Play
-			play(surface);
+			menu_play(surface);
 			break;
 
 		case 1:  // More
-			more(surface);
+			menu_more(surface);
 			break;
 
 		case 2:  // Quit
@@ -211,9 +211,9 @@ static void title( SDL_Surface *surface )
 	}
 }
 
-static MenuResult play( SDL_Surface *surface, LevelPack &level_pack );
+static MenuResult menu_play( SDL_Surface *surface, LevelPack &level_pack );
 
-static MenuResult play( SDL_Surface *surface )
+static MenuResult menu_play( SDL_Surface *surface )
 {
 	LevelPackMenu pack_selector;
 	
@@ -227,7 +227,7 @@ again:
 	
 	LevelPack &level_pack = pack_selector.entries[pack_selector.selection].level_pack;
 	
-	switch (play(surface, level_pack))
+	switch (menu_play(surface, level_pack))
 	{
 		case QUIT:
 			return QUIT;
@@ -241,9 +241,9 @@ again:
 	return DONE;
 }
 
-static MenuResult play( SDL_Surface *surface, LevelPack &level_pack, uint i );
+static MenuResult menu_play( SDL_Surface *surface, LevelPack &level_pack, uint i );
 
-static MenuResult play( SDL_Surface *surface, LevelPack &level_pack )
+static MenuResult menu_play( SDL_Surface *surface, LevelPack &level_pack )
 {
 	ScoredLevelMenu level_selector(level_pack);
 	
@@ -260,7 +260,7 @@ again:
 		if (global_quit)
 			return QUIT;
 
-		switch (play(surface, level_pack, i))
+		switch (menu_play(surface, level_pack, i))
 		{
 			case QUIT:
 				return QUIT;
@@ -277,7 +277,7 @@ again:
 	return BACK;
 }
 
-static MenuResult play( SDL_Surface *surface, LevelPack &level_pack, uint i )
+static MenuResult menu_play( SDL_Surface *surface, LevelPack &level_pack, uint i )
 {
 	Level level;
 
@@ -362,9 +362,9 @@ again:
 	return DONE;
 }
 
-static MenuResult watch_replays( SDL_Surface *surface );
+static MenuResult menu_watch_replays( SDL_Surface *surface );
 
-static MenuResult more( SDL_Surface *surface )
+static MenuResult menu_more( SDL_Surface *surface )
 {
 	SimpleMenu more_menu;
 	const std::string menu_items[] =
@@ -383,7 +383,7 @@ static MenuResult more( SDL_Surface *surface )
 	switch (more_menu.selection)
 	{
 	case 0:  // Watch Replays
-		return watch_replays(surface);
+		return menu_watch_replays(surface);
 		
 	case 1:  // Make Levels
 		{
@@ -400,9 +400,9 @@ static MenuResult more( SDL_Surface *surface )
 	return DONE;
 }
 
-static MenuResult watch_replays( SDL_Surface *surface, LevelPack &level_pack );
+static MenuResult menu_watch_replays( SDL_Surface *surface, LevelPack &level_pack );
 
-static MenuResult watch_replays( SDL_Surface *surface )
+static MenuResult menu_watch_replays( SDL_Surface *surface )
 {
 	LevelPackMenu pack_selector;
 	
@@ -416,7 +416,7 @@ again:
 
 	LevelPack &level_pack = pack_selector.entries[pack_selector.selection].level_pack;
 	
-	switch (watch_replays(surface, level_pack))
+	switch (menu_watch_replays(surface, level_pack))
 	{
 		case QUIT:
 			return QUIT;
@@ -430,9 +430,9 @@ again:
 	return DONE;
 }
 
-static MenuResult watch_replays( SDL_Surface *surface, LevelPack &level_pack, uint i );
+static MenuResult menu_watch_replays( SDL_Surface *surface, LevelPack &level_pack, uint i );
 
-static MenuResult watch_replays( SDL_Surface *surface, LevelPack &level_pack )
+static MenuResult menu_watch_replays( SDL_Surface *surface, LevelPack &level_pack )
 {
 	ScoredLevelMenu level_selector(level_pack, false, false);
 
@@ -444,7 +444,7 @@ again:
 	if (level_selector.no_selection)
 		return BACK;
 
-	switch (watch_replays(surface, level_pack, level_selector.selection))
+	switch (menu_watch_replays(surface, level_pack, level_selector.selection))
 	{
 		case QUIT:
 			goto again;
@@ -458,7 +458,7 @@ again:
 	return DONE;	
 }
 
-static MenuResult watch_replays( SDL_Surface *surface, LevelPack &level_pack, uint i )
+static MenuResult menu_watch_replays( SDL_Surface *surface, LevelPack &level_pack, uint i )
 {
 	Level level;
 	Highscore score;
