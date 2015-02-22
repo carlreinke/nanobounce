@@ -24,7 +24,7 @@ bool audio_disabled = false;
 AudioMode audio_mode = ALL_AUDIO;
 MusicMode music_mode = REPEAT_ALL;
 
-Fixed volume = 0.75f;
+Fixed volume = 1.0f;
 Fixed music_volume = 1.0f;
 
 SDL_AudioSpec spec;
