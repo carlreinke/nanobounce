@@ -43,7 +43,7 @@ LevelBlock::LevelBlock( int x, int y, Type type )
 		}};
 		
 		for (const SpriteName &i : sprite_names)
-			sprites[i.type] = Sprite(Sprite(sprite_directory + i.name + ".ppm"), SDL_RectXYWH(i.offset * width, 0, width, height));
+			sprites[i.type] = Sprite(Sprite((sprite_directory / (i.name + ".ppm")).string()), SDL_RectXYWH(i.offset * width, 0, width, height));
 	}
 }
 

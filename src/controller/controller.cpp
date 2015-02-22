@@ -172,7 +172,7 @@ bool ConfigurableController::Input::digital( const Controller &controller ) cons
 }
 
 
-void ConfigurableController::load_controls_mapping( const std::string &conf_path )
+bool ConfigurableController::load_controls_mapping( const std::string &conf_path )
 {
 	Json::Value root;
 	Json::Reader reader;
@@ -182,6 +182,8 @@ void ConfigurableController::load_controls_mapping( const std::string &conf_path
 	if (!success)
 	{
 		std::cerr << "failed to parse '" << conf_path << "': " << reader.getFormatedErrorMessages();
+		
+		return false;
 	}
 	else
 	{
@@ -192,6 +194,7 @@ void ConfigurableController::load_controls_mapping( const std::string &conf_path
 			ControlMapping &control_mapping = controls_mapping[i];
 			const Json::Value &control_mapping_config = config[i];
 			
+			control_mapping.clear();
 			control_mapping.resize(control_mapping_config.size());
 			
 			for (uint i = 0; i < control_mapping_config.size(); ++i)
@@ -208,4 +211,6 @@ void ConfigurableController::load_controls_mapping( const std::string &conf_path
 			}
 		}
 	}
+	
+	return true;
 }

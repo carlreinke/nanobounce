@@ -3,8 +3,17 @@
 #include "main.hpp"
 
 Highscore::Highscore( void )
+: valid(false),
+  level_hash({ 0, 0, 0, 0, 0, 0, 0, 0 }),
+  ticks_per_second(update_per_sec),
+  ticks(0)
+{
+	// nothing more to do
+}
+
+Highscore::Highscore( const sha256 &level_hash )
 : valid(true),
-  level_hash({ 0 }),
+  level_hash(level_hash),
   ticks_per_second(update_per_sec),
   ticks(0)
 {
@@ -23,9 +32,9 @@ bool Highscore::load( const boost::filesystem::path &path )
 	bool success = load(stream);
 	
 	if (success)
-		std::cout << "loaded score '" << player_name << "' " << get_time_ms() << " ms from '" << path << "'" << std::endl;
+		std::cout << "loaded score '" << player_name << "' (" << get_time_ms() << " ms) from '" << path.string() << "'" << std::endl;
 	else
-		std::cout << "warning: failed to load score from '" << path << "'" << std::endl;
+		std::cout << "warning: failed to load score from '" << path.string() << "'" << std::endl;
 	
 	return success;
 }
@@ -67,6 +76,8 @@ bool Highscore::save( const boost::filesystem::path &path ) const
 	if (!valid)
 		return false;
 	
+	boost::filesystem::create_directories(path.parent_path());
+	
 	std::ofstream stream(path.c_str());
 	
 	bool success = save(stream);
@@ -79,9 +90,13 @@ bool Highscore::save( const boost::filesystem::path &path ) const
 
 bool Highscore::save( std::ostream &stream ) const
 {
+	stream << std::hex;
+	
 	for (int i = 0; i < 8; ++i)
-		stream << stream.hex << std::setw(8) << stream.fill('0') << level_hash.h[i];
+		stream << std::setw(8) << std::setfill('0') << level_hash.h[i];
 	stream << std::endl;
+	
+	stream << std::dec;
 	
 	stream << player_name << std::endl;
 	

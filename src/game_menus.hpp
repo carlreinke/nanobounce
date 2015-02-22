@@ -21,7 +21,7 @@ private:
 class LevelPackMenu : public SmoothMenu
 {
 public:
-	LevelPackMenu( bool allow_new = false );
+	LevelPackMenu( bool show_builtin = true, bool allow_new = false );
 	
 protected:
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;

@@ -78,6 +78,8 @@ private:
 	
 	int x_offset, y_offset;
 	
+	sha256 level_hash;
+	
 	const int width, height;
 	
 	std::vector<GameBlock> blocks;

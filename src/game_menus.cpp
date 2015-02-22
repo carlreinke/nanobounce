@@ -78,14 +78,44 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 #endif
 }
 
-LevelPackMenu::LevelPackMenu( bool allow_new )
+LevelPackMenu::LevelPackMenu( bool show_builtin, bool allow_new )
 {
-	std::vector<std::string> level_pack_directories = list_directories(level_directory);
+	auto user_level_directory = user_data_directory / level_directory;
+
+	if (show_builtin)
+	{	
+		auto builtin_level_directory = level_directory;
+
+		auto builtin_level_pack_directories =
+		{
+			"easy",
+			"medium",
+			"hard",
+			"bound",
+			"bound_plus",
+		};
+		
+		for (const std::string &level_pack_directory : builtin_level_pack_directories)
+		{
+			LevelPack level_pack(builtin_level_directory / level_pack_directory,
+								 user_level_directory / level_pack_directory);
+			if (!level_pack.invalid())
+			{
+				Entry entry = { true, level_pack };
+				entries.push_back(entry);
+			}
+		}
+	}
+	
+	boost::filesystem::create_directories(user_level_directory);
+	
+	const std::vector<std::string> user_level_pack_directories = list_directories(user_level_directory);
 	
 	// populate the level pack list
-	for (const std::string &level_pack_directory : level_pack_directories)
+	for (const std::string &level_pack_directory : user_level_pack_directories)
 	{
-		LevelPack level_pack(level_directory + level_pack_directory);
+		LevelPack level_pack(user_level_directory / level_pack_directory,
+				             user_level_directory / level_pack_directory);
 		if (!level_pack.invalid())
 		{
 			Entry entry = { false, level_pack };

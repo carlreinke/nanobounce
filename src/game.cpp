@@ -1,4 +1,5 @@
 #include "audio/audio.hpp"
+#include "file_system.hpp"
 #include "game.hpp"
 #include "game_loops.hpp"
 #include "main.hpp"
@@ -12,6 +13,7 @@ Game::Samples Game::samples;
 
 Game::Game( const Level &level, Controllers controllers )
 : state(NONE),
+  level_hash(level.calculate_hash()),
   width(level.get_width()), height(level.get_height()),
   play_controllers(controllers)
 {
@@ -88,7 +90,7 @@ void Game::draw( SDL_Surface *surface, Uint8 alpha ) const
 
 void Game::reset( void )
 {
-	highscore = Highscore();
+	highscore = Highscore(level_hash);
 	
 	for (GameBlock &block : blocks)
 		block.ingame_reset();
@@ -166,7 +168,7 @@ void Game::tick( void )
 		{
 			state = LOST;
 			
-			highscore.save("last_lost.score");
+			highscore.save(user_data_directory / "last_lost.score");
 			
 			play_sample(samples.lost, 1, sample_pan(ball.x));
 		}
@@ -214,7 +216,7 @@ void Game::load_resources( void )
 	for (const SamplePair &i : sample_names)
 	{
 		if (i.first->empty())
-			*i.first = Sample(sample_directory + i.second + ".ogg");
+			*i.first = Sample((sample_directory / (i.second + ".ogg")).string());
 	}
 }
 
@@ -228,7 +230,7 @@ bool Game::check_collide( Ball &ball, int recursion_depth )
 	
 	if (recursion_depth >= 100)
 	{
-		highscore.save("bug_report.score");
+		highscore.save(user_data_directory / "bug_report.score");
 		assert(false);
 		return false;
 	}
@@ -382,7 +384,7 @@ inline Fixed Game::collision_depth_fraction( const Ball &ball, const GameBlock &
 		
 		if (frac_past_x > 1 && frac_past_y > 1)  // both invalid
 		{
-			highscore.save("bug_report.score");
+			highscore.save(user_data_directory / "bug_report.score");
 			assert(false);
 			return 0;
 		}
@@ -483,7 +485,7 @@ inline void Game::handle_block_y_collision( Ball &ball, GameBlock &block )
 			{
 				state = LOST;
 				
-				highscore.save("last_lost.score");
+				highscore.save(user_data_directory / "last_lost.score");
 			}
 			
 			ball.no_vel = true;
@@ -620,7 +622,7 @@ inline void Game::handle_noncollidable_block( Ball &ball, const GameBlock &block
 			ball.no_accel = true;
 			// TODO: maybe trap ball inside block?
 			
-			highscore.save("last_won.score");
+			highscore.save(user_data_directory / "last_won.score");
 			
 			play_sample(samples.won, 1, sample_pan(ball.x));
 		}

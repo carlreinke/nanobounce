@@ -8,7 +8,7 @@
 LevelPackCongratsLoop::LevelPackCongratsLoop( const LevelPack &level_pack )
 : pack_name(level_pack.get_name())
 {
-	play_music(music_directory + "special/Vulpine Skyflight.ogg");
+	play_music((music_directory / "special" / "Vulpine Skyflight.ogg").string());
 }
 
 void LevelPackCongratsLoop::handle_event( SDL_Event &e )

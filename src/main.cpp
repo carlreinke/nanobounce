@@ -16,13 +16,13 @@ using std::max;
 
 bool global_quit = false;
 
-const std::string level_directory = "levels/";
-const std::string music_directory = "music/";
-const std::string sample_directory = "samples/";
-const std::string sprite_directory = "sprites/";
-const std::string font_directory = sprite_directory + "fonts/";
+const boost::filesystem::path level_directory = "levels";
+const boost::filesystem::path music_directory = "music";
+const boost::filesystem::path sample_directory = "samples";
+const boost::filesystem::path sprite_directory = "sprites";
+const boost::filesystem::path font_directory = sprite_directory / "fonts";
 
-std::string player_name = "NOBODY";
+std::string player_name = "NAMELESS";
 
 static void title( SDL_Surface *surface );
 
@@ -77,7 +77,7 @@ int main( int argc, char *argv[] )
 	{
 		auto music_filenames = list_files(music_directory);
 		for (const std::string &filename : music_filenames)
-			music_paths.push_back(music_directory + filename);
+			music_paths.push_back((music_directory / filename).string());
 	}
 	
 	std::cout << "Nanobounce" << std::endl
@@ -97,25 +97,40 @@ int main( int argc, char *argv[] )
 	
 	// read player name
 	{
-		std::ifstream name_file("player");
+		std::ifstream name_file((user_data_directory / "player").string());
 		std::getline(name_file, player_name);
 	}
 	
 	Game::load_resources();
 	
-	font.load(font_directory + "font_04b21.pgm",
-	          font_directory + "font_04b21.meta");
+	font.load((font_directory / "font_04b21.pgm").string(),
+	          (font_directory / "font_04b21.meta").string());
 	
 	font_sprites.resize(5);
 	font_sprites[1] = Sprite(1, 1, SDL_Color_RGBA(128, 128, 128));
-	font_sprites[2] = Sprite(font_directory + "font_gray_2.ppm");
-	font_sprites[3] = Sprite(font_directory + "font_gray_3.ppm");
-	font_sprites[4] = Sprite(font_directory + "font_gray_4.ppm");
+	font_sprites[2] = Sprite((font_directory / "font_gray_2.ppm").string());
+	font_sprites[3] = Sprite((font_directory / "font_gray_3.ppm").string());
+	font_sprites[4] = Sprite((font_directory / "font_gray_4.ppm").string());
+	
+	boost::filesystem::create_directories(user_data_directory);
+	
+	const auto controller_path = user_data_directory / "controller.conf";
+	
+	if (!boost::filesystem::exists(controller_path))
+		boost::filesystem::copy_file("controller.conf", controller_path);
 	
 #if defined(HAS_KEYBOARD)
 	controllers.push_back(std::make_shared<Keyboard>());
 #endif
-	controllers.push_back(std::make_shared<Joystick>(0));
+	for (int i = 0; i < SDL_NumJoysticks(); ++i)
+		controllers.push_back(std::make_shared<Joystick>(i));
+	
+	for (auto &controller : controllers)
+	{
+		auto *configurable_controller = dynamic_cast<ConfigurableController *>(controller.get());
+		if (configurable_controller != nullptr)
+			configurable_controller->load_controls_mapping(controller_path.string());
+	}
 	
 	if (editor)
 	{
@@ -124,7 +139,7 @@ int main( int argc, char *argv[] )
 #endif
 		
 		Editor editor;
-		editor.load(level_path);
+		editor.load_level(level_path);
 		
 		editor.loop(surface);
 	}
@@ -135,7 +150,7 @@ int main( int argc, char *argv[] )
 	
 	// save player name
 	{
-		std::ofstream name_file("player");
+		std::ofstream name_file((user_data_directory / "player").string());
 		name_file << player_name;
 	}
 	

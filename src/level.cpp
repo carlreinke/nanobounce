@@ -1,5 +1,6 @@
 #include "audio/audio.hpp"
 #include "controller/controller.hpp"
+#include "hash/sha256.h"
 #include "level.hpp"
 #include "misc.hpp"
 
@@ -25,9 +26,9 @@ bool Level::load( const boost::filesystem::path &path )
 	bool success = load(stream);
 	
 	if (success)
-		std::cout << "loaded level '" << name << "' from '" << path << "'" << std::endl;
+		std::cout << "loaded level '" << name << "' from '" << path.string() << "'" << std::endl;
 	else
-		std::cout << "warning: failed to load level from '" << path << "'" << std::endl;
+		std::cout << "warning: failed to load level from '" << path.string() << "'" << std::endl;
 	
 	return success;
 }
@@ -71,6 +72,8 @@ bool Level::load( std::istream &stream )
 
 bool Level::save( const boost::filesystem::path &path ) const
 {
+	boost::filesystem::create_directories(path.parent_path());
+		
 	std::ofstream data(path.c_str());
 	bool success = save(data);
 	
@@ -122,6 +125,28 @@ void Level::draw( SDL_Surface *surface, int x_offset, int y_offset, Uint8 alpha 
 	
 	for (const LevelBlock &block : blocks)
 		block.draw(surface, x_offset, y_offset, alpha);
+}
+
+sha256 Level::calculate_hash( void ) const
+{
+	sha256_stream sha256;
+	
+	sha256_stream_init(&sha256);
+	
+	for (const auto &block : blocks)
+	{
+		const uint32_t data[] = {
+			SDL_SwapBE32(static_cast<uint32_t>(block.get_x())),
+			SDL_SwapBE32(static_cast<uint32_t>(block.get_y())),
+			SDL_SwapBE32(static_cast<uint32_t>(block.get_type())),
+		};
+		
+		sha256_stream_feed(&sha256, reinterpret_cast<const uint8_t *>(&data), sizeof data);
+	}
+	
+	sha256_stream_finish(&sha256);
+	
+	return sha256.digest;
 }
 
 void Level::load_resources( void )

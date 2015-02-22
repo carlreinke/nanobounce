@@ -15,13 +15,6 @@ LevelPack::LevelPack( const std::string &name, const std::string &author )
 	// nothing to do
 }
 
-LevelPack::LevelPack( const boost::filesystem::path &directory )
-: level_directory(directory),
-  score_directory(directory)
-{
-	load_meta();
-}
-
 LevelPack::LevelPack( const boost::filesystem::path &level_directory, const boost::filesystem::path &score_directory )
 : level_directory(level_directory),
   score_directory(score_directory)

@@ -9,7 +9,6 @@ public:
 	LevelPack( void );
 	LevelPack( const std::string &name, const std::string &author );
 	
-	LevelPack( const boost::filesystem::path &directory );
 	LevelPack( const boost::filesystem::path &level_directory, const boost::filesystem::path &score_directory );
 	
 	bool invalid( void ) const { return !valid; }

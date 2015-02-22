@@ -120,7 +120,8 @@ protected:
 	virtual const Json::Value &get_config( const Json::Value & ) const = 0;
 	virtual std::unique_ptr<Input> parse_input( const Json::Value & ) const = 0;
 	
-	void load_controls_mapping( const std::string & = "controller.conf" );
+public:
+	bool load_controls_mapping( const std::string & );
 };
 
 typedef std::vector< std::shared_ptr<Controller> > Controllers;

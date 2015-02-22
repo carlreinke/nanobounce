@@ -41,8 +41,6 @@ Joystick::Joystick( int j )
 	          << SDL_JoystickNumAxes(joystick) << " axes, "
 	          << SDL_JoystickNumButtons(joystick) << " buttons, "
 	          << SDL_JoystickNumHats(joystick) << " hats)" << std::endl;
-	
-	load_controls_mapping();
 }
 
 Joystick::~Joystick( void )

@@ -19,8 +19,6 @@
 Keyboard::Keyboard( void )
 {
 	key_state = SDL_GetKeyState(NULL);
-	
-	load_controls_mapping();
 }
 
 const Json::Value &Keyboard::get_config( const Json::Value &root ) const

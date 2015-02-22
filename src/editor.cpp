@@ -1,5 +1,6 @@
 #include "controller/controller.hpp"
 #include "editor.hpp"
+#include "file_system.hpp"
 #include "game.hpp"
 #include "main.hpp"
 #include "game_menus.hpp"
@@ -27,8 +28,8 @@ Editor::Editor( void )
 	{
 		block_sprites = LevelBlock(0, 0, LevelBlock::NONE).sprites;
 		block_sprites[LevelBlock::NONE] = Sprite(LevelBlock::width, LevelBlock::height, SDL_Color_RGBA(0, 0, 0));
-		block_sprites[LevelBlock::BALL] = Sprite(sprite_directory + "editor/ball.ppm");
-		block_sprites[LevelBlock::EXIT] = Sprite(sprite_directory + "editor/exit.ppm");
+		block_sprites[LevelBlock::BALL] = Sprite((sprite_directory / "editor" / "ball.ppm").string());
+		block_sprites[LevelBlock::EXIT] = Sprite((sprite_directory / "editor" / "exit.ppm").string());
 	}
 	if (block_type_unusable.none())
 	{
@@ -42,12 +43,12 @@ Editor::Editor( void )
 	SDL_ShowCursor(SDL_ENABLE);
 #endif
 	
-	load_last();
+	load_level_temporary();
 }
 
 Editor::~Editor( void )
 {
-	save_last();
+	save_level_temporary();
 	
 #ifdef HAS_MOUSE
 	SDL_ShowCursor(SDL_DISABLE);
@@ -209,7 +210,7 @@ void Editor::menu( void )
 		{
 		case 0:  // Play
 			{
-				save_last();
+				save_level_temporary();
 				
 				Game game(level);
 				game.loop(surface);
@@ -219,10 +220,10 @@ void Editor::menu( void )
 		case 1:  // Save
 			level.normalize();
 			
-			if (!save(level_path))
+			if (!level_path.empty() && !save_level(level_path))
 			{
 		case 2:  // Save As
-				LevelPackMenu level_pack_menu(true);
+				LevelPackMenu level_pack_menu(false, true);
 save_as_choose_level_pack:
 				level_pack_menu.loop(surface);
 				if (level_pack_menu.no_selection)
@@ -272,13 +273,13 @@ save_as_choose_level:
 
 				level.normalize();
 
-				save(level_path);
+				save_level(level_path);
 			}
 			break;
 			
 		case 3:  // Load
 			{
-				LevelPackMenu level_pack_menu(false);
+				LevelPackMenu level_pack_menu(true, false);
 load_choose_level_pack:
 				level_pack_menu.loop(surface);
 				if (level_pack_menu.no_selection)
@@ -291,7 +292,7 @@ load_choose_level_pack:
 				if (level_menu.no_selection)
 					goto load_choose_level_pack;
 
-				load(level_pack.get_level_path(level_menu.selection));
+				load_level(level_pack.get_level_path(level_menu.selection));
 			}
 			break;
 			
@@ -309,24 +310,24 @@ load_choose_level_pack:
 	}
 }
 
-bool Editor::load( const boost::filesystem::path &level_path )
+bool Editor::load_level( const boost::filesystem::path &path )
 {
-	bool success = level.load(level_path);
+	bool success = level.load(path);
 	
 	if (success)
-		this->level_path = level_path;
+		level_path = path;
 	
 	reset();
 	
 	return success;
 }
 
-bool Editor::save( const boost::filesystem::path &level_path )
+bool Editor::save_level( const boost::filesystem::path &path )
 {
-	bool success = level.save(level_path);
+	bool success = level.save(path);
 	
 	if (success)
-		this->level_path = level_path;
+		level_path = path;
 	
 	// remove highscore replay because it is probably no longer valid
 #if TODO
@@ -337,11 +338,12 @@ bool Editor::save( const boost::filesystem::path &level_path )
 	return success;
 }
 
-bool Editor::load_last( void )
+bool Editor::load_level_temporary( void )
 {
-	std::ifstream last("editor");
+	std::ifstream stream((user_data_directory / "editor").string());
+	
 	Level new_level;
-	new_level.load(last);
+	new_level.load(stream);
 	
 	if (!new_level.invalid())
 		level = new_level;
@@ -349,17 +351,19 @@ bool Editor::load_last( void )
 	return !new_level.invalid();
 }
 
-bool Editor::save_last( void ) const
+bool Editor::save_level_temporary( void ) const
 {
-	std::ofstream last("editor");
-	level.save(last);
-	last.close();
+	std::ofstream stream((user_data_directory / "editor").string());
+	
+	level.save(stream);
+	
+	stream.close();
 	
 #if defined(HAVE_SYNC)
 	sync();
 #endif
 	
-	return last.good();
+	return stream.good();
 }
 
 void Editor::reset( void )

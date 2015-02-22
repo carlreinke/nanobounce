@@ -19,12 +19,12 @@ protected:
 	void draw( SDL_Surface *, Uint8 alpha = SDL_ALPHA_OPAQUE ) const;
 
 public:
-	bool load( const boost::filesystem::path &level_path );
-	bool save( const boost::filesystem::path &level_path );
+	bool load_level( const boost::filesystem::path & );
+	bool save_level( const boost::filesystem::path & );
 
 protected:	
-	bool load_last( void );
-	bool save_last( void ) const;
+	bool load_level_temporary( void );
+	bool save_level_temporary( void ) const;
 	
 	void reset( void );
 	

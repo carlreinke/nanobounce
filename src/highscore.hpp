@@ -8,6 +8,7 @@ class Highscore
 {
 public:
 	Highscore( void );
+	explicit Highscore( const sha256 &level_hash );
 	explicit Highscore( const boost::filesystem::path & );
 	
 	bool invalid( void ) const { return !valid; }
