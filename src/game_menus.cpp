@@ -1,3 +1,19 @@
+/*  nanobounce/src/game_menus.cpp
+ *  
+ *  Copyright 2015 Carl Reinke
+ *  
+ *  This program is non-commercial, open-source software; you can redistribute
+ *  it and/or modify it under the terms of the MAME License as included along
+ *  with this program.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  MAME License for more details.
+ *  
+ *  You should have received a copy of the MAME License along with this
+ *  program; if not, see <http://www.intoorbit.org/licenses/MAME.txt>.
+ */
 #include "ball.hpp"
 #include "controller/controller.hpp"
 #include "editor.hpp"
@@ -55,14 +71,12 @@ void GameMenu::draw( SDL_Surface *surface, Uint8 alpha ) const
 		font.blit(surface, x, y, entries[i], font_sprites[3], Font::MAJUSCULE, Font::CENTER, (i == selection) ? alpha : alpha / 2);
 	}
 	
-	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.4-alpha", font_sprites[1], Font::MAJUSCULE, Font::LEFT, alpha);
+	font.blit(surface, 0, surface->h - font.height(font_sprites[1]), "v0.4", font_sprites[1], Font::MAJUSCULE, Font::LEFT, alpha);
 	
 	x = surface->w - 1;
-	y = surface->h - font.height(font_sprites[1]) * 3;
+	y = surface->h - font.height(font_sprites[1]) * 2;
 	
-	font.blit(surface, x, y, "programming, sprites, and effects:", font_sprites[1], Font::MAJUSCULE, Font::RIGHT, alpha);
-	y += font.height(font_sprites[1]);
-	font.blit(surface, x, y, "Carl \"Mindless\" Reinke", font_sprites[1], Font::MAJUSCULE, Font::RIGHT, alpha);
+	font.blit(surface, x, y, "game: Carl \"Mindless\" Reinke", font_sprites[1], Font::MAJUSCULE, Font::RIGHT, alpha);
 	y += font.height(font_sprites[1]);
 	font.blit(surface, x, y, "music: Jakob Svanholm, Seth Peelle", font_sprites[1], Font::MAJUSCULE, Font::RIGHT, alpha);
 	

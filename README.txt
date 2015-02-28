@@ -1,5 +1,5 @@
 ================================================================================
-Nanobounce                                            Copyright 2010 Carl Reinke
+Nanobounce                                            Copyright 2015 Carl Reinke
 ================================================================================
 
 This game is a known cause of tension headaches.  Enjoy!
@@ -19,20 +19,28 @@ the wall.
 The rest is simple enough. :)
 
 ================================================================================
+License
+================================================================================
+
+This program is non-commercial, open-source software; you can redistribute it
+and/or modify it under the terms of the MAME License as included along with this
+program.
+
+================================================================================
 Credits
 ================================================================================
 
 = Coding, Sprites, and Sounds ==================================================
 
-Carl Reinke <carlreinke nothinglost net>
+Carl Reinke
 
 http://www.intoorbit.org/projects/nanobounce/
 
-= Inspiration: Crazy Bound =====================================================
+= Inspiration: BOUND PLUS ======================================================
 
-CraftM developed a frustrating, freeware game called Crazy Bound.
+CraftM developed a frustrating, freeware game called BOUND PLUS.
 
-http://hp.vector.co.jp/authors/VA021277/
+http://www.uik.jp/craftm.html
 
 = Font: 04B-21 =================================================================
 

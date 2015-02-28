@@ -1,3 +1,4 @@
 features
- * add demo mode
+ * add attract (demo) mode
  * add ability to change level dimensions within editor
+ * add level pack management to editor

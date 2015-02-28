@@ -1,6 +1,6 @@
 /*  audio/stream.hpp
  *  
- *  Copyright 2010 Carl Reinke
+ *  Copyright 2015 Carl Reinke
  *  
  *  This program is non-commercial, open-source software; you can redistribute
  *  it and/or modify it under the terms of the MAME License as included along
