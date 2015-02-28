@@ -44,7 +44,7 @@ public:
 	int get_time_ms( void ) const { return ticks * 1000 / ticks_per_second; }
 	std::string get_time( void ) const { return format_time(get_time_ms()); }
 	
-	void set_player_name( const std::string &name ) { if (player_name.empty()) player_name = name; }
+	void set_player_name( const std::string &name ) { player_name = name; }
 	
 	static std::string format_time( int ms );
 	

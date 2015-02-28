@@ -332,13 +332,16 @@ void TextEntryMenu::handle_event( SDL_Event &e )
 			break;
 			
 		case Controller::SELECT_KEY:
-			if (entries[selection].size() > 1) // selected "end"
+			if (selection == 0) // selected "end"
 				goto made_selection;
 			text += entries[selection];
 			break;
 		case Controller::START_KEY:
-			if (entries[selection].size() == 1) // not selected "end"
+			if (selection > 0) // not selected "end"
+			{
 				text += entries[selection];
+				selection = 0;
+			}
 made_selection:
 			no_selection = false;
 			loop_quit = true;
