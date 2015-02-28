@@ -43,7 +43,7 @@ Highscore::Highscore( const boost::filesystem::path &path )
 
 bool Highscore::load( const boost::filesystem::path &path )
 {
-	std::ifstream stream(path.c_str());
+	std::ifstream stream(path.string());
 	
 	bool success = load(stream);
 	
@@ -94,7 +94,7 @@ bool Highscore::save( const boost::filesystem::path &path ) const
 	
 	boost::filesystem::create_directories(path.parent_path());
 	
-	std::ofstream stream(path.c_str());
+	std::ofstream stream(path.string());
 	
 	bool success = save(stream);
 	

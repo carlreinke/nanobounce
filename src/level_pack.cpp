@@ -40,7 +40,7 @@ LevelPack::LevelPack( const boost::filesystem::path &level_directory, const boos
 
 bool LevelPack::load_meta( void )
 {
-	std::ifstream stream((level_directory / "meta").c_str());
+	std::ifstream stream((level_directory / "meta").string());
 	
 	std::getline(stream, name);
 	boost::trim_right_if(name, boost::is_any_of("\r"));
@@ -82,7 +82,7 @@ bool LevelPack::save_meta( void )
 	if (!boost::filesystem::exists(level_directory))
 		boost::filesystem::create_directories(level_directory);
 	
-	std::ofstream stream((level_directory / "meta").c_str());
+	std::ofstream stream((level_directory / "meta").string());
 	
 	stream << name << std::endl;
 	stream << author << std::endl;

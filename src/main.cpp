@@ -28,6 +28,8 @@
 #include "video/font.hpp"
 #include "video/video.hpp"
 
+#include <getopt.h>
+
 using std::max;
 
 bool global_quit = false;

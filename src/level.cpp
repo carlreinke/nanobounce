@@ -38,7 +38,7 @@ Level::Level( const boost::filesystem::path &path )
 
 bool Level::load( const boost::filesystem::path &path )
 {
-	std::ifstream stream(path.c_str());
+	std::ifstream stream(path.string());
 	bool success = load(stream);
 	
 	if (success)
@@ -90,7 +90,7 @@ bool Level::save( const boost::filesystem::path &path ) const
 {
 	boost::filesystem::create_directories(path.parent_path());
 		
-	std::ofstream data(path.c_str());
+	std::ofstream data(path.string());
 	bool success = save(data);
 	
 	std::cout << (success ? "saved" : "warning: failed to save") << " level"
