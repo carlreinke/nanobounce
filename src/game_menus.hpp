@@ -48,7 +48,8 @@ public:
 		bool no_sort;
 		LevelPack level_pack;
 		
-		bool operator<( const Entry &that ) const { return no_sort ? false :
+		bool operator<( const Entry &that ) const { return
+		        (no_sort || that.no_sort)                           ? false :
 		        level_pack.get_name() != that.level_pack.get_name() ? level_pack.get_name() < that.level_pack.get_name() :
 		                                                              level_pack.get_author() < that.level_pack.get_author(); }
 	};
