@@ -34,7 +34,7 @@ Credits
 
 Carl Reinke
 
-http://www.intoorbit.org/projects/nanobounce/
+https://github.com/carlreinke/nanobounce
 
 = Inspiration: BOUND PLUS ======================================================
 
